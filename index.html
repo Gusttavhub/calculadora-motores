@@ -18,10 +18,9 @@
                     fontFamily: { sans: ['Inter', 'sans-serif'] },
                     colors: {
                         brand: {
-                            dark: '#0f172a',
-                            blue: '#1e40af',
-                            orange: '#f59e0b',
-                            text: '#1e293b'
+                            dark: '#0f172a', // Fundo principal
+                            blue: '#1e40af', // Azul destaque
+                            text: '#1e293b'  // Texto escuro
                         }
                     }
                 }
@@ -30,37 +29,82 @@
     </script>
 
     <style>
+        /* Remove estilo padrão e aplica estilo customizado */
         input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
+        /* Estilo do "dedão" (thumb) do slider */
         input[type=range]::-webkit-slider-thumb {
             -webkit-appearance: none; height: 16px; width: 16px; border-radius: 50%;
             background: #3b82f6; margin-top: -6px; cursor: pointer;
         }
+        /* Estilo da trilha do slider */
         input[type=range]::-webkit-slider-runnable-track {
             width: 100%; height: 4px; cursor: pointer; background: #e2e8f0; border-radius: 2px;
         }
+        /* Esconder o modal inicialmente */
+        #aboutModal.hidden { display: none; }
     </style>
 </head>
 <body class="bg-brand-dark text-slate-300 font-sans antialiased">
 
-    <nav class="border-b border-slate-700 bg-slate-900/50 backdrop-blur-md sticky top-0 z-50">
+    <nav class="border-b border-slate-700 bg-slate-900/50 backdrop-blur-md sticky top-0 z-40">
         <div class="container mx-auto px-4 h-16 flex items-center justify-between">
             <div class="flex items-center gap-2">
                 <i class="fa-solid fa-bolt text-yellow-400 text-xl"></i>
                 <span class="text-white font-bold text-lg tracking-wide">ElektroSys</span>
             </div>
-            <div class="hidden md:flex gap-8 text-sm font-medium text-slate-400">
+            <div class="flex gap-8 text-sm font-medium text-slate-400">
                 <a href="#" class="text-white">Calculadora</a>
-                <a href="#" class="hover:text-white transition">Sobre</a>
+                <button id="btnOpenAbout" class="hover:text-white transition focus:outline-none">Sobre</button>
             </div>
         </div>
     </nav>
+
+    <div id="aboutModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md relative overflow-hidden text-brand-text">
+            <button id="btnCloseAbout" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 focus:outline-none">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+            
+            <div class="bg-brand-blue p-6 text-white text-center">
+                <i class="fa-solid fa-user-tie text-4xl mb-2"></i>
+                <h3 class="text-xl font-bold">Gusttavo Gutierry</h3>
+                <p class="text-blue-200 text-sm">Engenharia Elétrica & Desenvolvimento</p>
+            </div>
+            
+            <div class="p-6 space-y-4">
+                <p class="text-sm text-gray-600 mb-4 text-center">Entre em contato para projetos ou dúvidas técnicas.</p>
+                
+                <a href="https://www.linkedin.com/in/gusttavo-gutierry-ferreira-moraes-bb71841a4/" target="_blank" class="flex items-center gap-4 p-4 rounded-lg border border-gray-200 hover:border-blue-500 hover:bg-blue-50 transition group">
+                    <div class="bg-[#0077b5] text-white w-10 h-10 rounded-full flex items-center justify-center">
+                        <i class="fa-brands fa-linkedin-in text-lg"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold group-hover:text-blue-700 transition">LinkedIn</h4>
+                        <p class="text-xs text-gray-500">Conectar perfil profissional</p>
+                    </div>
+                    <i class="fa-solid fa-arrow-up-right-from-square ml-auto text-gray-400 group-hover:text-blue-500"></i>
+                </a>
+                
+                <a href="https://wa.me/5564984395286" target="_blank" class="flex items-center gap-4 p-4 rounded-lg border border-gray-200 hover:border-green-500 hover:bg-green-50 transition group">
+                    <div class="bg-[#25D366] text-white w-10 h-10 rounded-full flex items-center justify-center">
+                        <i class="fa-brands fa-whatsapp text-xl"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-bold group-hover:text-green-700 transition">WhatsApp</h4>
+                        <p class="text-xs text-gray-500">+55 64 98439-5286</p>
+                    </div>
+                    <i class="fa-solid fa-arrow-up-right-from-square ml-auto text-gray-400 group-hover:text-green-500"></i>
+                </a>
+            </div>
+        </div>
+    </div>
 
     <header class="text-center py-10 px-4">
         <h1 class="text-3xl md:text-4xl font-bold text-white mb-3">
             Dimensionamento de <span class="text-blue-400">Motores Trifásicos</span>
         </h1>
         <p class="text-slate-400 max-w-2xl mx-auto">
-            Cálculos automáticos conforme NBR 5410. Altere os valores abaixo para ver o resultado em tempo real.
+            Cálculos automáticos com ajuste de bitola por queda de tensão. Altere os valores e veja o resultado em tempo real.
         </p>
     </header>
 
@@ -118,7 +162,7 @@
                                 <label class="text-xs font-bold text-gray-500">Distância do Quadro</label>
                                 <span class="text-xs font-bold text-gray-700"><span id="displayDist">20</span> m</span>
                             </div>
-                            <input type="range" id="inputDist" min="1" max="200" value="20">
+                            <input type="range" id="inputDist" min="1" max="300" value="20">
                         </div>
                     </div>
                 </div>
@@ -166,7 +210,7 @@
                         <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-2">Alimentação</span>
                         <h4 class="font-bold text-slate-800">Cabo PVC</h4>
                         <div class="text-3xl font-bold text-slate-800 mt-2"><span id="resCable">2.5</span> <span class="text-lg">mm²</span></div>
-                        <p class="text-[10px] text-green-600 mt-1">Queda de Tensão: <span id="resDrop">0.92</span>%</p>
+                        <p id="dropContainer" class="text-[10px] text-green-600 mt-1">Queda de Tensão: <span id="resDrop">0.92</span>%</p>
                     </div>
 
                     <div class="bg-white rounded-xl p-5 shadow-md border-l-4 border-blue-500">
@@ -178,18 +222,46 @@
                 </div>
 
                 <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r shadow-sm flex gap-3 text-xs text-yellow-800">
-                    <i class="fa-solid fa-triangle-exclamation text-yellow-600 mt-1"></i>
-                    <p><strong>Isenção de responsabilidade:</strong> Esta ferramenta é para fins educacionais e pré-dimensionamento. Instalações elétricas reais exigem validação de um Engenheiro Eletricista habilitado conforme NBR 5410.</p>
+                    <i class="fa-solid fa-triangle-exclamation text-yellow-600 mt-1 text-base"></i>
+                    <p><strong>Isenção de responsabilidade:</strong> Esta ferramenta é para fins educacionais e pré-dimensionamento. Instalações elétricas reais exigem validação de um Engenheiro Eletricista habilitado conforme NBR 5410. O cálculo considera Eletroduto (Método B1) e temperatura de 30°C.</p>
                 </div>
             </div>
         </div>
     </main>
 
     <script>
-        // Variáveis Globais
+        // --- LÓGICA DO MODAL "SOBRE" ---
+        const modal = document.getElementById('aboutModal');
+        const btnOpen = document.getElementById('btnOpenAbout');
+        const btnClose = document.getElementById('btnCloseAbout');
+
+        // Função para abrir o modal
+        btnOpen.addEventListener('click', (e) => {
+            e.preventDefault();
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        });
+
+        // Função para fechar o modal
+        function closeModal() {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        btnClose.addEventListener('click', closeModal);
+
+        // Fechar se clicar fora do cardzinho branco
+        modal.addEventListener('click', (e) => {
+            if(e.target === modal) closeModal();
+        });
+
+
+        // --- LÓGICA DA CALCULADORA ELÉTRICA ---
+        
+        // Variável Global de Tensão inicial
         let currentVoltage = 380;
         
-        // Elementos do DOM (Entradas)
+        // Referências aos elementos HTML (Entradas)
         const elPower = document.getElementById('inputPower');
         const elUnit = document.getElementById('inputUnit');
         const elCos = document.getElementById('inputCos');
@@ -197,13 +269,13 @@
         const elDist = document.getElementById('inputDist');
         const btnVolts = document.querySelectorAll('.volt-btn');
 
-        // Elementos do DOM (Displays numéricos dos sliders)
+        // Referências aos elementos HTML (Displays dos sliders)
         const dispWatts = document.getElementById('displayWatts');
         const dispCos = document.getElementById('displayCos');
         const dispEff = document.getElementById('displayEff');
         const dispDist = document.getElementById('displayDist');
 
-        // Elementos do DOM (Saídas)
+        // Referências aos elementos HTML (Saídas/Resultados)
         const outIn = document.getElementById('resultIn');
         const outIp = document.getElementById('resultIp');
         const outPactive = document.getElementById('resPactive');
@@ -211,11 +283,17 @@
         const outBreaker = document.getElementById('resBreaker');
         const outCable = document.getElementById('resCable');
         const outDrop = document.getElementById('resDrop');
+        const dropContainer = document.getElementById('dropContainer');
         const outContactor = document.getElementById('resContactor');
         const outRelay = document.getElementById('resRelay');
 
-        // Tabelas simplificadas (Baseado em NBR aproximada para PVC 70C em Eletroduto B1)
-        const standardBreakers = [2, 4, 6, 10, 16, 20, 25, 32, 40, 50, 63, 80, 100, 125];
+        // --- TABELAS DE REFERÊNCIA SIMPLIFICADAS ---
+
+        // Disjuntores comerciais padrão
+        const standardBreakers = [2, 4, 6, 10, 16, 20, 25, 32, 40, 50, 63, 70, 80, 100, 125, 150, 175, 200, 225, 250];
+        
+        // Tabela de Cabos (PVC 70°C, 3 condutores carregados, Ref. Método B1 aparente)
+        // 'sec': seção em mm², 'amp': capacidade de corrente em Amperes
         const cableTable = [
             { sec: 1.5, amp: 15.5 },
             { sec: 2.5, amp: 21 },
@@ -227,19 +305,27 @@
             { sec: 35.0, amp: 111 },
             { sec: 50.0, amp: 134 },
             { sec: 70.0, amp: 171 },
-            { sec: 95.0, amp: 207 }
+            { sec: 95.0, amp: 207 },
+            { sec: 120.0, amp: 239 },
+            { sec: 150.0, amp: 272 }
         ];
 
-        // Função Principal de Cálculo
+        // Constantes Físicas
+        const root3 = Math.sqrt(3); // Aprox 1.732
+        const rhoCobre = 0.0172; // Resistividade do cobre (ohm.mm²/m)
+        const maxDropAllowed = 4.0; // Limite de queda de tensão aceitável (4%)
+
+
+        // --- FUNÇÃO PRINCIPAL DE CÁLCULO ---
         function calculate() {
-            // 1. Pegar valores
+            // 1. Ler valores dos inputs
             let powerVal = parseFloat(elPower.value) || 0;
             let unit = elUnit.value;
             let cosPhi = parseFloat(elCos.value);
             let eff = parseFloat(elEff.value);
             let dist = parseFloat(elDist.value);
 
-            // Atualizar displays de texto dos sliders
+            // Atualizar os textos ao lado dos sliders
             dispCos.innerText = cosPhi;
             dispEff.innerText = eff;
             dispDist.innerText = dist;
@@ -248,90 +334,127 @@
             let watts = 0;
             if (unit === 'cv') watts = powerVal * 735.5;
             else if (unit === 'hp') watts = powerVal * 745.7;
-            else watts = powerVal * 1000;
+            else watts = powerVal * 1000; // kW
             
             dispWatts.innerText = Math.round(watts);
             outPactive.innerText = Math.round(watts) + " W";
 
             // 3. Calcular Corrente Nominal (In)
-            // Fórmula: In = P(w) / (sqrt(3) * V * cos * eff)
-            let root3 = Math.sqrt(3); // 1.732
+            // Fórmula: In = P(watts) / (√3 * V * cosφ * η)
             let In = watts / (root3 * currentVoltage * cosPhi * eff);
             
-            // Segurança contra divisão por zero
-            if(!isFinite(In)) In = 0;
+            // Evitar divisão por zero ou resultados infinitos se os inputs estiverem zerados
+            if(!isFinite(In) || In < 0) In = 0;
 
             outIn.innerText = In.toFixed(1);
 
-            // 4. Calcular Corrente de Partida (Ip) - Estimativa 7.5x
+            // 4. Calcular Corrente de Partida (Ip) - Estimativa 7.5 vezes a nominal
             let Ip = In * 7.5;
             outIp.innerText = "~" + Math.round(Ip) + " A";
 
-            // 5. Potência Aparente (S)
+            // 5. Calcular Potência Aparente (S) em VA
             let S = (root3 * currentVoltage * In);
             outPaparent.innerText = Math.round(S) + " VA";
 
-            // 6. Selecionar Disjuntor (In * 1.25 para folga de segurança simplificada)
-            let targetBreaker = In * 1.25;
-            let selectedBreaker = standardBreakers.find(b => b > targetBreaker) || "Consulta";
-            outBreaker.innerText = selectedBreaker;
-
-            // 7. Selecionar Cabo (Pelo critério de capacidade de corrente > Disjuntor)
-            // O cabo deve suportar o disjuntor, não apenas o motor.
-            let breakerVal = (typeof selectedBreaker === 'number') ? selectedBreaker : In * 1.25;
-            let selectedCable = cableTable.find(c => c.amp >= breakerVal);
-            let cableSection = selectedCable ? selectedCable.sec : "Espec.";
-            outCable.innerText = cableSection;
-
-            // 8. Calcular Queda de Tensão
-            // dU% = (sqrt(3) * rho * L * I) / (S * V) * 100
-            // rho cobre = 0.0172 ohm.mm²/m
-            let cableS = (typeof cableSection === 'number') ? cableSection : 1000; // Valor alto se indefinido
-            let voltageDropVal = (root3 * 0.0172 * dist * In) / (cableS * currentVoltage) * 100;
+            // 6. Selecionar Disjuntor (In + 25% de margem de segurança)
+            let targetBreakerCurrent = In * 1.25;
+            // Encontra o primeiro disjuntor na lista que seja maior que a corrente alvo
+            let selectedBreaker = standardBreakers.find(b => b > targetBreakerCurrent);
+            // Se a corrente for muito alta e passar do maior disjuntor da lista:
+            if (!selectedBreaker && In > 0) selectedBreaker = "> 250"; 
             
-            // Se a queda for muito alta (> 4%), sugerir cabo maior (lógica visual simples: fica vermelho)
-            let dropElem = document.getElementById('resDrop').parentNode;
-            if(voltageDropVal > 4) {
-                dropElem.className = "text-[10px] text-red-600 mt-1 font-bold";
-                outDrop.innerText = voltageDropVal.toFixed(2) + "% (ALTA)";
-            } else {
-                dropElem.className = "text-[10px] text-green-600 mt-1";
-                outDrop.innerText = voltageDropVal.toFixed(2);
+            outBreaker.innerText = selectedBreaker || 0;
+
+            // --- LÓGICA INTELIGENTE DE CABOS (CAPACIDADE + QUEDA DE TENSÃO) ---
+
+            // Passo 7a: Determinar o cabo MÍNIMO pela Capacidade de Corrente.
+            // O cabo deve suportar a corrente de ajuste do disjuntor, não apenas a do motor.
+            let requiredAmpacity = (typeof selectedBreaker === 'number') ? selectedBreaker : targetBreakerCurrent;
+            
+            // Encontra o índice (posição na tabela) do primeiro cabo que aguenta essa corrente
+            let selectedCableIndex = cableTable.findIndex(c => c.amp >= requiredAmpacity);
+
+            // Se não achou (corrente muito alta), pega o maior cabo da lista como fallback
+            if (selectedCableIndex === -1) {
+                selectedCableIndex = cableTable.length - 1;
+            }
+            
+            let currentCable = cableTable[selectedCableIndex];
+            let voltageDropVal = 0;
+
+            // Passo 7b: Loop de verificação da Queda de Tensão (Iteração)
+            // Enquanto a queda for alta DEMAIS e ainda houver cabos maiores na tabela...
+            let isDropTooHigh = true;
+
+            while (isDropTooHigh && selectedCableIndex < cableTable.length && In > 0) {
+                currentCable = cableTable[selectedCableIndex];
+                let cableS = currentCable.sec;
+
+                // Fórmula da Queda de Tensão %: dU = (√3 * ρ * L * In) / (S * V) * 100
+                voltageDropVal = (root3 * rhoCobre * dist * In) / (cableS * currentVoltage) * 100;
+                
+                if (voltageDropVal > maxDropAllowed) {
+                    // Se a queda está acima de 4%, tenta o próximo cabo maior
+                    selectedCableIndex++;
+                } else {
+                    // Se a queda está ok, pode parar de procurar
+                    isDropTooHigh = false;
+                }
             }
 
-            // 9. Contator e Relé
-            outContactor.innerText = Math.ceil(In); // Contator >= In
+            // Se depois de tentar todos os cabos a queda ainda for alta (ex: distância imensa), avisa.
+            if (isDropTooHigh) voltageDropVal = maxDropAllowed + 0.1; // Força o status de "alto"
+
+            // Atualiza o resultado do cabo na tela
+            outCable.innerText = (In > 0) ? currentCable.sec : 0;
+
+            // 8. Exibir Queda de Tensão e mudar a cor do texto
+            outDrop.innerText = voltageDropVal.toFixed(2);
             
-            // Faixa de ajuste do relé (geralmente In fica no meio)
-            let relayMin = (In * 0.8).toFixed(1);
-            let relayMax = (In * 1.2).toFixed(1);
+            if(voltageDropVal > maxDropAllowed && In > 0) {
+                // Fica vermelho e negrito se passou do limite
+                dropContainer.className = "text-[10px] text-red-600 mt-1 font-bold";
+                outDrop.innerText += "% (ALTA - Distância Limite)";
+            } else {
+                // Fica verde se está dentro do limite
+                dropContainer.className = "text-[10px] text-green-600 mt-1";
+            }
+
+            // 9. Sugerir Contator e Relé Térmico
+            outContactor.innerText = Math.ceil(In); // Contator deve ser >= In
+            
+            // Faixa de ajuste do relé (In deve estar no meio da faixa, +/- 20%)
+            let relayMin = (In > 0) ? (In * 0.8).toFixed(1) : 0;
+            let relayMax = (In > 0) ? (In * 1.2).toFixed(1) : 0;
             outRelay.innerText = `${relayMin} - ${relayMax}`;
         }
 
-        // Event Listeners (Ouvir mudanças)
+        // --- EVENT LISTENERS (Ouvir as ações do usuário) ---
+        
+        // Recalcular sempre que um input mudar
         elPower.addEventListener('input', calculate);
         elUnit.addEventListener('change', calculate);
         elCos.addEventListener('input', calculate);
         elEff.addEventListener('input', calculate);
-        elDist.addEventListener('input', calculate);
+        elDist.addEventListener('input', calculate); // Importante: calcula ao mover a distância
 
-        // Lógica dos Botões de Tensão
+        // Lógica dos botões de seleção de Tensão (220V/380V/440V)
         btnVolts.forEach(btn => {
             btn.addEventListener('click', (e) => {
-                // Remove estilo ativo de todos
+                // Remove o estilo "ativo" (azul) de todos os botões
                 btnVolts.forEach(b => {
                     b.className = "volt-btn border border-gray-200 rounded py-1.5 text-sm font-medium text-gray-500 hover:bg-gray-50";
                 });
-                // Adiciona estilo ativo no clicado
+                // Adiciona o estilo "ativo" apenas no botão clicado
                 e.target.className = "volt-btn bg-blue-600 text-white rounded py-1.5 text-sm font-medium shadow-md ring-2 ring-blue-200";
                 
-                // Atualiza valor
+                // Atualiza a variável de tensão e recalcula
                 currentVoltage = parseInt(e.target.dataset.volts);
                 calculate();
             });
         });
 
-        // Calcular ao carregar a página
+        // Rodar o cálculo uma vez ao carregar a página para preencher os dados iniciais
         calculate();
 
     </script>
