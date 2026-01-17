@@ -18,7 +18,6 @@
                     fontFamily: { sans: ['Inter', 'sans-serif'] },
                     colors: {
                         brand: {
-                            // A cor dark original é #0f172a. Usaremos ela no overlay.
                             dark: '#0f172a', 
                             blue: '#1e40af',
                             text: '#1e293b'
@@ -30,7 +29,6 @@
     </script>
 
     <style>
-        /* Sliders */
         input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
         input[type=range]::-webkit-slider-thumb {
             -webkit-appearance: none; height: 16px; width: 16px; border-radius: 50%;
@@ -39,10 +37,10 @@
         input[type=range]::-webkit-slider-runnable-track {
             width: 100%; height: 4px; cursor: pointer; background: #e2e8f0; border-radius: 2px;
         }
-        /* Modal */
         #aboutModal.hidden { display: none; }
     </style>
 </head>
+
 <body class="text-slate-300 font-sans antialiased" style="background-image: linear-gradient(to bottom, rgba(15, 23, 42, 0.93), rgba(15, 23, 42, 0.97)), url('https://ecoa.org.br/wp-content/uploads/2015/11/weg-electric-motors-in-stiavelli-warehouse.jpg'); background-size: cover; background-position: center; background-attachment: fixed; background-repeat: no-repeat;">
 
     <nav class="border-b border-slate-700 bg-slate-900/80 backdrop-blur-md sticky top-0 z-40">
@@ -72,7 +70,6 @@
             
             <div class="p-6 space-y-4">
                 <p class="text-sm text-gray-600 mb-4 text-center">Entre em contato para projetos ou dúvidas técnicas.</p>
-                
                 <a href="https://www.linkedin.com/in/gusttavo-gutierry-ferreira-moraes-bb71841a4/" target="_blank" class="flex items-center gap-4 p-4 rounded-lg border border-gray-200 hover:border-blue-500 hover:bg-blue-50 transition group">
                     <div class="bg-[#0077b5] text-white w-10 h-10 rounded-full flex items-center justify-center">
                         <i class="fa-brands fa-linkedin-in text-lg"></i>
@@ -83,7 +80,6 @@
                     </div>
                     <i class="fa-solid fa-arrow-up-right-from-square ml-auto text-gray-400 group-hover:text-blue-500"></i>
                 </a>
-                
                 <a href="https://wa.me/5564984395286" target="_blank" class="flex items-center gap-4 p-4 rounded-lg border border-gray-200 hover:border-green-500 hover:bg-green-50 transition group">
                     <div class="bg-[#25D366] text-white w-10 h-10 rounded-full flex items-center justify-center">
                         <i class="fa-brands fa-whatsapp text-xl"></i>
@@ -102,8 +98,10 @@
         <h1 class="text-3xl md:text-4xl font-bold text-white mb-3">
             Dimensionamento de <span class="text-blue-400">Motores Trifásicos</span>
         </h1>
-        <p class="text-slate-400 max-w-2xl mx-auto">
-            Cálculos automáticos com ajuste de bitola por queda de tensão. Altere os valores e veja o resultado em tempo real.
+        <p class="text-white font-bold max-w-2xl mx-auto">
+            Cálculos automáticos com ajuste de bitola por queda de tensão.
+            <br>
+            Altere os valores e veja o resultado em tempo real.
         </p>
     </header>
 
@@ -229,7 +227,7 @@
     </main>
 
     <script>
-        // --- LÓGICA DO MODAL "SOBRE" ---
+        // MODAL
         const modal = document.getElementById('aboutModal');
         const btnOpen = document.getElementById('btnOpenAbout');
         const btnClose = document.getElementById('btnCloseAbout');
@@ -240,10 +238,10 @@
         modal.addEventListener('click', (e) => { if(e.target === modal) closeModal(); });
 
 
-        // --- LÓGICA DA CALCULADORA ELÉTRICA ---
+        // CALCULADORA
         let currentVoltage = 380;
         
-        // Elementos HTML
+        // Elementos
         const elPower = document.getElementById('inputPower');
         const elUnit = document.getElementById('inputUnit');
         const elCos = document.getElementById('inputCos');
@@ -279,7 +277,6 @@
         const rhoCobre = 0.0172; 
         const maxDropAllowed = 4.0;
 
-        // Função de Cálculo
         function calculate() {
             let powerVal = parseFloat(elPower.value) || 0;
             let unit = elUnit.value;
@@ -314,7 +311,7 @@
             if (!selectedBreaker && In > 0) selectedBreaker = "> 250"; 
             outBreaker.innerText = selectedBreaker || 0;
 
-            // Lógica de Cabo Inteligente
+            // Cabo Inteligente
             let requiredAmpacity = (typeof selectedBreaker === 'number') ? selectedBreaker : targetBreakerCurrent;
             let selectedCableIndex = cableTable.findIndex(c => c.amp >= requiredAmpacity);
             if (selectedCableIndex === -1) selectedCableIndex = cableTable.length - 1;
@@ -351,7 +348,6 @@
             outRelay.innerText = `${relayMin} - ${relayMax}`;
         }
 
-        // Event Listeners
         elPower.addEventListener('input', calculate);
         elUnit.addEventListener('change', calculate);
         elCos.addEventListener('input', calculate);
