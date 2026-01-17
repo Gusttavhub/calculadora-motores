@@ -18,9 +18,10 @@
                     fontFamily: { sans: ['Inter', 'sans-serif'] },
                     colors: {
                         brand: {
-                            dark: '#0f172a', // Fundo principal
-                            blue: '#1e40af', // Azul destaque
-                            text: '#1e293b'  // Texto escuro
+                            // A cor dark original é #0f172a. Usaremos ela no overlay.
+                            dark: '#0f172a', 
+                            blue: '#1e40af',
+                            text: '#1e293b'
                         }
                     }
                 }
@@ -29,24 +30,22 @@
     </script>
 
     <style>
-        /* Remove estilo padrão e aplica estilo customizado */
+        /* Sliders */
         input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
-        /* Estilo do "dedão" (thumb) do slider */
         input[type=range]::-webkit-slider-thumb {
             -webkit-appearance: none; height: 16px; width: 16px; border-radius: 50%;
             background: #3b82f6; margin-top: -6px; cursor: pointer;
         }
-        /* Estilo da trilha do slider */
         input[type=range]::-webkit-slider-runnable-track {
             width: 100%; height: 4px; cursor: pointer; background: #e2e8f0; border-radius: 2px;
         }
-        /* Esconder o modal inicialmente */
+        /* Modal */
         #aboutModal.hidden { display: none; }
     </style>
 </head>
-<body class="bg-brand-dark text-slate-300 font-sans antialiased">
+<body class="text-slate-300 font-sans antialiased" style="background-image: linear-gradient(to bottom, rgba(15, 23, 42, 0.93), rgba(15, 23, 42, 0.97)), url('https://ecoa.org.br/wp-content/uploads/2015/11/weg-electric-motors-in-stiavelli-warehouse.jpg'); background-size: cover; background-position: center; background-attachment: fixed; background-repeat: no-repeat;">
 
-    <nav class="border-b border-slate-700 bg-slate-900/50 backdrop-blur-md sticky top-0 z-40">
+    <nav class="border-b border-slate-700 bg-slate-900/80 backdrop-blur-md sticky top-0 z-40">
         <div class="container mx-auto px-4 h-16 flex items-center justify-between">
             <div class="flex items-center gap-2">
                 <i class="fa-solid fa-bolt text-yellow-400 text-xl"></i>
@@ -59,7 +58,7 @@
         </div>
     </nav>
 
-    <div id="aboutModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div id="aboutModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-md relative overflow-hidden text-brand-text">
             <button id="btnCloseAbout" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 focus:outline-none">
                 <i class="fa-solid fa-xmark text-xl"></i>
@@ -99,7 +98,7 @@
         </div>
     </div>
 
-    <header class="text-center py-10 px-4">
+    <header class="text-center py-10 px-4 relative z-10">
         <h1 class="text-3xl md:text-4xl font-bold text-white mb-3">
             Dimensionamento de <span class="text-blue-400">Motores Trifásicos</span>
         </h1>
@@ -108,7 +107,7 @@
         </p>
     </header>
 
-    <main class="container mx-auto px-4 pb-20">
+    <main class="container mx-auto px-4 pb-20 relative z-10">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
             
             <div class="lg:col-span-4 space-y-4">
@@ -167,7 +166,7 @@
                     </div>
                 </div>
 
-                <div class="bg-slate-800 rounded-lg p-4 border border-slate-700 shadow-inner text-center">
+                <div class="bg-slate-800/80 backdrop-blur-md rounded-lg p-4 border border-slate-700 shadow-inner text-center">
                     <p class="text-[10px] text-slate-400 uppercase tracking-widest mb-1">Cálculo Realizado</p>
                     <div class="text-white text-sm font-serif italic opacity-80">
                          In = P / (√3 · V · cosφ · η)
@@ -235,33 +234,16 @@
         const btnOpen = document.getElementById('btnOpenAbout');
         const btnClose = document.getElementById('btnCloseAbout');
 
-        // Função para abrir o modal
-        btnOpen.addEventListener('click', (e) => {
-            e.preventDefault();
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        });
-
-        // Função para fechar o modal
-        function closeModal() {
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
-        }
-
+        btnOpen.addEventListener('click', (e) => { e.preventDefault(); modal.classList.remove('hidden'); modal.classList.add('flex'); });
+        function closeModal() { modal.classList.add('hidden'); modal.classList.remove('flex'); }
         btnClose.addEventListener('click', closeModal);
-
-        // Fechar se clicar fora do cardzinho branco
-        modal.addEventListener('click', (e) => {
-            if(e.target === modal) closeModal();
-        });
+        modal.addEventListener('click', (e) => { if(e.target === modal) closeModal(); });
 
 
         // --- LÓGICA DA CALCULADORA ELÉTRICA ---
-        
-        // Variável Global de Tensão inicial
         let currentVoltage = 380;
         
-        // Referências aos elementos HTML (Entradas)
+        // Elementos HTML
         const elPower = document.getElementById('inputPower');
         const elUnit = document.getElementById('inputUnit');
         const elCos = document.getElementById('inputCos');
@@ -269,13 +251,11 @@
         const elDist = document.getElementById('inputDist');
         const btnVolts = document.querySelectorAll('.volt-btn');
 
-        // Referências aos elementos HTML (Displays dos sliders)
         const dispWatts = document.getElementById('displayWatts');
         const dispCos = document.getElementById('displayCos');
         const dispEff = document.getElementById('displayEff');
         const dispDist = document.getElementById('displayDist');
 
-        // Referências aos elementos HTML (Saídas/Resultados)
         const outIn = document.getElementById('resultIn');
         const outIp = document.getElementById('resultIp');
         const outPactive = document.getElementById('resPactive');
@@ -287,176 +267,109 @@
         const outContactor = document.getElementById('resContactor');
         const outRelay = document.getElementById('resRelay');
 
-        // --- TABELAS DE REFERÊNCIA SIMPLIFICADAS ---
-
-        // Disjuntores comerciais padrão
+        // Tabelas
         const standardBreakers = [2, 4, 6, 10, 16, 20, 25, 32, 40, 50, 63, 70, 80, 100, 125, 150, 175, 200, 225, 250];
-        
-        // Tabela de Cabos (PVC 70°C, 3 condutores carregados, Ref. Método B1 aparente)
-        // 'sec': seção em mm², 'amp': capacidade de corrente em Amperes
         const cableTable = [
-            { sec: 1.5, amp: 15.5 },
-            { sec: 2.5, amp: 21 },
-            { sec: 4.0, amp: 28 },
-            { sec: 6.0, amp: 36 },
-            { sec: 10.0, amp: 50 },
-            { sec: 16.0, amp: 68 },
-            { sec: 25.0, amp: 89 },
-            { sec: 35.0, amp: 111 },
-            { sec: 50.0, amp: 134 },
-            { sec: 70.0, amp: 171 },
-            { sec: 95.0, amp: 207 },
-            { sec: 120.0, amp: 239 },
-            { sec: 150.0, amp: 272 }
+            { sec: 1.5, amp: 15.5 }, { sec: 2.5, amp: 21 }, { sec: 4.0, amp: 28 }, { sec: 6.0, amp: 36 },
+            { sec: 10.0, amp: 50 }, { sec: 16.0, amp: 68 }, { sec: 25.0, amp: 89 }, { sec: 35.0, amp: 111 },
+            { sec: 50.0, amp: 134 }, { sec: 70.0, amp: 171 }, { sec: 95.0, amp: 207 }, { sec: 120.0, amp: 239 }, { sec: 150.0, amp: 272 }
         ];
 
-        // Constantes Físicas
-        const root3 = Math.sqrt(3); // Aprox 1.732
-        const rhoCobre = 0.0172; // Resistividade do cobre (ohm.mm²/m)
-        const maxDropAllowed = 4.0; // Limite de queda de tensão aceitável (4%)
+        const root3 = Math.sqrt(3); 
+        const rhoCobre = 0.0172; 
+        const maxDropAllowed = 4.0;
 
-
-        // --- FUNÇÃO PRINCIPAL DE CÁLCULO ---
+        // Função de Cálculo
         function calculate() {
-            // 1. Ler valores dos inputs
             let powerVal = parseFloat(elPower.value) || 0;
             let unit = elUnit.value;
             let cosPhi = parseFloat(elCos.value);
             let eff = parseFloat(elEff.value);
             let dist = parseFloat(elDist.value);
 
-            // Atualizar os textos ao lado dos sliders
             dispCos.innerText = cosPhi;
             dispEff.innerText = eff;
             dispDist.innerText = dist;
 
-            // 2. Converter Potência para Watts
             let watts = 0;
             if (unit === 'cv') watts = powerVal * 735.5;
             else if (unit === 'hp') watts = powerVal * 745.7;
-            else watts = powerVal * 1000; // kW
+            else watts = powerVal * 1000;
             
             dispWatts.innerText = Math.round(watts);
             outPactive.innerText = Math.round(watts) + " W";
 
-            // 3. Calcular Corrente Nominal (In)
-            // Fórmula: In = P(watts) / (√3 * V * cosφ * η)
             let In = watts / (root3 * currentVoltage * cosPhi * eff);
-            
-            // Evitar divisão por zero ou resultados infinitos se os inputs estiverem zerados
             if(!isFinite(In) || In < 0) In = 0;
-
             outIn.innerText = In.toFixed(1);
 
-            // 4. Calcular Corrente de Partida (Ip) - Estimativa 7.5 vezes a nominal
             let Ip = In * 7.5;
             outIp.innerText = "~" + Math.round(Ip) + " A";
 
-            // 5. Calcular Potência Aparente (S) em VA
             let S = (root3 * currentVoltage * In);
             outPaparent.innerText = Math.round(S) + " VA";
 
-            // 6. Selecionar Disjuntor (In + 25% de margem de segurança)
             let targetBreakerCurrent = In * 1.25;
-            // Encontra o primeiro disjuntor na lista que seja maior que a corrente alvo
             let selectedBreaker = standardBreakers.find(b => b > targetBreakerCurrent);
-            // Se a corrente for muito alta e passar do maior disjuntor da lista:
             if (!selectedBreaker && In > 0) selectedBreaker = "> 250"; 
-            
             outBreaker.innerText = selectedBreaker || 0;
 
-            // --- LÓGICA INTELIGENTE DE CABOS (CAPACIDADE + QUEDA DE TENSÃO) ---
-
-            // Passo 7a: Determinar o cabo MÍNIMO pela Capacidade de Corrente.
-            // O cabo deve suportar a corrente de ajuste do disjuntor, não apenas a do motor.
+            // Lógica de Cabo Inteligente
             let requiredAmpacity = (typeof selectedBreaker === 'number') ? selectedBreaker : targetBreakerCurrent;
-            
-            // Encontra o índice (posição na tabela) do primeiro cabo que aguenta essa corrente
             let selectedCableIndex = cableTable.findIndex(c => c.amp >= requiredAmpacity);
-
-            // Se não achou (corrente muito alta), pega o maior cabo da lista como fallback
-            if (selectedCableIndex === -1) {
-                selectedCableIndex = cableTable.length - 1;
-            }
+            if (selectedCableIndex === -1) selectedCableIndex = cableTable.length - 1;
             
             let currentCable = cableTable[selectedCableIndex];
             let voltageDropVal = 0;
-
-            // Passo 7b: Loop de verificação da Queda de Tensão (Iteração)
-            // Enquanto a queda for alta DEMAIS e ainda houver cabos maiores na tabela...
             let isDropTooHigh = true;
 
             while (isDropTooHigh && selectedCableIndex < cableTable.length && In > 0) {
                 currentCable = cableTable[selectedCableIndex];
                 let cableS = currentCable.sec;
-
-                // Fórmula da Queda de Tensão %: dU = (√3 * ρ * L * In) / (S * V) * 100
                 voltageDropVal = (root3 * rhoCobre * dist * In) / (cableS * currentVoltage) * 100;
-                
                 if (voltageDropVal > maxDropAllowed) {
-                    // Se a queda está acima de 4%, tenta o próximo cabo maior
                     selectedCableIndex++;
                 } else {
-                    // Se a queda está ok, pode parar de procurar
                     isDropTooHigh = false;
                 }
             }
+            if (isDropTooHigh) voltageDropVal = maxDropAllowed + 0.1;
 
-            // Se depois de tentar todos os cabos a queda ainda for alta (ex: distância imensa), avisa.
-            if (isDropTooHigh) voltageDropVal = maxDropAllowed + 0.1; // Força o status de "alto"
-
-            // Atualiza o resultado do cabo na tela
             outCable.innerText = (In > 0) ? currentCable.sec : 0;
-
-            // 8. Exibir Queda de Tensão e mudar a cor do texto
             outDrop.innerText = voltageDropVal.toFixed(2);
             
             if(voltageDropVal > maxDropAllowed && In > 0) {
-                // Fica vermelho e negrito se passou do limite
                 dropContainer.className = "text-[10px] text-red-600 mt-1 font-bold";
                 outDrop.innerText += "% (ALTA - Distância Limite)";
             } else {
-                // Fica verde se está dentro do limite
                 dropContainer.className = "text-[10px] text-green-600 mt-1";
             }
 
-            // 9. Sugerir Contator e Relé Térmico
-            outContactor.innerText = Math.ceil(In); // Contator deve ser >= In
-            
-            // Faixa de ajuste do relé (In deve estar no meio da faixa, +/- 20%)
+            outContactor.innerText = Math.ceil(In);
             let relayMin = (In > 0) ? (In * 0.8).toFixed(1) : 0;
             let relayMax = (In > 0) ? (In * 1.2).toFixed(1) : 0;
             outRelay.innerText = `${relayMin} - ${relayMax}`;
         }
 
-        // --- EVENT LISTENERS (Ouvir as ações do usuário) ---
-        
-        // Recalcular sempre que um input mudar
+        // Event Listeners
         elPower.addEventListener('input', calculate);
         elUnit.addEventListener('change', calculate);
         elCos.addEventListener('input', calculate);
         elEff.addEventListener('input', calculate);
-        elDist.addEventListener('input', calculate); // Importante: calcula ao mover a distância
+        elDist.addEventListener('input', calculate);
 
-        // Lógica dos botões de seleção de Tensão (220V/380V/440V)
         btnVolts.forEach(btn => {
             btn.addEventListener('click', (e) => {
-                // Remove o estilo "ativo" (azul) de todos os botões
                 btnVolts.forEach(b => {
                     b.className = "volt-btn border border-gray-200 rounded py-1.5 text-sm font-medium text-gray-500 hover:bg-gray-50";
                 });
-                // Adiciona o estilo "ativo" apenas no botão clicado
                 e.target.className = "volt-btn bg-blue-600 text-white rounded py-1.5 text-sm font-medium shadow-md ring-2 ring-blue-200";
-                
-                // Atualiza a variável de tensão e recalcula
                 currentVoltage = parseInt(e.target.dataset.volts);
                 calculate();
             });
         });
 
-        // Rodar o cálculo uma vez ao carregar a página para preencher os dados iniciais
         calculate();
-
     </script>
 </body>
 </html>
