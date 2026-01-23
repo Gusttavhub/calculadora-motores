@@ -10,19 +10,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="ElektroSys | Dimensionamento de Cabos para Motores">
+    <meta name="theme-color" content="#0f172a">
+    <link rel="manifest" href="manifest.json">
 
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     fontFamily: { sans: ['Inter', 'sans-serif'] },
-                    colors: {
-                        brand: {
-                            dark: '#0f172a', 
-                            blue: '#1e40af',
-                            text: '#1e293b'
-                        }
-                    }
+                    colors: { brand: { dark: '#0f172a', blue: '#1e40af', text: '#1e293b' } }
                 }
             }
         }
@@ -38,6 +37,11 @@
             width: 100%; height: 4px; cursor: pointer; background: #e2e8f0; border-radius: 2px;
         }
         #aboutModal.hidden { display: none; }
+        
+        /* Estilos para o Diagrama Fasorial */
+        .phasor-text { font-size: 12px; font-weight: 600; pointer-events: none; font-family: 'Inter', sans-serif; }
+        .phasor-label { font-size: 10px; fill: #64748b; font-weight: 500; }
+        .phasor-value { font-size: 13px; font-weight: 800; }
     </style>
 </head>
 
@@ -58,37 +62,21 @@
 
     <div id="aboutModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-md relative overflow-hidden text-brand-text">
-            <button id="btnCloseAbout" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 focus:outline-none">
-                <i class="fa-solid fa-xmark text-xl"></i>
-            </button>
-            
+            <button id="btnCloseAbout" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 focus:outline-none"><i class="fa-solid fa-xmark text-xl"></i></button>
             <div class="bg-brand-blue p-6 text-white text-center">
                 <i class="fa-solid fa-user-tie text-4xl mb-2"></i>
                 <h3 class="text-xl font-bold">Gusttavo Gutierry</h3>
                 <p class="text-blue-200 text-sm">Engenharia Elétrica & Desenvolvimento</p>
             </div>
-            
             <div class="p-6 space-y-4">
                 <p class="text-sm text-gray-600 mb-4 text-center">Entre em contato para projetos ou dúvidas técnicas.</p>
                 <a href="https://www.linkedin.com/in/gusttavo-gutierry-ferreira-moraes-bb71841a4/" target="_blank" class="flex items-center gap-4 p-4 rounded-lg border border-gray-200 hover:border-blue-500 hover:bg-blue-50 transition group">
-                    <div class="bg-[#0077b5] text-white w-10 h-10 rounded-full flex items-center justify-center">
-                        <i class="fa-brands fa-linkedin-in text-lg"></i>
-                    </div>
-                    <div>
-                        <h4 class="font-bold group-hover:text-blue-700 transition">LinkedIn</h4>
-                        <p class="text-xs text-gray-500">Conectar perfil profissional</p>
-                    </div>
-                    <i class="fa-solid fa-arrow-up-right-from-square ml-auto text-gray-400 group-hover:text-blue-500"></i>
+                    <div class="bg-[#0077b5] text-white w-10 h-10 rounded-full flex items-center justify-center"><i class="fa-brands fa-linkedin-in text-lg"></i></div>
+                    <div><h4 class="font-bold group-hover:text-blue-700 transition">LinkedIn</h4><p class="text-xs text-gray-500">Conectar perfil profissional</p></div>
                 </a>
                 <a href="https://wa.me/5564984395286" target="_blank" class="flex items-center gap-4 p-4 rounded-lg border border-gray-200 hover:border-green-500 hover:bg-green-50 transition group">
-                    <div class="bg-[#25D366] text-white w-10 h-10 rounded-full flex items-center justify-center">
-                        <i class="fa-brands fa-whatsapp text-xl"></i>
-                    </div>
-                    <div>
-                        <h4 class="font-bold group-hover:text-green-700 transition">WhatsApp</h4>
-                        <p class="text-xs text-gray-500">+55 64 98439-5286</p>
-                    </div>
-                    <i class="fa-solid fa-arrow-up-right-from-square ml-auto text-gray-400 group-hover:text-green-500"></i>
+                    <div class="bg-[#25D366] text-white w-10 h-10 rounded-full flex items-center justify-center"><i class="fa-brands fa-whatsapp text-xl"></i></div>
+                    <div><h4 class="font-bold group-hover:text-green-700 transition">WhatsApp</h4><p class="text-xs text-gray-500">+55 64 98439-5286</p></div>
                 </a>
             </div>
         </div>
@@ -96,11 +84,10 @@
 
     <header class="text-center py-10 px-4 relative z-10">
         <h1 class="text-3xl md:text-4xl font-bold text-white mb-3">
-            Dimensionamento de <span class="text-blue-400">Motores Trifásicos</span>
+            Dimensionamento de cabos para <span class="text-blue-400">Motores Trifásicos</span>
         </h1>
         <p class="text-white font-bold max-w-2xl mx-auto">
-            Cálculos automáticos com ajuste de bitola por queda de tensão.
-            <br>
+            Cálculos automáticos com ajuste de bitola por queda de tensão.<br>
             Altere os valores e veja o resultado em tempo real.
         </p>
     </header>
@@ -140,7 +127,7 @@
 
                         <div>
                             <div class="flex justify-between mb-1">
-                                <label class="text-xs font-bold text-gray-500">Fator de Potência</label>
+                                <label class="text-xs font-bold text-gray-500">Fator de Potência (cos φ)</label>
                                 <span id="displayCos" class="text-xs font-bold text-blue-600">0.85</span>
                             </div>
                             <input type="range" id="inputCos" min="0.5" max="1" step="0.01" value="0.85">
@@ -159,34 +146,68 @@
                                 <label class="text-xs font-bold text-gray-500">Distância do Quadro</label>
                                 <span class="text-xs font-bold text-gray-700"><span id="displayDist">20</span> m</span>
                             </div>
-                            <input type="range" id="inputDist" min="1" max="300" value="20">
+                            <input type="range" id="inputDist" min="1" max="500" value="20">
                         </div>
                     </div>
                 </div>
 
                 <div class="bg-slate-800/80 backdrop-blur-md rounded-lg p-4 border border-slate-700 shadow-inner text-center">
                     <p class="text-[10px] text-slate-400 uppercase tracking-widest mb-1">Cálculo Realizado</p>
-                    <div class="text-white text-sm font-serif italic opacity-80">
-                         In = P / (√3 · V · cosφ · η)
-                    </div>
+                    <div class="text-white text-sm font-serif italic opacity-80">In = P / (√3 · V · cosφ · η)</div>
                 </div>
             </div>
 
             <div class="lg:col-span-8 space-y-6">
                 
-                <div class="bg-white rounded-xl shadow-lg p-0 overflow-hidden flex flex-col md:flex-row relative">
-                    <div class="p-8 flex-1 flex flex-col justify-center z-10">
+                <div class="bg-white rounded-xl shadow-lg p-0 overflow-hidden flex flex-col md:flex-row relative min-h-[220px]">
+                    <div class="p-6 md:p-8 flex-1 flex flex-col justify-center z-10 border-r border-gray-100">
                         <p class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-1">Corrente Nominal (In)</p>
-                        <h2 class="text-6xl font-extrabold text-slate-800 mb-2"><span id="resultIn">14.6</span><span class="text-2xl text-gray-500 ml-1">A</span></h2>
+                        <h2 class="text-5xl md:text-6xl font-extrabold text-slate-800 mb-2"><span id="resultIn">14.6</span><span class="text-2xl text-gray-500 ml-1">A</span></h2>
                         <div class="inline-flex items-center gap-2 bg-gray-100 rounded-full px-3 py-1 w-max">
                             <span class="text-sm font-semibold text-slate-600">Partida (Ip): <span id="resultIp" class="text-blue-600">~110 A</span></span>
                         </div>
                     </div>
-                    <div class="flex-1 bg-gradient-to-br from-gray-50 to-gray-200 min-h-[180px] flex items-center justify-center relative">
-                        <i class="fa-solid fa-industry text-8xl text-gray-300 opacity-50 absolute right-4 bottom-4"></i>
-                        <div class="absolute bottom-4 left-4 right-4 bg-white/90 backdrop-blur-sm rounded-lg p-3 shadow-sm border border-white/50 text-xs text-gray-600 flex justify-between">
-                            <div><span class="block font-bold">Potência Ativa</span><span id="resPactive">7355 W</span></div>
-                            <div class="text-right"><span class="block font-bold">Potência Aparente</span><span id="resPaparent">9614 VA</span></div>
+                    
+                    <div class="flex-1 bg-gradient-to-br from-gray-50 to-gray-100 relative flex items-center justify-center p-2">
+                        <i class="fa-solid fa-bolt text-7xl text-yellow-400 opacity-5 absolute right-2 bottom-2"></i>
+                        
+                        <div class="w-full h-full flex items-center justify-center">
+                            <svg viewBox="0 0 300 220" class="w-full max-w-[320px] drop-shadow-sm" style="overflow: visible;">
+                                
+                                <defs>
+                                    <marker id="arrowP" markerWidth="4" markerHeight="3" refX="3.5" refY="1.5" orient="auto" markerUnits="strokeWidth">
+                                      <path d="M0,0 L0,3 L3.5,1.5 z" fill="#EAB308" />
+                                    </marker>
+                                    <marker id="arrowQ" markerWidth="4" markerHeight="3" refX="3.5" refY="1.5" orient="auto" markerUnits="strokeWidth">
+                                      <path d="M0,0 L0,3 L3.5,1.5 z" fill="#FACC15" />
+                                    </marker>
+                                    <marker id="arrowS" markerWidth="4" markerHeight="3" refX="3.5" refY="1.5" orient="auto" markerUnits="strokeWidth">
+                                      <path d="M0,0 L0,3 L3.5,1.5 z" fill="#475569" />
+                                    </marker>
+                                </defs>
+                                
+                                <path id="angleArc" fill="none" stroke="#3B82F6" stroke-width="2" opacity="0.6"/>
+                                <text id="angleText" class="phasor-text" fill="#3B82F6">φ</text>
+                                
+                                <line id="lineP" stroke="#EAB308" stroke-width="4" marker-end="url(#arrowP)" stroke-linecap="round"/>
+                                
+                                <line id="lineQ" stroke="#FACC15" stroke-width="4" stroke-dasharray="6,3" marker-end="url(#arrowQ)" stroke-linecap="round"/>
+                                
+                                <line id="lineS" stroke="#475569" stroke-width="3" marker-end="url(#arrowS)" stroke-linecap="round"/>
+
+                                <text id="textP" text-anchor="middle" class="phasor-text">
+                                    <tspan class="phasor-label" fill="#EAB308">Ativa (P)</tspan>
+                                    <tspan id="svgValP" x="0" dy="14" class="phasor-value" fill="#A16207">-- kW</tspan>
+                                </text>
+                                <text id="textQ" text-anchor="start" class="phasor-text">
+                                    <tspan class="phasor-label" fill="#FACC15">Reativa (Q)</tspan>
+                                    <tspan id="svgValQ" x="0" dy="14" class="phasor-value" fill="#CA8A04">-- kVAr</tspan>
+                                </text>
+                                <text id="textS" text-anchor="end" class="phasor-text">
+                                    <tspan class="phasor-label" fill="#475569">Aparente (S)</tspan>
+                                    <tspan id="svgValS" x="0" dy="14" class="phasor-value" fill="#1E293B">-- kVA</tspan>
+                                </text>
+                            </svg>
                         </div>
                     </div>
                 </div>
@@ -198,15 +219,15 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div class="bg-white rounded-xl p-5 shadow-md border-l-4 border-red-500">
                         <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-2">Proteção</span>
-                        <h4 class="font-bold text-slate-800">Disjuntor Motor</h4>
+                        <h4 id="breakerTitle" class="font-bold text-slate-800">Disjuntor Motor</h4>
                         <div class="text-3xl font-bold text-red-600 mt-2"><span id="resBreaker">20</span> A</div>
-                        <p class="text-[10px] text-gray-400 mt-1">Curva C Recomendada</p>
+                        <p class="text-[10px] text-gray-400 mt-1">Verificar Curva/Ajuste</p>
                     </div>
 
                     <div class="bg-white rounded-xl p-5 shadow-md border-l-4 border-yellow-400">
                         <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-2">Alimentação</span>
-                        <h4 class="font-bold text-slate-800">Cabo PVC</h4>
-                        <div class="text-3xl font-bold text-slate-800 mt-2"><span id="resCable">2.5</span> <span class="text-lg">mm²</span></div>
+                        <h4 id="cableTitle" class="font-bold text-slate-800">Cabo PVC</h4>
+                        <div class="text-3xl font-bold text-slate-800 mt-2"><span id="resCable">2.5</span> <span id="resCableUnit" class="text-lg">mm²</span></div>
                         <p id="dropContainer" class="text-[10px] text-green-600 mt-1">Queda de Tensão: <span id="resDrop">0.92</span>%</p>
                     </div>
 
@@ -220,7 +241,7 @@
 
                 <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r shadow-sm flex gap-3 text-xs text-yellow-800">
                     <i class="fa-solid fa-triangle-exclamation text-yellow-600 mt-1 text-base"></i>
-                    <p><strong>Isenção de responsabilidade:</strong> Esta ferramenta é para fins educacionais e pré-dimensionamento. Instalações elétricas reais exigem validação de um Engenheiro Eletricista habilitado conforme NBR 5410. O cálculo considera Eletroduto (Método B1) e temperatura de 30°C.</p>
+                    <p><strong>Isenção de responsabilidade:</strong> Esta ferramenta é para fins educacionais e pré-dimensionamento. Instalações elétricas reais exigem validação de um Engenheiro Eletricista habilitado conforme NBR 5410. Para cabos múltiplos, considera-se instalação em eletrodutos separados (Fator 0.9).</p>
                 </div>
             </div>
         </div>
@@ -231,17 +252,15 @@
         const modal = document.getElementById('aboutModal');
         const btnOpen = document.getElementById('btnOpenAbout');
         const btnClose = document.getElementById('btnCloseAbout');
-
         btnOpen.addEventListener('click', (e) => { e.preventDefault(); modal.classList.remove('hidden'); modal.classList.add('flex'); });
         function closeModal() { modal.classList.add('hidden'); modal.classList.remove('flex'); }
         btnClose.addEventListener('click', closeModal);
         modal.addEventListener('click', (e) => { if(e.target === modal) closeModal(); });
 
-
         // CALCULADORA
         let currentVoltage = 380;
         
-        // Elementos
+        // Inputs
         const elPower = document.getElementById('inputPower');
         const elUnit = document.getElementById('inputUnit');
         const elCos = document.getElementById('inputCos');
@@ -249,33 +268,56 @@
         const elDist = document.getElementById('inputDist');
         const btnVolts = document.querySelectorAll('.volt-btn');
 
+        // Displays Inputs
         const dispWatts = document.getElementById('displayWatts');
         const dispCos = document.getElementById('displayCos');
         const dispEff = document.getElementById('displayEff');
         const dispDist = document.getElementById('displayDist');
 
+        // Outputs Main
         const outIn = document.getElementById('resultIn');
         const outIp = document.getElementById('resultIp');
-        const outPactive = document.getElementById('resPactive');
-        const outPaparent = document.getElementById('resPaparent');
         const outBreaker = document.getElementById('resBreaker');
+        const outBreakerTitle = document.getElementById('breakerTitle');
         const outCable = document.getElementById('resCable');
+        const outCableUnit = document.getElementById('resCableUnit');
+        const cableTitle = document.getElementById('cableTitle');
         const outDrop = document.getElementById('resDrop');
         const dropContainer = document.getElementById('dropContainer');
         const outContactor = document.getElementById('resContactor');
         const outRelay = document.getElementById('resRelay');
 
-        // Tabelas
-        const standardBreakers = [2, 4, 6, 10, 16, 20, 25, 32, 40, 50, 63, 70, 80, 100, 125, 150, 175, 200, 225, 250];
+        // SVG Elements
+        const svgLineP = document.getElementById('lineP');
+        const svgLineQ = document.getElementById('lineQ');
+        const svgLineS = document.getElementById('lineS');
+        const svgAngleArc = document.getElementById('angleArc');
+        const svgAngleText = document.getElementById('angleText');
+        const svgValP = document.getElementById('svgValP');
+        const svgValQ = document.getElementById('svgValQ');
+        const svgValS = document.getElementById('svgValS');
+        const textP = document.getElementById('textP');
+        const textQ = document.getElementById('textQ');
+        const textS = document.getElementById('textS');
+
+        // Tabelas e Dados
         const cableTable = [
-            { sec: 1.5, amp: 15.5 }, { sec: 2.5, amp: 21 }, { sec: 4.0, amp: 28 }, { sec: 6.0, amp: 36 },
-            { sec: 10.0, amp: 50 }, { sec: 16.0, amp: 68 }, { sec: 25.0, amp: 89 }, { sec: 35.0, amp: 111 },
-            { sec: 50.0, amp: 134 }, { sec: 70.0, amp: 171 }, { sec: 95.0, amp: 207 }, { sec: 120.0, amp: 239 }, { sec: 150.0, amp: 272 }
+            { sec: 1.5, amp: 15.5 }, { sec: 2.5, amp: 21 }, { sec: 4.0, amp: 28 }, 
+            { sec: 6.0, amp: 36 }, { sec: 10.0, amp: 50 }, { sec: 16.0, amp: 68 }, 
+            { sec: 25.0, amp: 89 }, { sec: 35.0, amp: 111 }, { sec: 50.0, amp: 134 }, 
+            { sec: 70.0, amp: 171 }, { sec: 95.0, amp: 207 }, { sec: 120.0, amp: 239 }, 
+            { sec: 150.0, amp: 272 }, { sec: 185.0, amp: 306 }, { sec: 240.0, amp: 363 }
         ];
 
+        const standardBreakers = [2, 4, 6, 10, 16, 20, 25, 32, 40, 50, 63, 70, 80, 100, 125, 150, 175, 200, 225, 250, 315, 350, 400, 500, 630, 800, 1000, 1250, 1600];
         const root3 = Math.sqrt(3); 
         const rhoCobre = 0.0172; 
         const maxDropAllowed = 4.0;
+        const maxCableAmp = 363;
+
+        function formatKilo(value) {
+            return (value / 1000).toFixed(1).replace('.', ',');
+        }
 
         function calculate() {
             let powerVal = parseFloat(elPower.value) || 0;
@@ -284,8 +326,8 @@
             let eff = parseFloat(elEff.value);
             let dist = parseFloat(elDist.value);
 
-            dispCos.innerText = cosPhi;
-            dispEff.innerText = eff;
+            dispCos.innerText = cosPhi.toFixed(2);
+            dispEff.innerText = eff.toFixed(2);
             dispDist.innerText = dist;
 
             let watts = 0;
@@ -294,52 +336,46 @@
             else watts = powerVal * 1000;
             
             dispWatts.innerText = Math.round(watts);
-            outPactive.innerText = Math.round(watts) + " W";
-
             let In = watts / (root3 * currentVoltage * cosPhi * eff);
             if(!isFinite(In) || In < 0) In = 0;
             outIn.innerText = In.toFixed(1);
 
-            let Ip = In * 7.5;
-            outIp.innerText = "~" + Math.round(Ip) + " A";
-
             let S = (root3 * currentVoltage * In);
-            outPaparent.innerText = Math.round(S) + " VA";
+            let Q = Math.sqrt(Math.pow(S, 2) - Math.pow(watts, 2));
+            if(!isFinite(Q)) Q = 0;
+
+            updatePhasorDiagram(watts, Q, S, cosPhi);
+
+            outBreakerTitle.innerText = (In > 100) ? "Disjuntor Caixa Moldada" : "Disjuntor Motor";
+            outIp.innerText = "~" + Math.round(In * 7.5) + " A";
 
             let targetBreakerCurrent = In * 1.25;
             let selectedBreaker = standardBreakers.find(b => b > targetBreakerCurrent);
-            if (!selectedBreaker && In > 0) selectedBreaker = "> 250"; 
+            if (!selectedBreaker && In > 0) selectedBreaker = "> 1600"; 
             outBreaker.innerText = selectedBreaker || 0;
 
-            // Cabo Inteligente
-            let requiredAmpacity = (typeof selectedBreaker === 'number') ? selectedBreaker : targetBreakerCurrent;
-            let selectedCableIndex = cableTable.findIndex(c => c.amp >= requiredAmpacity);
-            if (selectedCableIndex === -1) selectedCableIndex = cableTable.length - 1;
-            
-            let currentCable = cableTable[selectedCableIndex];
-            let voltageDropVal = 0;
-            let isDropTooHigh = true;
+            let designCurrent = targetBreakerCurrent; 
+            let solutionFound = false;
 
-            while (isDropTooHigh && selectedCableIndex < cableTable.length && In > 0) {
-                currentCable = cableTable[selectedCableIndex];
-                let cableS = currentCable.sec;
-                voltageDropVal = (root3 * rhoCobre * dist * In) / (cableS * currentVoltage) * 100;
-                if (voltageDropVal > maxDropAllowed) {
-                    selectedCableIndex++;
-                } else {
-                    isDropTooHigh = false;
-                }
-            }
-            if (isDropTooHigh) voltageDropVal = maxDropAllowed + 0.1;
+            dropContainer.className = "text-[10px] text-green-600 mt-1";
+            outCableUnit.innerText = "mm²";
+            outCable.className = "text-3xl font-bold text-slate-800 mt-2";
+            cableTitle.className = "font-bold text-slate-800";
+            cableTitle.innerText = "Cabo PVC";
 
-            outCable.innerText = (In > 0) ? currentCable.sec : 0;
-            outDrop.innerText = voltageDropVal.toFixed(2);
-            
-            if(voltageDropVal > maxDropAllowed && In > 0) {
-                dropContainer.className = "text-[10px] text-red-600 mt-1 font-bold";
-                outDrop.innerText += "% (ALTA - Distância Limite)";
-            } else {
-                dropContainer.className = "text-[10px] text-green-600 mt-1";
+            if (!solutionFound) solutionFound = tryFindCable(designCurrent, 1, 1.0, In, dist);
+            if (!solutionFound) { solutionFound = tryFindCable(designCurrent, 2, 0.90, In, dist); if(solutionFound) cableTitle.innerText = "Sugestão: 2x Cabos //"; }
+            if (!solutionFound) { solutionFound = tryFindCable(designCurrent, 3, 0.90, In, dist); if(solutionFound) cableTitle.innerText = "Sugestão: 3x Cabos //"; }
+            if (!solutionFound) { solutionFound = tryFindCable(designCurrent, 4, 0.90, In, dist); if(solutionFound) cableTitle.innerText = "Sugestão: 4x Cabos //"; }
+
+            if (!solutionFound && In > 0) {
+                cableTitle.innerText = "Barramento / Busway";
+                cableTitle.className = "font-bold text-blue-600";
+                outCable.innerText = "Projeto";
+                outCableUnit.innerText = "Espec.";
+                outCable.className = "text-2xl font-bold text-blue-600 mt-2";
+                dropContainer.className = "text-[10px] text-gray-500 mt-1";
+                outDrop.innerText = "-";
             }
 
             outContactor.innerText = Math.ceil(In);
@@ -348,17 +384,101 @@
             outRelay.innerText = `${relayMin} - ${relayMax}`;
         }
 
+        // --- ATUALIZAÇÃO DO DIAGRAMA ---
+        function updatePhasorDiagram(P, Q, S, cosPhi) {
+            svgValP.textContent = formatKilo(P) + " kW";
+            svgValQ.textContent = formatKilo(Q) + " kVAr";
+            svgValS.textContent = formatKilo(S) + " kVA";
+            document.getElementById('angleText').textContent = "φ " + (Math.acos(cosPhi) * 180 / Math.PI).toFixed(0) + "°";
+
+            // NOVAS COORDENADAS PARA CENTRALIZAR
+            // Usamos coordenadas relativas ao viewBox 0 0 300 220
+            const originX = 40;  // Margem esquerda
+            const originY = 190; // Base do gráfico (perto do fundo)
+            const hypLen = 200;  // Comprimento bem grande para preencher
+
+            let angleRad = Math.acos(cosPhi);
+            let pLen = hypLen * Math.cos(angleRad);
+            let qLen = hypLen * Math.sin(angleRad);
+
+            let pEndX = originX + pLen;
+            let qEndY = originY - qLen;
+
+            // Linhas
+            svgLineP.setAttribute('x1', originX); svgLineP.setAttribute('y1', originY);
+            svgLineP.setAttribute('x2', pEndX); svgLineP.setAttribute('y2', originY);
+
+            svgLineQ.setAttribute('x1', pEndX); svgLineQ.setAttribute('y1', originY);
+            svgLineQ.setAttribute('x2', pEndX); svgLineQ.setAttribute('y2', qEndY);
+
+            svgLineS.setAttribute('x1', originX); svgLineS.setAttribute('y1', originY);
+            svgLineS.setAttribute('x2', pEndX); svgLineS.setAttribute('y2', qEndY);
+
+            // Textos (Posicionamento inteligente para não encavalar)
+            
+            // P (Ativa) - Centralizado abaixo da linha amarela
+            textP.setAttribute('x', originX + (pLen / 2));
+            textP.setAttribute('y', originY + 20); // Afastado para baixo
+            svgValP.setAttribute('x', originX + (pLen / 2));
+
+            // Q (Reativa) - Centralizado à direita da linha vertical
+            textQ.setAttribute('x', pEndX + 10); // Afastado para direita
+            textQ.setAttribute('y', originY - (qLen / 2));
+            svgValQ.setAttribute('x', pEndX + 10);
+
+            // S (Aparente) - No meio da hipotenusa, deslocado para cima/esquerda
+            textS.setAttribute('x', (originX + pEndX) / 2 - 10); 
+            textS.setAttribute('y', (originY + qEndY) / 2 - 10);
+            svgValS.setAttribute('x', (originX + pEndX) / 2 - 10);
+
+            // Arco
+            let arcR = 40;
+            let arcEx = originX + arcR * Math.cos(angleRad);
+            let arcEy = originY - arcR * Math.sin(angleRad);
+            svgAngleArc.setAttribute('d', `M ${originX + arcR} ${originY} A ${arcR} ${arcR} 0 0 0 ${arcEx} ${arcEy}`);
+            svgAngleText.setAttribute('x', originX + arcR + 10);
+            svgAngleText.setAttribute('y', originY - 5);
+        }
+
+        // ... (Funções tryFindCable e updateCableUI permanecem iguais)
+        function tryFindCable(totalCurrent, numCables, groupFactor, loadCurrent, dist) {
+            let currentPerCable = totalCurrent / (numCables * groupFactor);
+            if (currentPerCable > maxCableAmp) return false;
+            let startIndex = cableTable.findIndex(c => c.amp >= currentPerCable);
+            if (startIndex === -1) startIndex = cableTable.length - 1;
+            let idx = startIndex;
+            let drop = 100;
+            while (idx < cableTable.length) {
+                let singleCableArea = cableTable[idx].sec;
+                let totalArea = singleCableArea * numCables; 
+                drop = (root3 * rhoCobre * dist * loadCurrent) / (totalArea * currentVoltage) * 100;
+                if (drop <= maxDropAllowed) {
+                    updateCableUI(cableTable[idx].sec, numCables, drop);
+                    return true;
+                }
+                idx++;
+            }
+            return false;
+        }
+
+        function updateCableUI(section, num, drop) {
+            if (num === 1) outCable.innerText = section;
+            else outCable.innerText = num + "x " + section;
+            outDrop.innerText = drop.toFixed(2);
+            if(drop > maxDropAllowed) {
+                dropContainer.className = "text-[10px] text-red-600 mt-1 font-bold";
+                document.getElementById('resDrop').innerText += "% (ALTA)";
+            }
+        }
+
         elPower.addEventListener('input', calculate);
         elUnit.addEventListener('change', calculate);
         elCos.addEventListener('input', calculate);
         elEff.addEventListener('input', calculate);
         elDist.addEventListener('input', calculate);
-
         btnVolts.forEach(btn => {
             btn.addEventListener('click', (e) => {
-                btnVolts.forEach(b => {
-                    b.className = "volt-btn border border-gray-200 rounded py-1.5 text-sm font-medium text-gray-500 hover:bg-gray-50";
-                });
+                btnVolts.forEach(b => { b.className = "volt-btn border border-gray-200 rounded py-1.5 text-sm font-medium text-gray-500 hover:bg-gray-50"; });
                 e.target.className = "volt-btn bg-blue-600 text-white rounded py-1.5 text-sm font-medium shadow-md ring-2 ring-blue-200";
                 currentVoltage = parseInt(e.target.dataset.volts);
                 calculate();
