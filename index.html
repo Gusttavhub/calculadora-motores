@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ElektroSys - Calculadora de Motores</title>
     
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23FFD700'%3E%3Cpath d='M13 2L3 14h9l-1 8 10-12h-9l1-8z'/%3E%3C/svg%3E">
+
     <script src="https://cdn.tailwindcss.com"></script>
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -14,7 +16,6 @@
     <meta property="og:type" content="website">
     <meta property="og:title" content="ElektroSys | Dimensionamento de Cabos para Motores">
     <meta name="theme-color" content="#0f172a">
-    <link rel="manifest" href="manifest.json">
 
     <script>
         tailwind.config = {
@@ -37,11 +38,11 @@
             width: 100%; height: 4px; cursor: pointer; background: #e2e8f0; border-radius: 2px;
         }
         #aboutModal.hidden { display: none; }
-        
-        /* Estilos para o Diagrama Fasorial */
         .phasor-text { font-size: 12px; font-weight: 600; pointer-events: none; font-family: 'Inter', sans-serif; }
         .phasor-label { font-size: 10px; fill: #64748b; font-weight: 500; }
         .phasor-value { font-size: 13px; font-weight: 800; }
+        /* Animação suave para o input de tensão */
+        #customVoltageContainer { transition: all 0.3s ease; }
     </style>
 </head>
 
@@ -50,7 +51,9 @@
     <nav class="border-b border-slate-700 bg-slate-900/80 backdrop-blur-md sticky top-0 z-40">
         <div class="container mx-auto px-4 h-16 flex items-center justify-between">
             <div class="flex items-center gap-2">
-                <i class="fa-solid fa-bolt text-yellow-400 text-xl"></i>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-yellow-400" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                </svg>
                 <span class="text-white font-bold text-lg tracking-wide">ElektroSys</span>
             </div>
             <div class="flex gap-8 text-sm font-medium text-slate-400">
@@ -118,10 +121,31 @@
 
                         <div>
                             <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Tensão (Trifásico)</label>
-                            <div class="grid grid-cols-3 gap-2" id="voltageSelector">
-                                <button data-volts="220" class="volt-btn border border-gray-200 rounded py-1.5 text-sm font-medium text-gray-500 hover:bg-gray-50">220V</button>
-                                <button data-volts="380" class="volt-btn bg-blue-600 text-white rounded py-1.5 text-sm font-medium shadow-md ring-2 ring-blue-200">380V</button>
-                                <button data-volts="440" class="volt-btn border border-gray-200 rounded py-1.5 text-sm font-medium text-gray-500 hover:bg-gray-50">440V</button>
+                            <div class="grid grid-cols-4 gap-2" id="voltageSelector">
+                                <button data-volts="220" class="volt-btn border border-gray-200 rounded py-1.5 text-xs font-bold text-gray-500 hover:bg-gray-50">220V</button>
+                                <button data-volts="380" class="volt-btn bg-blue-600 text-white rounded py-1.5 text-xs font-bold shadow-md ring-2 ring-blue-200">380V</button>
+                                <button data-volts="440" class="volt-btn border border-gray-200 rounded py-1.5 text-xs font-bold text-gray-500 hover:bg-gray-50">440V</button>
+                                <button id="btnCustomVolt" class="volt-btn border border-gray-200 rounded py-1.5 text-xs font-bold text-gray-500 hover:bg-gray-50">Outro</button>
+                            </div>
+                            <div id="customVoltageContainer" class="hidden mt-2">
+                                <div class="flex items-center gap-2">
+                                    <input type="number" id="inputCustomVoltage" placeholder="Ex: 480" class="w-full border border-blue-300 rounded px-3 py-1.5 text-sm font-semibold text-gray-700 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600">
+                                    <span class="text-sm font-bold text-gray-500">Volts</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Método de Instalação</label>
+                            <select id="installMethod" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm font-semibold text-gray-700 focus:outline-none focus:border-blue-500">
+                                <option value="B1">Método B1 - Eletroduto (PVC)</option>
+                                <option value="E">Método E - Multipolar (Bandeja)</option>
+                                <option value="F_TRI" selected>Método F - Trifólio (Bandeja)</option>
+                                <option value="F_JUS">Método F - Justapostos (Bandeja)</option>
+                                <option value="G_HOR">Método G - Espaçados (Horizontal)</option>
+                            </select>
+                            <div id="methodDesc" class="text-xs text-blue-600 mt-1 bg-blue-50 p-2 rounded border border-blue-100">
+                                Cabos unipolares em trifólio ao ar livre ou bandejas. (Padrão Industrial)
                             </div>
                         </div>
 
@@ -148,6 +172,15 @@
                             </div>
                             <input type="range" id="inputDist" min="1" max="500" value="20">
                         </div>
+
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <label class="text-xs font-bold text-gray-500">Temperatura Ambiente</label>
+                                <span class="text-xs font-bold text-red-600"><span id="displayTemp">30</span> °C</span>
+                            </div>
+                            <input type="range" id="inputTemp" min="10" max="80" step="5" value="30">
+                            <p class="text-[10px] text-gray-400 mt-1 text-right">Fator de Correção: <span id="displayTempFactor">1.00</span></p>
+                        </div>
                     </div>
                 </div>
 
@@ -158,7 +191,6 @@
             </div>
 
             <div class="lg:col-span-8 space-y-6">
-                
                 <div class="bg-white rounded-xl shadow-lg p-0 overflow-hidden flex flex-col md:flex-row relative min-h-[220px]">
                     <div class="p-6 md:p-8 flex-1 flex flex-col justify-center z-10 border-r border-gray-100">
                         <p class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-1">Corrente Nominal (In)</p>
@@ -170,43 +202,21 @@
                     
                     <div class="flex-1 bg-gradient-to-br from-gray-50 to-gray-100 relative flex items-center justify-center p-2">
                         <i class="fa-solid fa-bolt text-7xl text-yellow-400 opacity-5 absolute right-2 bottom-2"></i>
-                        
                         <div class="w-full h-full flex items-center justify-center">
                             <svg viewBox="0 0 300 220" class="w-full max-w-[320px] drop-shadow-sm" style="overflow: visible;">
-                                
                                 <defs>
-                                    <marker id="arrowP" markerWidth="4" markerHeight="3" refX="3.5" refY="1.5" orient="auto" markerUnits="strokeWidth">
-                                      <path d="M0,0 L0,3 L3.5,1.5 z" fill="#EAB308" />
-                                    </marker>
-                                    <marker id="arrowQ" markerWidth="4" markerHeight="3" refX="3.5" refY="1.5" orient="auto" markerUnits="strokeWidth">
-                                      <path d="M0,0 L0,3 L3.5,1.5 z" fill="#FACC15" />
-                                    </marker>
-                                    <marker id="arrowS" markerWidth="4" markerHeight="3" refX="3.5" refY="1.5" orient="auto" markerUnits="strokeWidth">
-                                      <path d="M0,0 L0,3 L3.5,1.5 z" fill="#475569" />
-                                    </marker>
+                                    <marker id="arrowP" markerWidth="4" markerHeight="3" refX="3.5" refY="1.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,3 L3.5,1.5 z" fill="#EAB308" /></marker>
+                                    <marker id="arrowQ" markerWidth="4" markerHeight="3" refX="3.5" refY="1.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,3 L3.5,1.5 z" fill="#FACC15" /></marker>
+                                    <marker id="arrowS" markerWidth="4" markerHeight="3" refX="3.5" refY="1.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,3 L3.5,1.5 z" fill="#475569" /></marker>
                                 </defs>
-                                
                                 <path id="angleArc" fill="none" stroke="#3B82F6" stroke-width="2" opacity="0.6"/>
                                 <text id="angleText" class="phasor-text" fill="#3B82F6">φ</text>
-                                
                                 <line id="lineP" stroke="#EAB308" stroke-width="4" marker-end="url(#arrowP)" stroke-linecap="round"/>
-                                
                                 <line id="lineQ" stroke="#FACC15" stroke-width="4" stroke-dasharray="6,3" marker-end="url(#arrowQ)" stroke-linecap="round"/>
-                                
                                 <line id="lineS" stroke="#475569" stroke-width="3" marker-end="url(#arrowS)" stroke-linecap="round"/>
-
-                                <text id="textP" text-anchor="middle" class="phasor-text">
-                                    <tspan class="phasor-label" fill="#EAB308">Ativa (P)</tspan>
-                                    <tspan id="svgValP" x="0" dy="14" class="phasor-value" fill="#A16207">-- kW</tspan>
-                                </text>
-                                <text id="textQ" text-anchor="start" class="phasor-text">
-                                    <tspan class="phasor-label" fill="#FACC15">Reativa (Q)</tspan>
-                                    <tspan id="svgValQ" x="0" dy="14" class="phasor-value" fill="#CA8A04">-- kVAr</tspan>
-                                </text>
-                                <text id="textS" text-anchor="end" class="phasor-text">
-                                    <tspan class="phasor-label" fill="#475569">Aparente (S)</tspan>
-                                    <tspan id="svgValS" x="0" dy="14" class="phasor-value" fill="#1E293B">-- kVA</tspan>
-                                </text>
+                                <text id="textP" text-anchor="middle" class="phasor-text"><tspan class="phasor-label" fill="#EAB308">Ativa (P)</tspan><tspan id="svgValP" x="0" dy="14" class="phasor-value" fill="#A16207">-- kW</tspan></text>
+                                <text id="textQ" text-anchor="start" class="phasor-text"><tspan class="phasor-label" fill="#FACC15">Reativa (Q)</tspan><tspan id="svgValQ" x="0" dy="14" class="phasor-value" fill="#CA8A04">-- kVAr</tspan></text>
+                                <text id="textS" text-anchor="end" class="phasor-text"><tspan class="phasor-label" fill="#475569">Aparente (S)</tspan><tspan id="svgValS" x="0" dy="14" class="phasor-value" fill="#1E293B">-- kVA</tspan></text>
                             </svg>
                         </div>
                     </div>
@@ -226,7 +236,7 @@
 
                     <div class="bg-white rounded-xl p-5 shadow-md border-l-4 border-yellow-400">
                         <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-2">Alimentação</span>
-                        <h4 id="cableTitle" class="font-bold text-slate-800">Cabo PVC</h4>
+                        <h4 id="cableTitle" class="font-bold text-slate-800">Cabo XLPE</h4>
                         <div class="text-3xl font-bold text-slate-800 mt-2"><span id="resCable">2.5</span> <span id="resCableUnit" class="text-lg">mm²</span></div>
                         <p id="dropContainer" class="text-[10px] text-green-600 mt-1">Queda de Tensão: <span id="resDrop">0.92</span>%</p>
                     </div>
@@ -241,14 +251,13 @@
 
                 <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r shadow-sm flex gap-3 text-xs text-yellow-800">
                     <i class="fa-solid fa-triangle-exclamation text-yellow-600 mt-1 text-base"></i>
-                    <p><strong>Isenção de responsabilidade:</strong> Esta ferramenta é para fins educacionais e pré-dimensionamento. Instalações elétricas reais exigem validação de um Engenheiro Eletricista habilitado conforme NBR 5410. Para cabos múltiplos, considera-se instalação em eletrodutos separados (Fator 0.9).</p>
+                    <p id="disclaimerText"><strong>Isenção de responsabilidade:</strong> Esta ferramenta é para fins educacionais. Considere a norma NBR 5410.</p>
                 </div>
             </div>
         </div>
     </main>
 
     <script>
-        // MODAL
         const modal = document.getElementById('aboutModal');
         const btnOpen = document.getElementById('btnOpenAbout');
         const btnClose = document.getElementById('btnCloseAbout');
@@ -259,22 +268,30 @@
 
         // CALCULADORA
         let currentVoltage = 380;
+        let isCustomVoltage = false;
         
-        // Inputs
         const elPower = document.getElementById('inputPower');
         const elUnit = document.getElementById('inputUnit');
         const elCos = document.getElementById('inputCos');
         const elEff = document.getElementById('inputEff');
         const elDist = document.getElementById('inputDist');
+        const elInstall = document.getElementById('installMethod');
+        const elMethodDesc = document.getElementById('methodDesc');
+        const elTemp = document.getElementById('inputTemp'); 
+        const dispTemp = document.getElementById('displayTemp');
+        const dispTempFactor = document.getElementById('displayTempFactor');
+        
+        // Elementos de Tensão
         const btnVolts = document.querySelectorAll('.volt-btn');
+        const btnCustomVolt = document.getElementById('btnCustomVolt');
+        const customVoltageContainer = document.getElementById('customVoltageContainer');
+        const inputCustomVoltage = document.getElementById('inputCustomVoltage');
 
-        // Displays Inputs
         const dispWatts = document.getElementById('displayWatts');
         const dispCos = document.getElementById('displayCos');
         const dispEff = document.getElementById('displayEff');
         const dispDist = document.getElementById('displayDist');
 
-        // Outputs Main
         const outIn = document.getElementById('resultIn');
         const outIp = document.getElementById('resultIp');
         const outBreaker = document.getElementById('resBreaker');
@@ -286,8 +303,8 @@
         const dropContainer = document.getElementById('dropContainer');
         const outContactor = document.getElementById('resContactor');
         const outRelay = document.getElementById('resRelay');
+        const disclaimerText = document.getElementById('disclaimerText');
 
-        // SVG Elements
         const svgLineP = document.getElementById('lineP');
         const svgLineQ = document.getElementById('lineQ');
         const svgLineS = document.getElementById('lineS');
@@ -300,24 +317,105 @@
         const textQ = document.getElementById('textQ');
         const textS = document.getElementById('textS');
 
-        // Tabelas e Dados
-        const cableTable = [
-            { sec: 1.5, amp: 15.5 }, { sec: 2.5, amp: 21 }, { sec: 4.0, amp: 28 }, 
-            { sec: 6.0, amp: 36 }, { sec: 10.0, amp: 50 }, { sec: 16.0, amp: 68 }, 
-            { sec: 25.0, amp: 89 }, { sec: 35.0, amp: 111 }, { sec: 50.0, amp: 134 }, 
-            { sec: 70.0, amp: 171 }, { sec: 95.0, amp: 207 }, { sec: 120.0, amp: 239 }, 
-            { sec: 150.0, amp: 272 }, { sec: 185.0, amp: 306 }, { sec: 240.0, amp: 363 }
-        ];
+        const tempFactors = {
+            10: { pvc: 1.22, xlpe: 1.15 }, 15: { pvc: 1.17, xlpe: 1.12 },
+            20: { pvc: 1.12, xlpe: 1.08 }, 25: { pvc: 1.06, xlpe: 1.04 },
+            30: { pvc: 1.00, xlpe: 1.00 }, 35: { pvc: 0.94, xlpe: 0.96 },
+            40: { pvc: 0.87, xlpe: 0.91 }, 45: { pvc: 0.79, xlpe: 0.87 },
+            50: { pvc: 0.71, xlpe: 0.82 }, 55: { pvc: 0.61, xlpe: 0.76 },
+            60: { pvc: 0.50, xlpe: 0.71 }, 65: { pvc: 0.00, xlpe: 0.65 },
+            70: { pvc: 0.00, xlpe: 0.58 }, 75: { pvc: 0.00, xlpe: 0.50 },
+            80: { pvc: 0.00, xlpe: 0.41 }
+        };
+
+        const installationMethods = {
+            'B1': {
+                name: "Cabo PVC (B1)",
+                desc: "Condutores isolados (70°C) em eletroduto embutido/aparente. (Tabela 36)",
+                disclaimer: "Considerado Cabo PVC (70°C), Método B1, 3 condutores carregados.",
+                type: 'pvc',
+                table: [{sec:1.5,amp:15.5},{sec:2.5,amp:21},{sec:4.0,amp:28},{sec:6.0,amp:36},{sec:10.0,amp:50},{sec:16.0,amp:68},{sec:25.0,amp:89},{sec:35.0,amp:111},{sec:50.0,amp:134},{sec:70.0,amp:171},{sec:95.0,amp:207},{sec:120.0,amp:239},{sec:150.0,amp:275},{sec:185.0,amp:314},{sec:240.0,amp:370}]
+            },
+            'E': {
+                name: "Cabo XLPE (E)",
+                desc: "Cabo Multipolar (90°C) em bandeja ventilada ou leito. (Tabela 39)",
+                disclaimer: "Considerado Cabo Multipolar XLPE (90°C), Método E, 3 condutores carregados.",
+                type: 'xlpe',
+                table: [{sec:1.5,amp:23},{sec:2.5,amp:32},{sec:4.0,amp:42},{sec:6.0,amp:54},{sec:10.0,amp:75},{sec:16.0,amp:100},{sec:25.0,amp:127},{sec:35.0,amp:158},{sec:50.0,amp:192},{sec:70.0,amp:246},{sec:95.0,amp:298},{sec:120.0,amp:346},{sec:150.0,amp:399},{sec:185.0,amp:456},{sec:240.0,amp:538}]
+            },
+            'F_TRI': {
+                name: "Cabo XLPE (F-Tri)",
+                desc: "Cabos Unipolares (90°C) em TRIFÓLIO sobre bandeja. (Tabela 39)",
+                disclaimer: "Considerado Cabo Unipolar XLPE (90°C), Método F (Trifólio), 3 condutores.",
+                type: 'xlpe',
+                table: [{sec:1.5,amp:21},{sec:2.5,amp:29},{sec:4.0,amp:40},{sec:6.0,amp:53},{sec:10.0,amp:74},{sec:16.0,amp:101},{sec:25.0,amp:135},{sec:35.0,amp:169},{sec:50.0,amp:207},{sec:70.0,amp:268},{sec:95.0,amp:328},{sec:120.0,amp:383},{sec:150.0,amp:444},{sec:185.0,amp:510},{sec:240.0,amp:607}]
+            },
+            'F_JUS': {
+                name: "Cabo XLPE (F-Flat)",
+                desc: "Cabos Unipolares (90°C) JUSTAPOSTOS (Plano) sobre bandeja. (Tabela 39)",
+                disclaimer: "Considerado Cabo Unipolar XLPE (90°C), Método F (Justapostos), 3 condutores.",
+                type: 'xlpe',
+                table: [{sec:1.5,amp:22},{sec:2.5,amp:30},{sec:4.0,amp:42},{sec:6.0,amp:55},{sec:10.0,amp:77},{sec:16.0,amp:105},{sec:25.0,amp:141},{sec:35.0,amp:176},{sec:50.0,amp:216},{sec:70.0,amp:279},{sec:95.0,amp:342},{sec:120.0,amp:400},{sec:150.0,amp:464},{sec:185.0,amp:533},{sec:240.0,amp:634}]
+            },
+            'G_HOR': {
+                name: "Cabo XLPE (G-Esp)",
+                desc: "Cabos Unipolares (90°C) ESPAÇADOS (Horizontal) sobre bandeja. (Tabela 39)",
+                disclaimer: "Considerado Cabo Unipolar XLPE (90°C), Método G (Horizontal Espaçado 1xDe), 3 condutores.",
+                type: 'xlpe',
+                table: [{sec:1.5,amp:30},{sec:2.5,amp:41},{sec:4.0,amp:56},{sec:6.0,amp:73},{sec:10.0,amp:101},{sec:16.0,amp:137},{sec:25.0,amp:182},{sec:35.0,amp:226},{sec:50.0,amp:275},{sec:70.0,amp:353},{sec:95.0,amp:430},{sec:120.0,amp:500},{sec:150.0,amp:577},{sec:185.0,amp:661},{sec:240.0,amp:781}]
+            }
+        };
 
         const standardBreakers = [2, 4, 6, 10, 16, 20, 25, 32, 40, 50, 63, 70, 80, 100, 125, 150, 175, 200, 225, 250, 315, 350, 400, 500, 630, 800, 1000, 1250, 1600];
         const root3 = Math.sqrt(3); 
         const rhoCobre = 0.0172; 
         const maxDropAllowed = 4.0;
-        const maxCableAmp = 363;
 
-        function formatKilo(value) {
-            return (value / 1000).toFixed(1).replace('.', ',');
-        }
+        function formatKilo(value) { return (value / 1000).toFixed(1).replace('.', ','); }
+
+        // LOGICA DE TENSÃO
+        btnVolts.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                // Reset visual dos botões
+                btnVolts.forEach(b => { 
+                    b.className = "volt-btn border border-gray-200 rounded py-1.5 text-xs font-bold text-gray-500 hover:bg-gray-50"; 
+                });
+                
+                // Ativa o clicado
+                e.target.className = "volt-btn bg-blue-600 text-white rounded py-1.5 text-xs font-bold shadow-md ring-2 ring-blue-200";
+
+                if (e.target.id === 'btnCustomVolt') {
+                    isCustomVoltage = true;
+                    customVoltageContainer.classList.remove('hidden');
+                    let customVal = parseFloat(inputCustomVoltage.value);
+                    if(customVal > 0) currentVoltage = customVal;
+                } else {
+                    isCustomVoltage = false;
+                    customVoltageContainer.classList.add('hidden');
+                    currentVoltage = parseInt(e.target.dataset.volts);
+                }
+                calculate();
+            });
+        });
+
+        // Listener do Input Customizado
+        inputCustomVoltage.addEventListener('input', (e) => {
+            if (isCustomVoltage) {
+                let val = parseFloat(e.target.value);
+                if (val > 0) {
+                    currentVoltage = val;
+                    calculate();
+                }
+            }
+        });
+
+        elInstall.addEventListener('change', calculate);
+        elTemp.addEventListener('input', calculate);
+        elPower.addEventListener('input', calculate);
+        elUnit.addEventListener('change', calculate);
+        elCos.addEventListener('input', calculate);
+        elEff.addEventListener('input', calculate);
+        elDist.addEventListener('input', calculate);
 
         function calculate() {
             let powerVal = parseFloat(elPower.value) || 0;
@@ -325,6 +423,20 @@
             let cosPhi = parseFloat(elCos.value);
             let eff = parseFloat(elEff.value);
             let dist = parseFloat(elDist.value);
+            let methodKey = elInstall.value;
+            let methodData = installationMethods[methodKey];
+            let tempVal = parseInt(elTemp.value);
+
+            let type = methodData.type; 
+            let tFactor = tempFactors[tempVal][type] || 1.00;
+            
+            dispTemp.innerText = tempVal;
+            dispTempFactor.innerText = tFactor.toFixed(2);
+            if(tFactor === 0) dispTempFactor.innerText = "N/A (Inválido)";
+
+            elMethodDesc.innerText = methodData.desc;
+            cableTitle.innerText = methodData.name;
+            disclaimerText.innerHTML = `<strong>Isenção de responsabilidade:</strong> ${methodData.disclaimer} Temp: ${tempVal}°C (Fator ${tFactor}). Valide com NBR 5410.`;
 
             dispCos.innerText = cosPhi.toFixed(2);
             dispEff.innerText = eff.toFixed(2);
@@ -354,24 +466,34 @@
             if (!selectedBreaker && In > 0) selectedBreaker = "> 1600"; 
             outBreaker.innerText = selectedBreaker || 0;
 
-            let designCurrent = targetBreakerCurrent; 
+            let designCurrent = In; 
             let solutionFound = false;
+            let currentTable = methodData.table;
+            let maxAmp = currentTable[currentTable.length - 1].amp;
 
             dropContainer.className = "text-[10px] text-green-600 mt-1";
             outCableUnit.innerText = "mm²";
             outCable.className = "text-3xl font-bold text-slate-800 mt-2";
-            cableTitle.className = "font-bold text-slate-800";
-            cableTitle.innerText = "Cabo PVC";
 
-            if (!solutionFound) solutionFound = tryFindCable(designCurrent, 1, 1.0, In, dist);
-            if (!solutionFound) { solutionFound = tryFindCable(designCurrent, 2, 0.90, In, dist); if(solutionFound) cableTitle.innerText = "Sugestão: 2x Cabos //"; }
-            if (!solutionFound) { solutionFound = tryFindCable(designCurrent, 3, 0.90, In, dist); if(solutionFound) cableTitle.innerText = "Sugestão: 3x Cabos //"; }
-            if (!solutionFound) { solutionFound = tryFindCable(designCurrent, 4, 0.90, In, dist); if(solutionFound) cableTitle.innerText = "Sugestão: 4x Cabos //"; }
+            if(tFactor > 0) {
+                if (!solutionFound) solutionFound = tryFindCable(designCurrent, 1, 1.0, In, dist, currentTable, maxAmp, tFactor);
+                if (!solutionFound) { solutionFound = tryFindCable(designCurrent, 2, 0.90, In, dist, currentTable, maxAmp, tFactor); if(solutionFound) cableTitle.innerText = "Sugestão: 2x " + methodData.name; }
+                if (!solutionFound) { solutionFound = tryFindCable(designCurrent, 3, 0.90, In, dist, currentTable, maxAmp, tFactor); if(solutionFound) cableTitle.innerText = "Sugestão: 3x " + methodData.name; }
+                if (!solutionFound) { solutionFound = tryFindCable(designCurrent, 4, 0.90, In, dist, currentTable, maxAmp, tFactor); if(solutionFound) cableTitle.innerText = "Sugestão: 4x " + methodData.name; }
+            } else {
+                solutionFound = false;
+                cableTitle.innerText = "Temp. Inválida";
+            }
 
             if (!solutionFound && In > 0) {
-                cableTitle.innerText = "Barramento / Busway";
-                cableTitle.className = "font-bold text-blue-600";
-                outCable.innerText = "Projeto";
+                if(tFactor === 0) {
+                    cableTitle.innerText = "Não Suportado";
+                    outCable.innerText = "Temp > Limite";
+                } else {
+                    cableTitle.innerText = "Barramento / Busway";
+                    cableTitle.className = "font-bold text-blue-600";
+                    outCable.innerText = "Projeto";
+                }
                 outCableUnit.innerText = "Espec.";
                 outCable.className = "text-2xl font-bold text-blue-600 mt-2";
                 dropContainer.className = "text-[10px] text-gray-500 mt-1";
@@ -384,18 +506,15 @@
             outRelay.innerText = `${relayMin} - ${relayMax}`;
         }
 
-        // --- ATUALIZAÇÃO DO DIAGRAMA ---
         function updatePhasorDiagram(P, Q, S, cosPhi) {
             svgValP.textContent = formatKilo(P) + " kW";
             svgValQ.textContent = formatKilo(Q) + " kVAr";
             svgValS.textContent = formatKilo(S) + " kVA";
             document.getElementById('angleText').textContent = "φ " + (Math.acos(cosPhi) * 180 / Math.PI).toFixed(0) + "°";
 
-            // NOVAS COORDENADAS PARA CENTRALIZAR
-            // Usamos coordenadas relativas ao viewBox 0 0 300 220
-            const originX = 40;  // Margem esquerda
-            const originY = 190; // Base do gráfico (perto do fundo)
-            const hypLen = 200;  // Comprimento bem grande para preencher
+            const originX = 40;  
+            const originY = 190; 
+            const hypLen = 200;  
 
             let angleRad = Math.acos(cosPhi);
             let pLen = hypLen * Math.cos(angleRad);
@@ -404,7 +523,6 @@
             let pEndX = originX + pLen;
             let qEndY = originY - qLen;
 
-            // Linhas
             svgLineP.setAttribute('x1', originX); svgLineP.setAttribute('y1', originY);
             svgLineP.setAttribute('x2', pEndX); svgLineP.setAttribute('y2', originY);
 
@@ -414,24 +532,18 @@
             svgLineS.setAttribute('x1', originX); svgLineS.setAttribute('y1', originY);
             svgLineS.setAttribute('x2', pEndX); svgLineS.setAttribute('y2', qEndY);
 
-            // Textos (Posicionamento inteligente para não encavalar)
-            
-            // P (Ativa) - Centralizado abaixo da linha amarela
             textP.setAttribute('x', originX + (pLen / 2));
-            textP.setAttribute('y', originY + 20); // Afastado para baixo
+            textP.setAttribute('y', originY + 20); 
             svgValP.setAttribute('x', originX + (pLen / 2));
 
-            // Q (Reativa) - Centralizado à direita da linha vertical
-            textQ.setAttribute('x', pEndX + 10); // Afastado para direita
+            textQ.setAttribute('x', pEndX + 10); 
             textQ.setAttribute('y', originY - (qLen / 2));
             svgValQ.setAttribute('x', pEndX + 10);
 
-            // S (Aparente) - No meio da hipotenusa, deslocado para cima/esquerda
-            textS.setAttribute('x', (originX + pEndX) / 2 - 10); 
+            textS.setAttribute('x', (originX + pEndX) / 2 - 15); 
             textS.setAttribute('y', (originY + qEndY) / 2 - 10);
-            svgValS.setAttribute('x', (originX + pEndX) / 2 - 10);
+            svgValS.setAttribute('x', (originX + pEndX) / 2 - 15);
 
-            // Arco
             let arcR = 40;
             let arcEx = originX + arcR * Math.cos(angleRad);
             let arcEy = originY - arcR * Math.sin(angleRad);
@@ -440,20 +552,19 @@
             svgAngleText.setAttribute('y', originY - 5);
         }
 
-        // ... (Funções tryFindCable e updateCableUI permanecem iguais)
-        function tryFindCable(totalCurrent, numCables, groupFactor, loadCurrent, dist) {
-            let currentPerCable = totalCurrent / (numCables * groupFactor);
-            if (currentPerCable > maxCableAmp) return false;
-            let startIndex = cableTable.findIndex(c => c.amp >= currentPerCable);
-            if (startIndex === -1) startIndex = cableTable.length - 1;
+        function tryFindCable(totalCurrent, numCables, groupFactor, loadCurrent, dist, table, maxLimit, tempFactor) {
+            let currentPerCable = totalCurrent / (numCables * groupFactor * tempFactor);
+            if (currentPerCable > maxLimit) return false;
+            let startIndex = table.findIndex(c => c.amp >= currentPerCable);
+            if (startIndex === -1) startIndex = table.length - 1;
             let idx = startIndex;
             let drop = 100;
-            while (idx < cableTable.length) {
-                let singleCableArea = cableTable[idx].sec;
+            while (idx < table.length) {
+                let singleCableArea = table[idx].sec;
                 let totalArea = singleCableArea * numCables; 
                 drop = (root3 * rhoCobre * dist * loadCurrent) / (totalArea * currentVoltage) * 100;
                 if (drop <= maxDropAllowed) {
-                    updateCableUI(cableTable[idx].sec, numCables, drop);
+                    updateCableUI(table[idx].sec, numCables, drop);
                     return true;
                 }
                 idx++;
@@ -470,20 +581,6 @@
                 document.getElementById('resDrop').innerText += "% (ALTA)";
             }
         }
-
-        elPower.addEventListener('input', calculate);
-        elUnit.addEventListener('change', calculate);
-        elCos.addEventListener('input', calculate);
-        elEff.addEventListener('input', calculate);
-        elDist.addEventListener('input', calculate);
-        btnVolts.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                btnVolts.forEach(b => { b.className = "volt-btn border border-gray-200 rounded py-1.5 text-sm font-medium text-gray-500 hover:bg-gray-50"; });
-                e.target.className = "volt-btn bg-blue-600 text-white rounded py-1.5 text-sm font-medium shadow-md ring-2 ring-blue-200";
-                currentVoltage = parseInt(e.target.dataset.volts);
-                calculate();
-            });
-        });
 
         calculate();
     </script>
