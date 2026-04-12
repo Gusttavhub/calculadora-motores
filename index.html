@@ -563,12 +563,28 @@
         svgValP.textContent = formatKilo(P) + " kW";
         svgValQ.textContent = formatKilo(Q) + " kVAr";
         svgValS.textContent = formatKilo(S) + " kVA";
-        document.getElementById('angleText').textContent = "φ " + (Math.acos(cosPhi) * 180 / Math.PI).toFixed(0) + "°";
 
-        const originX = 40, originY = 190, hypLen = 200;
         const angleRad = Math.acos(cosPhi);
-        const pLen = hypLen * Math.cos(angleRad);
-        const qLen = hypLen * Math.sin(angleRad);
+        document.getElementById('angleText').textContent = "φ " + (angleRad * 180 / Math.PI).toFixed(0) + "°";
+
+        // --- Triângulo de Potências ---
+        // P (ativa) = cateto horizontal FIXO em pixels.
+        // Quando o usuário muda cos φ (sem mudar potência/tensão/rendimento),
+        // P em watts não muda, então o vetor P NÃO deve mudar.
+        // Q = P · tan(φ)  →  cresce quando φ aumenta (cos φ diminui)
+        // S = P / cos(φ)  →  hipotenusa se alonga
+        const originX = 40, originY = 190;
+        const pLen = 180;  // comprimento FIXO em pixels para P
+
+        // Q e S derivados geometricamente do ângulo φ
+        // tan(φ) = Q/P  →  qLen = pLen · tan(φ)
+        const tanPhi = Math.tan(angleRad);
+        let qLen = pLen * tanPhi;
+
+        // Limitar qLen para não estourar o viewBox (máx ~160px para cima)
+        const maxQLen = 160;
+        if (qLen > maxQLen) qLen = maxQLen;
+
         const pEndX = originX + pLen;
         const qEndY = originY - qLen;
 
@@ -579,13 +595,19 @@
         const textQ = document.getElementById('textQ');
         const textS = document.getElementById('textS');
 
+        // P — horizontal fixo
         lineP.setAttribute('x1', originX); lineP.setAttribute('y1', originY);
         lineP.setAttribute('x2', pEndX);   lineP.setAttribute('y2', originY);
+
+        // Q — vertical (do fim de P, para cima)
         lineQ.setAttribute('x1', pEndX);   lineQ.setAttribute('y1', originY);
         lineQ.setAttribute('x2', pEndX);   lineQ.setAttribute('y2', qEndY);
+
+        // S — hipotenusa (da origem ao vértice P,Q)
         lineS.setAttribute('x1', originX); lineS.setAttribute('y1', originY);
         lineS.setAttribute('x2', pEndX);   lineS.setAttribute('y2', qEndY);
 
+        // Labels — P sempre centralizado no mesmo lugar
         textP.setAttribute('x', originX + (pLen / 2));
         textP.setAttribute('y', originY + 20);
         svgValP.setAttribute('x', originX + (pLen / 2));
@@ -598,6 +620,7 @@
         textS.setAttribute('y', (originY + qEndY) / 2 - 10);
         svgValS.setAttribute('x', (originX + pEndX) / 2 - 15);
 
+        // Arco do ângulo φ
         const arcR = 40;
         const arcEx = originX + arcR * Math.cos(angleRad);
         const arcEy = originY - arcR * Math.sin(angleRad);
