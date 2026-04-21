@@ -603,7 +603,7 @@
     }
 
     // === MÓDULO: UI / DIAGRAMA FASORIAL ===
-    function updatePhasorDiagram(P, Q, S, cosPhi) {
+    function updatePhasorDiagram(P, Q, S, cosPhi, eff) {
         const svgValP = document.getElementById('svgValP');
         const svgValQ = document.getElementById('svgValQ');
         const svgValS = document.getElementById('svgValS');
@@ -615,23 +615,26 @@
         const angleRad = Math.acos(cosPhi);
         document.getElementById('angleText').textContent = "φ " + (angleRad * 180 / Math.PI).toFixed(0) + "°";
 
-        // --- Triângulo de Potências ---
-        // P (ativa) = cateto horizontal FIXO em pixels.
-        // Quando o usuário muda cos φ (sem mudar potência/tensão/rendimento),
-        // P em watts não muda, então o vetor P NÃO deve mudar.
-        // Q = P · tan(φ)  →  cresce quando φ aumenta (cos φ diminui)
-        // S = P / cos(φ)  →  hipotenusa se alonga
+        // --- Triângulo de Potências (escala dinâmica com η) ---
+        // P (ativa elétrica) = P_mec / η → quanto menor η, maior P → triângulo cresce.
+        // Mapeia η ∈ [0.5, 1.0] para pLen ∈ [pLenMax, pLenMin] (inversamente proporcional).
+        // Depois ajusta qLen via tan(φ) mantendo proporção se estourar o viewBox.
         const originX = 40, originY = 190;
-        const pLen = 180;  // comprimento FIXO em pixels para P
+        const pLenMax = 180, pLenMin = 100, qLenMax = 160;
 
-        // Q e S derivados geometricamente do ângulo φ
-        // tan(φ) = Q/P  →  qLen = pLen · tan(φ)
+        const effClamped = Math.max(0.5, Math.min(1.0, eff || 1.0));
+        const effFraction = (1.0 - effClamped) / (1.0 - 0.5); // 0 (η=1) a 1 (η=0.5)
+        let pLen = pLenMin + effFraction * (pLenMax - pLenMin);
+
         const tanPhi = Math.tan(angleRad);
         let qLen = pLen * tanPhi;
 
-        // Limitar qLen para não estourar o viewBox (máx ~160px para cima)
-        const maxQLen = 160;
-        if (qLen > maxQLen) qLen = maxQLen;
+        // Se qLen estoura, reduz tudo proporcionalmente (mantém forma correta)
+        if (qLen > qLenMax) {
+            const shrink = qLenMax / qLen;
+            pLen *= shrink;
+            qLen = qLenMax;
+        }
 
         const pEndX = originX + pLen;
         const qEndY = originY - qLen;
@@ -842,11 +845,14 @@
             const In = ElecCalc.nominalCurrent(watts, currentVoltage, cosPhi, eff);
             out.In.innerText = In.toFixed(1);
 
-            // 6. Potências para diagrama fasorial
+            // 6. Potências elétricas para diagrama fasorial (triângulo de potências)
+            // P_elétrica = potência ativa consumida da rede = P_mecânica / η
+            // Assim P, Q e S variam TODOS com o rendimento (antes, P ficava travado no valor mecânico).
+            const P_el = eff > 0 ? watts / eff : 0;
             const S = CONSTANTS.ROOT3 * currentVoltage * In;
-            let Q = Math.sqrt(Math.pow(S, 2) - Math.pow(watts, 2));
+            let Q = Math.sqrt(Math.max(0, S * S - P_el * P_el));
             if (!isFinite(Q)) Q = 0;
-            updatePhasorDiagram(watts, Q, S, cosPhi);
+            updatePhasorDiagram(P_el, Q, S, cosPhi, eff);
 
             // 7. Corrente de partida (variável com potência)
             const startup = ElecCalc.startupCurrent(In, watts);
