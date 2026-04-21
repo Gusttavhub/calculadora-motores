@@ -4,14 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ElektroSys - Calculadora de Dimensionamento de Cabos para Motores Trifásicos | NBR 5410</title>
-    
+
+    <!-- Segurança: Content Security Policy -->
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self';
+        script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com;
+        style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com;
+        font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com data:;
+        img-src 'self' data: https://ecoa.org.br;
+        connect-src 'self';
+        frame-ancestors 'none';
+        base-uri 'self';
+        form-action 'self';
+    ">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23FFD700'%3E%3Cpath d='M13 2L3 14h9l-1 8 10-12h-9l1-8z'/%3E%3C/svg%3E">
 
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com" crossorigin="anonymous"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" crossorigin="anonymous">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+          integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+          crossorigin="anonymous"
+          referrerpolicy="no-referrer">
     
     <!-- Verificação Google Search Console -->
     <meta name="google-site-verification" content="yM14JaRIHCzldCV7wrt48d8ELgjzqoQiyT7OEftroKc" />
@@ -112,11 +131,11 @@
             </div>
             <div class="p-6 space-y-4">
                 <p class="text-sm text-gray-600 mb-4 text-center">Entre em contato para projetos ou dúvidas técnicas.</p>
-                <a href="https://www.linkedin.com/in/gusttavo-gutierry-ferreira-moraes-bb71841a4/" target="_blank" class="flex items-center gap-4 p-4 rounded-lg border border-gray-200 hover:border-blue-500 hover:bg-blue-50 transition group">
+                <a href="https://www.linkedin.com/in/gusttavo-gutierry-ferreira-moraes-bb71841a4/" target="_blank" rel="noopener noreferrer" class="flex items-center gap-4 p-4 rounded-lg border border-gray-200 hover:border-blue-500 hover:bg-blue-50 transition group">
                     <div class="bg-[#0077b5] text-white w-10 h-10 rounded-full flex items-center justify-center"><i class="fa-brands fa-linkedin-in text-lg"></i></div>
                     <div><h4 class="font-bold group-hover:text-blue-700 transition">LinkedIn</h4><p class="text-xs text-gray-500">Conectar perfil profissional</p></div>
                 </a>
-                <a href="https://wa.me/5564984395286" target="_blank" class="flex items-center gap-4 p-4 rounded-lg border border-gray-200 hover:border-green-500 hover:bg-green-50 transition group">
+                <a href="https://wa.me/5564984395286" target="_blank" rel="noopener noreferrer" class="flex items-center gap-4 p-4 rounded-lg border border-gray-200 hover:border-green-500 hover:bg-green-50 transition group">
                     <div class="bg-[#25D366] text-white w-10 h-10 rounded-full flex items-center justify-center"><i class="fa-brands fa-whatsapp text-xl"></i></div>
                     <div><h4 class="font-bold group-hover:text-green-700 transition">WhatsApp</h4><p class="text-xs text-gray-500">+55 64 98439-5286</p></div>
                 </a>
@@ -461,19 +480,49 @@
 
     // === MÓDULO: VALIDAÇÃO DE INPUTS ===
     const Validation = {
+        // Sanitiza valores numéricos removendo NaN, Infinity, null, undefined
+        sanitizeNumber(value, fallback = 0) {
+            const num = Number(value);
+            if (!Number.isFinite(num) || Number.isNaN(num)) return fallback;
+            return num;
+        },
+        // Limita valor dentro de range seguro (evita overflow)
+        clamp(value, min, max) {
+            return Math.max(min, Math.min(max, value));
+        },
         validatePower(value) {
-            return value >= CONSTANTS.MIN_POWER && value <= CONSTANTS.MAX_POWER && isFinite(value);
+            return Number.isFinite(value) && value >= CONSTANTS.MIN_POWER && value <= CONSTANTS.MAX_POWER;
         },
         validateVoltage(value) {
-            return value >= CONSTANTS.MIN_VOLTAGE && value <= CONSTANTS.MAX_VOLTAGE && isFinite(value);
+            return Number.isFinite(value) && value >= CONSTANTS.MIN_VOLTAGE && value <= CONSTANTS.MAX_VOLTAGE;
+        },
+        validateRange(value, min, max) {
+            return Number.isFinite(value) && value >= min && value <= max;
         },
         showError(inputEl, msgEl) {
-            inputEl.classList.add('input-error');
+            if (inputEl) inputEl.classList.add('input-error');
             if (msgEl) msgEl.classList.add('show');
         },
         clearError(inputEl, msgEl) {
-            inputEl.classList.remove('input-error');
+            if (inputEl) inputEl.classList.remove('input-error');
             if (msgEl) msgEl.classList.remove('show');
+        }
+    };
+
+    // === MÓDULO: DOM SAFE HELPERS (evita XSS) ===
+    const SafeDOM = {
+        // Cria elemento com texto seguro (nunca usa innerHTML com entrada variável)
+        setText(el, text) {
+            if (el) el.textContent = String(text);
+        },
+        // Atualiza disclaimer com estrutura controlada, sem interpolação HTML
+        buildDisclaimer(el, parts) {
+            if (!el) return;
+            el.textContent = '';
+            const strong = document.createElement('strong');
+            strong.textContent = 'Isenção de responsabilidade: ';
+            el.appendChild(strong);
+            el.appendChild(document.createTextNode(parts.join(' ')));
         }
     };
 
@@ -736,35 +785,52 @@
 
         // --- Função Principal ---
         function calculate() {
-            // 1. Ler e validar inputs
-            let powerVal = parseFloat(el.power.value) || 0;
+            // 1. Ler e validar/sanitizar inputs (proteção contra NaN, Infinity, overflow)
+            let powerVal = Validation.sanitizeNumber(el.power.value, CONSTANTS.MIN_POWER);
             if (!Validation.validatePower(powerVal)) {
                 Validation.showError(el.power, valPower);
-                powerVal = Math.max(CONSTANTS.MIN_POWER, Math.min(CONSTANTS.MAX_POWER, powerVal || CONSTANTS.MIN_POWER));
+                powerVal = Validation.clamp(powerVal, CONSTANTS.MIN_POWER, CONSTANTS.MAX_POWER);
             } else {
                 Validation.clearError(el.power, valPower);
             }
 
-            const unit = el.unit.value;
-            const cosPhi = parseFloat(el.cos.value);
-            const eff = parseFloat(el.eff.value);
-            const dist = parseFloat(el.dist.value);
-            const methodKey = el.install.value;
+            // Whitelist de unidades (evita valores arbitrários)
+            const ALLOWED_UNITS = ['cv', 'hp', 'kw'];
+            const unit = ALLOWED_UNITS.includes(el.unit.value) ? el.unit.value : 'cv';
+
+            // Sanitização com clamp para evitar valores fora da faixa esperada
+            const cosPhi = Validation.clamp(Validation.sanitizeNumber(el.cos.value, 0.85), 0.5, 1);
+            const eff    = Validation.clamp(Validation.sanitizeNumber(el.eff.value, 0.90), 0.5, 1);
+            const dist   = Validation.clamp(Validation.sanitizeNumber(el.dist.value, 20), 1, 500);
+            const tempVal = Validation.clamp(Math.round(Validation.sanitizeNumber(el.temp.value, 30)), 10, 80);
+
+            // Whitelist de métodos de instalação (evita injeção via dropdown manipulado)
+            const methodKey = Object.prototype.hasOwnProperty.call(installationMethods, el.install.value)
+                ? el.install.value
+                : 'F_TRI';
             const methodData = installationMethods[methodKey];
-            const tempVal = parseInt(el.temp.value);
+
+            // Validação adicional da tensão corrente (defesa em profundidade)
+            if (!Validation.validateVoltage(currentVoltage)) {
+                currentVoltage = 380;
+            }
 
             // 2. Fator de temperatura (com interpolação)
             const tFactor = getTempFactor(tempVal, methodData.type);
 
-            // 3. Atualizar displays
-            disp.temp.innerText = tempVal;
-            disp.tempFactor.innerText = tFactor > 0 ? tFactor.toFixed(2) : "N/A (Inválido)";
-            disp.methodDesc.innerText = methodData.desc;
-            out.cableTitle.innerText = methodData.name;
-            out.disclaimer.innerHTML = `<strong>Isenção de responsabilidade:</strong> ${methodData.disclaimer} Temp: ${tempVal}°C (Fator ${tFactor.toFixed(2)}). ΔV considera R+X. Valide com NBR 5410.`;
-            disp.cos.innerText = cosPhi.toFixed(2);
-            disp.eff.innerText = eff.toFixed(2);
-            disp.dist.innerText = dist;
+            // 3. Atualizar displays (textContent — imune a XSS)
+            SafeDOM.setText(disp.temp, tempVal);
+            SafeDOM.setText(disp.tempFactor, tFactor > 0 ? tFactor.toFixed(2) : "N/A (Inválido)");
+            SafeDOM.setText(disp.methodDesc, methodData.desc);
+            SafeDOM.setText(out.cableTitle, methodData.name);
+            SafeDOM.buildDisclaimer(out.disclaimer, [
+                methodData.disclaimer,
+                `Temp: ${tempVal}°C (Fator ${tFactor.toFixed(2)}).`,
+                'ΔV considera R+X. Valide com NBR 5410.'
+            ]);
+            SafeDOM.setText(disp.cos, cosPhi.toFixed(2));
+            SafeDOM.setText(disp.eff, eff.toFixed(2));
+            SafeDOM.setText(disp.dist, dist);
 
             // 4. Conversão de potência
             let watts = 0;
@@ -828,9 +894,11 @@
                             out.dropContainer.className = "text-[10px] text-red-600 mt-1 font-bold";
                         }
 
-                        // Mostrar fator de agrupamento usado
+                        // Mostrar fator de agrupamento usado (sem innerHTML — seguro)
                         if (numCables > 1) {
-                            out.disclaimer.innerHTML += ` Fator de agrupamento: ${result.groupFactor.toFixed(2)} (Tab.42, ${numCables} circuitos).`;
+                            out.disclaimer.appendChild(document.createTextNode(
+                                ` Fator de agrupamento: ${result.groupFactor.toFixed(2)} (Tab.42, ${numCables} circuitos).`
+                            ));
                         }
                         break;
                     }
