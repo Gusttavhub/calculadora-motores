@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ElektroSys - Calculadora de Dimensionamento de Cabos para Motores Trifásicos | NBR 5410</title>
 
-    <!-- Segurança: Content Security Policy (Tailwind Play CDN precisa de unsafe-eval) -->
+    <!-- Segurança: Content Security Policy -->
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'self';
-        script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com;
+        script-src 'self' 'unsafe-inline';
         style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com;
         font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com data:;
-        img-src 'self' data: https://ecoa.org.br;
+        img-src 'self' data:;
         connect-src 'self';
         frame-ancestors 'none';
         base-uri 'self';
@@ -22,7 +22,7 @@
 
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23FFD700'%3E%3Cpath d='M13 2L3 14h9l-1 8 10-12h-9l1-8z'/%3E%3C/svg%3E">
 
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="styles.css">
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
@@ -47,6 +47,11 @@
     <meta property="og:title" content="ElektroSys | Calculadora de Dimensionamento de Cabos para Motores Trifásicos">
     <meta property="og:description" content="Dimensione cabos, disjuntores e contatores para motores trifásicos online e grátis. Conforme NBR 5410.">
     <meta property="og:url" content="https://elektrosys.eng.br/">
+    <meta property="og:image" content="https://elektrosys.eng.br/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://elektrosys.eng.br/og-image.png">
     <meta name="theme-color" content="#0f172a">
 
     <!-- Dados Estruturados (Google Rich Results) -->
@@ -72,17 +77,6 @@
     }
     </script>
 
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['Inter', 'sans-serif'] },
-                    colors: { brand: { dark: '#0f172a', blue: '#1e40af', text: '#1e293b' } }
-                }
-            }
-        }
-    </script>
-
     <style>
         input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
         input[type=range]::-webkit-slider-thumb {
@@ -91,6 +85,19 @@
         }
         input[type=range]::-webkit-slider-runnable-track {
             width: 100%; height: 4px; cursor: pointer; background: #e2e8f0; border-radius: 2px;
+        }
+        input[type=range]::-moz-range-thumb {
+            height: 16px; width: 16px; border-radius: 50%; border: none;
+            background: #3b82f6; cursor: pointer;
+        }
+        input[type=range]::-moz-range-track {
+            width: 100%; height: 4px; cursor: pointer; background: #e2e8f0; border-radius: 2px;
+        }
+        body.bg-hero {
+            background-color: #0f172a;
+            background-image:
+                radial-gradient(1100px 600px at 85% -10%, rgba(59, 130, 246, 0.18), transparent 60%),
+                radial-gradient(900px 500px at 5% 110%, rgba(234, 179, 8, 0.10), transparent 60%);
         }
         #aboutModal.hidden { display: none; }
         .phasor-text { font-size: 12px; font-weight: 600; pointer-events: none; font-family: 'Inter', sans-serif; }
@@ -103,7 +110,7 @@
     </style>
 </head>
 
-<body class="text-slate-300 font-sans antialiased" style="background-image: linear-gradient(to bottom, rgba(15, 23, 42, 0.93), rgba(15, 23, 42, 0.97)), url('https://ecoa.org.br/wp-content/uploads/2015/11/weg-electric-motors-in-stiavelli-warehouse.jpg'); background-size: cover; background-position: center; background-attachment: fixed; background-repeat: no-repeat;">
+<body class="bg-hero text-slate-300 font-sans antialiased">
 
     <nav class="border-b border-slate-700 bg-slate-900/80 backdrop-blur-md sticky top-0 z-40">
         <div class="container mx-auto px-4 h-16 flex items-center justify-between">
@@ -115,17 +122,17 @@
             </div>
             <div class="flex gap-8 text-sm font-medium text-slate-400">
                 <a href="#" class="text-white">Calculadora</a>
-                <button id="btnOpenAbout" class="hover:text-white transition focus:outline-none">Sobre</button>
+                <button id="btnOpenAbout" class="hover:text-white transition rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400">Sobre</button>
             </div>
         </div>
     </nav>
 
-    <div id="aboutModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div id="aboutModal" role="dialog" aria-modal="true" aria-labelledby="aboutTitle" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-md relative overflow-hidden text-brand-text">
-            <button id="btnCloseAbout" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 focus:outline-none"><i class="fa-solid fa-xmark text-xl"></i></button>
+            <button id="btnCloseAbout" aria-label="Fechar" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"><i class="fa-solid fa-xmark text-xl"></i></button>
             <div class="bg-brand-blue p-6 text-white text-center">
                 <i class="fa-solid fa-user-tie text-4xl mb-2"></i>
-                <h3 class="text-xl font-bold">Gusttavo Gutierry</h3>
+                <h3 id="aboutTitle" class="text-xl font-bold">Gusttavo Gutierry</h3>
                 <p class="text-blue-200 text-sm">Engenharia Elétrica & Desenvolvimento</p>
             </div>
             <div class="p-6 space-y-4">
@@ -164,7 +171,7 @@
 
                     <div class="space-y-5">
                         <div>
-                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Potência Mecânica</label>
+                            <label for="inputPower" class="block text-xs font-bold text-gray-500 uppercase mb-1">Potência Mecânica</label>
                             <div class="flex">
                                 <input type="number" id="inputPower" value="10" min="0.1" max="5000" class="w-full border border-gray-300 rounded-l-lg px-3 py-2 focus:outline-none focus:border-blue-500 font-semibold text-gray-700">
                                 <select id="inputUnit" class="bg-gray-100 border border-l-0 border-gray-300 rounded-r-lg px-3 py-2 text-sm font-semibold text-gray-600">
@@ -187,15 +194,15 @@
                             </div>
                             <div id="customVoltageContainer" class="hidden mt-2">
                                 <div class="flex items-center gap-2">
-                                    <input type="number" id="inputCustomVoltage" placeholder="Ex: 480" min="100" max="13800" class="w-full border border-blue-300 rounded px-3 py-1.5 text-sm font-semibold text-gray-700 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600">
+                                    <input type="number" id="inputCustomVoltage" aria-label="Tensão personalizada em volts" placeholder="Ex: 480" min="100" max="1000" class="w-full border border-blue-300 rounded px-3 py-1.5 text-sm font-semibold text-gray-700 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600">
                                     <span class="text-sm font-bold text-gray-500">Volts</span>
                                 </div>
-                                <p id="validationVoltage" class="validation-msg">Tensão deve ser entre 100V e 13.800V.</p>
+                                <p id="validationVoltage" class="validation-msg">Tensão deve ser entre 100 V e 1.000 V (baixa tensão, NBR 5410).</p>
                             </div>
                         </div>
 
                         <div>
-                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Método de Instalação</label>
+                            <label for="installMethod" class="block text-xs font-bold text-gray-500 uppercase mb-1">Método de Instalação</label>
                             <select id="installMethod" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm font-semibold text-gray-700 focus:outline-none focus:border-blue-500">
                                 <option value="B1">Método B1 - Eletroduto (PVC)</option>
                                 <option value="E">Método E - Multipolar (Bandeja)</option>
@@ -210,23 +217,23 @@
 
                         <div>
                             <div class="flex justify-between mb-1">
-                                <label class="text-xs font-bold text-gray-500">Fator de Potência (cos φ)</label>
-                                <span id="displayCos" class="text-xs font-bold text-blue-600">0.85</span>
+                                <label for="inputCos" class="text-xs font-bold text-gray-500">Fator de Potência (cos φ)</label>
+                                <span id="displayCos" class="text-xs font-bold text-blue-600">0,85</span>
                             </div>
                             <input type="range" id="inputCos" min="0.5" max="1" step="0.01" value="0.85">
                         </div>
 
                         <div>
                             <div class="flex justify-between mb-1">
-                                <label class="text-xs font-bold text-gray-500">Rendimento (η)</label>
-                                <span id="displayEff" class="text-xs font-bold text-green-600">0.90</span>
+                                <label for="inputEff" class="text-xs font-bold text-gray-500">Rendimento (η)</label>
+                                <span id="displayEff" class="text-xs font-bold text-green-600">0,90</span>
                             </div>
                             <input type="range" id="inputEff" min="0.5" max="1" step="0.01" value="0.90">
                         </div>
 
                         <div>
                             <div class="flex justify-between mb-1">
-                                <label class="text-xs font-bold text-gray-500">Distância do Quadro</label>
+                                <label for="inputDist" class="text-xs font-bold text-gray-500">Distância do Quadro</label>
                                 <span class="text-xs font-bold text-gray-700"><span id="displayDist">20</span> m</span>
                             </div>
                             <input type="range" id="inputDist" min="1" max="500" value="20">
@@ -234,11 +241,11 @@
 
                         <div>
                             <div class="flex justify-between mb-1">
-                                <label class="text-xs font-bold text-gray-500">Temperatura Ambiente</label>
+                                <label for="inputTemp" class="text-xs font-bold text-gray-500">Temperatura Ambiente</label>
                                 <span class="text-xs font-bold text-red-600"><span id="displayTemp">30</span> °C</span>
                             </div>
                             <input type="range" id="inputTemp" min="10" max="80" step="1" value="30">
-                            <p class="text-[10px] text-gray-400 mt-1 text-right">Fator de Correção: <span id="displayTempFactor">1.00</span></p>
+                            <p class="text-[10px] text-gray-400 mt-1 text-right">Fator de Correção: <span id="displayTempFactor">1,00</span></p>
                         </div>
                     </div>
                 </div>
@@ -246,7 +253,7 @@
                 <div class="bg-slate-800/80 backdrop-blur-md rounded-lg p-4 border border-slate-700 shadow-inner text-center">
                     <p class="text-[10px] text-slate-400 uppercase tracking-widest mb-1">Queda de Tensão (ΔV)</p>
                     <div class="text-white text-sm font-serif italic opacity-80">ΔV = √3 · I · L · (R·cosφ + X·senφ)</div>
-                    <p class="text-[10px] text-slate-500 mt-1">Considera resistência e reatância do cabo</p>
+                    <p class="text-[10px] text-slate-500 mt-1">R na temperatura do condutor (70/90 °C) + reatância. Limites adotados: 4% em regime, 10% na partida.</p>
                 </div>
             </div>
 
@@ -254,7 +261,7 @@
                 <div class="bg-white rounded-xl shadow-lg p-0 overflow-hidden flex flex-col md:flex-row relative min-h-[220px]">
                     <div class="p-6 md:p-8 flex-1 flex flex-col justify-center z-10 border-r border-gray-100">
                         <p class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-1">Corrente Nominal (In)</p>
-                        <h2 class="text-5xl md:text-6xl font-extrabold text-slate-800 mb-2"><span id="resultIn">14.6</span><span class="text-2xl text-gray-500 ml-1">A</span></h2>
+                        <h2 class="text-5xl md:text-6xl font-extrabold text-slate-800 mb-2"><span id="resultIn">14,6</span><span class="text-2xl text-gray-500 ml-1">A</span></h2>
                         <div class="inline-flex items-center gap-2 bg-gray-100 rounded-full px-3 py-1 w-max">
                             <span class="text-sm font-semibold text-slate-600">Partida (Ip): <span id="resultIp" class="text-blue-600">~110 A</span></span>
                         </div>
@@ -276,7 +283,7 @@
                                 <line id="lineQ" stroke="#FACC15" stroke-width="4" stroke-dasharray="6,3" marker-end="url(#arrowQ)" stroke-linecap="round"/>
                                 <line id="lineS" stroke="#475569" stroke-width="3" marker-end="url(#arrowS)" stroke-linecap="round"/>
                                 <text id="textP" text-anchor="middle" class="phasor-text"><tspan class="phasor-label" fill="#EAB308">Ativa (P)</tspan><tspan id="svgValP" x="0" dy="14" class="phasor-value" fill="#A16207">-- kW</tspan></text>
-                                <text id="textQ" text-anchor="start" class="phasor-text"><tspan class="phasor-label" fill="#FACC15">Reativa (Q)</tspan><tspan id="svgValQ" x="0" dy="14" class="phasor-value" fill="#CA8A04">-- kVAr</tspan></text>
+                                <text id="textQ" text-anchor="start" class="phasor-text"><tspan class="phasor-label" fill="#A16207">Reativa (Q)</tspan><tspan id="svgValQ" x="0" dy="14" class="phasor-value" fill="#CA8A04">-- kVAr</tspan></text>
                                 <text id="textS" text-anchor="end" class="phasor-text"><tspan class="phasor-label" fill="#475569">Aparente (S)</tspan><tspan id="svgValS" x="0" dy="14" class="phasor-value" fill="#1E293B">-- kVA</tspan></text>
                             </svg>
                         </div>
@@ -298,15 +305,16 @@
                     <div class="bg-white rounded-xl p-5 shadow-md border-l-4 border-yellow-400">
                         <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-2">Alimentação</span>
                         <h4 id="cableTitle" class="font-bold text-slate-800">Cabo XLPE</h4>
-                        <div class="text-3xl font-bold text-slate-800 mt-2"><span id="resCable">2.5</span> <span id="resCableUnit" class="text-lg">mm²</span></div>
-                        <p id="dropContainer" class="text-[10px] text-green-600 mt-1">Queda de Tensão: <span id="resDrop">0.92</span>%</p>
+                        <div class="text-3xl font-bold text-slate-800 mt-2"><span id="resCable">2,5</span> <span id="resCableUnit" class="text-lg">mm²</span></div>
+                        <p id="dropContainer" class="text-[10px] text-green-600 mt-1">Queda de Tensão: <span id="resDrop">1,00</span>%</p>
+                        <p id="startDropContainer" class="text-[10px] text-gray-500 mt-1">Queda na partida: <span id="resStartDrop">–</span>%</p>
                     </div>
 
                     <div class="bg-white rounded-xl p-5 shadow-md border-l-4 border-blue-500">
                         <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-2">Comando</span>
                         <h4 class="font-bold text-slate-800">Contator (AC-3)</h4>
                         <div class="text-3xl font-bold text-slate-800 mt-2">Ie ≥ <span id="resContactor">15</span> A</div>
-                        <p class="text-[10px] text-blue-500 mt-1">Relé: <span id="resRelay">11-17</span> A</p>
+                        <p class="text-[10px] text-blue-500 mt-1">Relé: <span id="resRelay">11,7 – 17,5</span> A</p>
                     </div>
                 </div>
 
@@ -318,6 +326,13 @@
         </div>
     </main>
 
+    <footer class="border-t border-slate-800 bg-slate-900/80 relative z-10">
+        <div class="container mx-auto px-4 py-6 text-center text-xs text-slate-500 space-y-1">
+            <p>© 2026 Gusttavo Gutierry — ElektroSys</p>
+            <p>Ferramenta educacional. Os resultados não substituem projeto elétrico — valide com a NBR 5410.</p>
+        </div>
+    </footer>
+
     <script>
     // =========================================================================
     // ElektroSys v2.0 — Módulos isolados para manutenibilidade
@@ -326,10 +341,15 @@
     // === MÓDULO: CONSTANTES ===
     const CONSTANTS = {
         ROOT3: Math.sqrt(3),
-        RHO_COBRE: 0.0172,       // Ω·mm²/m (resistividade do cobre a 20°C)
-        MAX_DROP_ALLOWED: 4.0,   // % — limite NBR 5410 para circuitos terminais
+        // Resistividade do cobre na temperatura de operação do condutor:
+        // ρ20 = 0,0172 Ω·mm²/m; α = 0,00393/°C → 70°C (PVC) e 90°C (XLPE/EPR)
+        RHO_COBRE: { pvc: 0.0206, xlpe: 0.0219 },
+        MAX_DROP_ALLOWED: 4.0,   // % — limite ADOTADO p/ circuito terminal (NBR 5410 6.2.7 define 5%/7% da origem)
+        MAX_STARTUP_DROP: 10.0,  // % — queda máxima adotada durante a partida do motor
+        STARTUP_COS: 0.30,       // cos φ típico com rotor bloqueado (partida direta)
+        MIN_SECTION: 2.5,        // mm² — seção mínima de cobre p/ circuitos de força (NBR 5410 Tab. 47)
         MIN_VOLTAGE: 100,        // V — limite inferior de validação
-        MAX_VOLTAGE: 13800,      // V — limite superior (média tensão)
+        MAX_VOLTAGE: 1000,       // V — NBR 5410 só cobre baixa tensão (≤ 1 kV); acima é NBR 14039
         MIN_POWER: 0.1,
         MAX_POWER: 5000,
     };
@@ -359,6 +379,13 @@
             10: 0.086, 16: 0.081, 25: 0.078, 35: 0.076,
             50: 0.074, 70: 0.072, 95: 0.071, 120: 0.070,
             150: 0.069, 185: 0.068, 240: 0.067
+        },
+        // Espaçados (1×De) — maior afastamento entre condutores → maior reatância
+        espaçado: {
+            1.5: 0.190, 2.5: 0.180, 4.0: 0.170, 6.0: 0.160,
+            10: 0.150, 16: 0.145, 25: 0.140, 35: 0.135,
+            50: 0.130, 70: 0.128, 95: 0.125, 120: 0.123,
+            150: 0.122, 185: 0.120, 240: 0.118
         }
     };
 
@@ -469,7 +496,7 @@
             desc: "Cabos Unipolares (90°C) ESPAÇADOS (Horizontal) sobre bandeja. (Tabela 39)",
             disclaimer: "Considerado Cabo Unipolar XLPE (90°C), Método G (Horizontal Espaçado 1xDe), 3 condutores.",
             type: 'xlpe',
-            reactanceType: 'plano',
+            reactanceType: 'espaçado',
             groupingType: 'bandeja_espaçados',
             table: [{sec:1.5,amp:30},{sec:2.5,amp:41},{sec:4.0,amp:56},{sec:6.0,amp:73},{sec:10.0,amp:101},{sec:16.0,amp:137},{sec:25.0,amp:182},{sec:35.0,amp:226},{sec:50.0,amp:275},{sec:70.0,amp:353},{sec:95.0,amp:430},{sec:120.0,amp:500},{sec:150.0,amp:577},{sec:185.0,amp:661},{sec:240.0,amp:781}]
         }
@@ -548,10 +575,12 @@
         },
 
         // Queda de tensão com resistência E reatância — ΔV = √3·I·L·(R·cosφ + X·senφ)
-        voltageDrop(current, distance, sectionMm2, numCables, voltage, cosPhi, reactanceType) {
+        // R calculada com ρ na temperatura de operação da isolação (70°C PVC / 90°C XLPE)
+        voltageDrop(current, distance, sectionMm2, numCables, voltage, cosPhi, reactanceType, insulationType) {
             const totalArea = sectionMm2 * numCables;
             // Resistência por metro (Ω/m) — considerando área total em paralelo
-            const R_per_m = CONSTANTS.RHO_COBRE / totalArea;
+            const rho = CONSTANTS.RHO_COBRE[insulationType] || CONSTANTS.RHO_COBRE.xlpe;
+            const R_per_m = rho / totalArea;
 
             // Reatância por metro (Ω/m) — dividida por numCables em paralelo
             const xlTable = CABLE_REACTANCE[reactanceType] || CABLE_REACTANCE['trifólio'];
@@ -574,7 +603,7 @@
     };
 
     // === MÓDULO: SELEÇÃO DE CABOS ===
-    function tryFindCable(totalCurrent, numCables, methodData, loadCurrent, dist, voltage, cosPhi, tempFactor) {
+    function tryFindCable(totalCurrent, numCables, methodData, loadCurrent, dist, voltage, cosPhi, tempFactor, startupCurrent) {
         const groupFactor = ElecCalc.getGroupingFactor(numCables, methodData.groupingType);
         const table = methodData.table;
         const maxLimit = table[table.length - 1].amp;
@@ -583,18 +612,23 @@
         const currentPerCable = totalCurrent / (numCables * groupFactor * tempFactor);
         if (currentPerCable > maxLimit) return null;
 
-        let startIndex = table.findIndex(c => c.amp >= currentPerCable);
+        // Seção mínima de 2,5 mm² para circuitos de força (NBR 5410 Tab. 47)
+        let startIndex = table.findIndex(c => c.sec >= CONSTANTS.MIN_SECTION && c.amp >= currentPerCable);
         if (startIndex === -1) startIndex = table.length - 1;
 
         for (let idx = startIndex; idx < table.length; idx++) {
             const section = table[idx].sec;
-            const drop = ElecCalc.voltageDrop(loadCurrent, dist, section, numCables, voltage, cosPhi, methodData.reactanceType);
+            if (section < CONSTANTS.MIN_SECTION) continue;
+            const drop = ElecCalc.voltageDrop(loadCurrent, dist, section, numCables, voltage, cosPhi, methodData.reactanceType, methodData.type);
+            // Queda durante a partida: corrente Ip com cos φ de rotor bloqueado (~0,30)
+            const startDrop = ElecCalc.voltageDrop(startupCurrent, dist, section, numCables, voltage, CONSTANTS.STARTUP_COS, methodData.reactanceType, methodData.type);
 
-            if (drop <= CONSTANTS.MAX_DROP_ALLOWED) {
+            if (drop <= CONSTANTS.MAX_DROP_ALLOWED && startDrop <= CONSTANTS.MAX_STARTUP_DROP) {
                 return {
                     section: section,
                     numCables: numCables,
                     drop: drop,
+                    startDrop: startDrop,
                     groupFactor: groupFactor
                 };
             }
@@ -681,16 +715,18 @@
     }
 
     function formatKilo(value) { return (value / 1000).toFixed(1).replace('.', ','); }
+    function fmtBR(value, decimals) { return Number(value).toFixed(decimals).replace('.', ','); }
 
     // === MÓDULO: MODAL ===
     (function initModal() {
         const modal = document.getElementById('aboutModal');
         const btnOpen = document.getElementById('btnOpenAbout');
         const btnClose = document.getElementById('btnCloseAbout');
-        btnOpen.addEventListener('click', (e) => { e.preventDefault(); modal.classList.remove('hidden'); modal.classList.add('flex'); });
-        function closeModal() { modal.classList.add('hidden'); modal.classList.remove('flex'); }
+        btnOpen.addEventListener('click', (e) => { e.preventDefault(); modal.classList.remove('hidden'); modal.classList.add('flex'); btnClose.focus(); });
+        function closeModal() { modal.classList.add('hidden'); modal.classList.remove('flex'); btnOpen.focus(); }
         btnClose.addEventListener('click', closeModal);
         modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !modal.classList.contains('hidden')) closeModal(); });
     })();
 
     // === MÓDULO: CALCULADORA PRINCIPAL ===
@@ -730,6 +766,8 @@
             cableTitle:  document.getElementById('cableTitle'),
             drop:        document.getElementById('resDrop'),
             dropContainer:document.getElementById('dropContainer'),
+            startDrop:   document.getElementById('resStartDrop'),
+            startDropContainer: document.getElementById('startDropContainer'),
             contactor:   document.getElementById('resContactor'),
             relay:       document.getElementById('resRelay'),
             disclaimer:  document.getElementById('disclaimerText'),
@@ -822,16 +860,18 @@
 
             // 3. Atualizar displays (textContent — imune a XSS)
             SafeDOM.setText(disp.temp, tempVal);
-            SafeDOM.setText(disp.tempFactor, tFactor > 0 ? tFactor.toFixed(2) : "N/A (Inválido)");
+            SafeDOM.setText(disp.tempFactor, tFactor > 0 ? fmtBR(tFactor, 2) : "N/A (Inválido)");
             SafeDOM.setText(disp.methodDesc, methodData.desc);
             SafeDOM.setText(out.cableTitle, methodData.name);
             SafeDOM.buildDisclaimer(out.disclaimer, [
                 methodData.disclaimer,
-                `Temp: ${tempVal}°C (Fator ${tFactor.toFixed(2)}).`,
-                'ΔV considera R+X. Valide com NBR 5410.'
+                `Temp: ${tempVal}°C (Fator ${fmtBR(tFactor, 2)}).`,
+                'ΔV com R na temperatura do condutor + X; limites adotados: 4% em regime e 10% na partida.',
+                'Sobrecarga protegida pelo relé térmico (0,8–1,2×In); disjuntor atua no curto-circuito — confirme In do disjuntor ≤ Iz do cabo.',
+                'Valide com a NBR 5410.'
             ]);
-            SafeDOM.setText(disp.cos, cosPhi.toFixed(2));
-            SafeDOM.setText(disp.eff, eff.toFixed(2));
+            SafeDOM.setText(disp.cos, fmtBR(cosPhi, 2));
+            SafeDOM.setText(disp.eff, fmtBR(eff, 2));
             SafeDOM.setText(disp.dist, dist);
 
             // 4. Conversão de potência
@@ -839,11 +879,11 @@
             if (unit === 'cv') watts = powerVal * 735.5;
             else if (unit === 'hp') watts = powerVal * 745.7;
             else watts = powerVal * 1000;
-            disp.watts.innerText = Math.round(watts);
+            disp.watts.innerText = Math.round(watts).toLocaleString('pt-BR');
 
             // 5. Corrente nominal
             const In = ElecCalc.nominalCurrent(watts, currentVoltage, cosPhi, eff);
-            out.In.innerText = In.toFixed(1);
+            out.In.innerText = fmtBR(In, 1);
 
             // 6. Potências elétricas para diagrama fasorial (triângulo de potências)
             // P_elétrica = potência ativa consumida da rede = P_mecânica / η
@@ -857,7 +897,7 @@
             // 7. Corrente de partida (variável com potência)
             const startup = ElecCalc.startupCurrent(In, watts);
             out.Ip.innerText = "~" + startup.current + " A";
-            out.ipRatioInfo.innerText = `Ip/In ≈ ${startup.ratio}x (gaiola esquilo, partida direta)`;
+            out.ipRatioInfo.innerText = `Ip/In ≈ ${fmtBR(startup.ratio, 1)}x (gaiola esquilo, partida direta)`;
 
             // 8. Disjuntor
             if (In > 100) {
@@ -869,7 +909,7 @@
             }
 
             const targetBreakerCurrent = In * 1.25;
-            let selectedBreaker = standardBreakers.find(b => b > targetBreakerCurrent);
+            let selectedBreaker = standardBreakers.find(b => b >= targetBreakerCurrent);
             if (!selectedBreaker && In > 0) selectedBreaker = "> 1600";
             out.breaker.innerText = selectedBreaker || 0;
 
@@ -883,26 +923,24 @@
 
             if (tFactor > 0 && In > 0) {
                 for (let numCables = 1; numCables <= 4; numCables++) {
-                    const result = tryFindCable(In, numCables, methodData, In, dist, currentVoltage, cosPhi, tFactor);
+                    const result = tryFindCable(In, numCables, methodData, In, dist, currentVoltage, cosPhi, tFactor, startup.current);
                     if (result) {
                         solutionFound = true;
+                        const secText = String(result.section).replace('.', ',');
                         if (numCables === 1) {
-                            out.cable.innerText = result.section;
+                            out.cable.innerText = secText;
                             out.cableTitle.innerText = methodData.name;
                         } else {
-                            out.cable.innerText = numCables + "x " + result.section;
+                            out.cable.innerText = numCables + "x " + secText;
                             out.cableTitle.innerText = numCables + "x " + methodData.name;
                         }
-                        out.drop.innerText = result.drop.toFixed(2);
-
-                        if (result.drop > CONSTANTS.MAX_DROP_ALLOWED) {
-                            out.dropContainer.className = "text-[10px] text-red-600 mt-1 font-bold";
-                        }
+                        out.drop.innerText = fmtBR(result.drop, 2);
+                        out.startDrop.innerText = fmtBR(result.startDrop, 2);
 
                         // Mostrar fator de agrupamento usado (sem innerHTML — seguro)
                         if (numCables > 1) {
                             out.disclaimer.appendChild(document.createTextNode(
-                                ` Fator de agrupamento: ${result.groupFactor.toFixed(2)} (Tab.42, ${numCables} circuitos).`
+                                ` Fator de agrupamento: ${fmtBR(result.groupFactor, 2)} (Tab.42, ${numCables} circuitos).`
                             ));
                         }
                         break;
@@ -923,13 +961,14 @@
                 out.cable.className = "text-2xl font-bold text-blue-600 mt-2";
                 out.dropContainer.className = "text-[10px] text-gray-500 mt-1";
                 out.drop.innerText = "-";
+                out.startDrop.innerText = "-";
             }
 
             // 10. Contator e relé térmico
             out.contactor.innerText = Math.ceil(In);
-            const relayMin = (In > 0) ? (In * 0.8).toFixed(1) : 0;
-            const relayMax = (In > 0) ? (In * 1.2).toFixed(1) : 0;
-            out.relay.innerText = `${relayMin} - ${relayMax}`;
+            const relayMin = (In > 0) ? fmtBR(In * 0.8, 1) : "0";
+            const relayMax = (In > 0) ? fmtBR(In * 1.2, 1) : "0";
+            out.relay.innerText = `${relayMin} – ${relayMax}`;
         }
 
         // Executar cálculo inicial
