@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ElektroSys - Calculadora de Dimensionamento de Cabos para Motores Trifásicos | NBR 5410</title>
+
+    <!-- Segurança: Content Security Policy -->
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self';
+        script-src 'self' 'unsafe-inline';
+        style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com;
+        font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com data:;
+        img-src 'self' data:;
+        connect-src 'self';
+        frame-ancestors 'none';
+        base-uri 'self';
+        form-action 'self';
+    ">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23FFD700'%3E%3Cpath d='M13 2L3 14h9l-1 8 10-12h-9l1-8z'/%3E%3C/svg%3E">
+
+    <link rel="stylesheet" href="styles.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+          crossorigin="anonymous"
+          referrerpolicy="no-referrer">
+    
+    <!-- Verificação Google Search Console -->
+    <meta name="google-site-verification" content="yM14JaRIHCzldCV7wrt48d8ELgjzqoQiyT7OEftroKc" />
+
+    <!-- SEO -->
+    <meta name="description" content="Calculadora online gratuita para dimensionamento de cabos, disjuntores, contatores e proteção de motores trifásicos conforme NBR 5410. Cálculo automático de corrente nominal, queda de tensão e sugestão de componentes.">
+    <meta name="keywords" content="calculadora motores trifásicos, dimensionamento cabos, NBR 5410, corrente nominal motor, queda de tensão, disjuntor motor, contator, engenharia elétrica, calculadora elétrica online">
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="Gusttavo Gutierry">
+    <meta http-equiv="content-language" content="pt-BR">
+    <link rel="canonical" href="https://elektrosys.eng.br/">
+
+    <!-- Open Graph (Redes Sociais) -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="ElektroSys | Calculadora de Dimensionamento de Cabos para Motores Trifásicos">
+    <meta property="og:description" content="Dimensione cabos, disjuntores e contatores para motores trifásicos online e grátis. Conforme NBR 5410.">
+    <meta property="og:url" content="https://elektrosys.eng.br/">
+    <meta property="og:image" content="https://elektrosys.eng.br/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://elektrosys.eng.br/og-image.png">
+    <meta name="theme-color" content="#0f172a">
+
+    <!-- Dados Estruturados (Google Rich Results) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "ElektroSys - Calculadora de Motores",
+      "url": "https://elektrosys.eng.br",
+      "description": "Calculadora online para dimensionamento de cabos e proteção de motores trifásicos conforme NBR 5410",
+      "applicationCategory": "EngineeringApplication",
+      "operatingSystem": "Web",
+      "inLanguage": "pt-BR",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "BRL"
+      },
+      "author": {
+        "@type": "Person",
+        "name": "Gusttavo Gutierry"
+      }
+    }
+    </script>
+
+    <style>
+        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none; height: 16px; width: 16px; border-radius: 50%;
+            background: #3b82f6; margin-top: -6px; cursor: pointer;
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%; height: 4px; cursor: pointer; background: #e2e8f0; border-radius: 2px;
+        }
+        input[type=range]::-moz-range-thumb {
+            height: 16px; width: 16px; border-radius: 50%; border: none;
+            background: #3b82f6; cursor: pointer;
+        }
+        input[type=range]::-moz-range-track {
+            width: 100%; height: 4px; cursor: pointer; background: #e2e8f0; border-radius: 2px;
+        }
+        body.bg-hero {
+            background-color: #0f172a;
+            background-image:
+                radial-gradient(1100px 600px at 85% -10%, rgba(59, 130, 246, 0.18), transparent 60%),
+                radial-gradient(900px 500px at 5% 110%, rgba(234, 179, 8, 0.10), transparent 60%);
+        }
+        #aboutModal.hidden { display: none; }
+        .phasor-text { font-size: 12px; font-weight: 600; pointer-events: none; font-family: 'Inter', sans-serif; }
+        .phasor-label { font-size: 10px; fill: #64748b; font-weight: 500; }
+        .phasor-value { font-size: 13px; font-weight: 800; }
+        #customVoltageContainer { transition: all 0.3s ease; }
+        .input-error { border-color: #ef4444 !important; background-color: #fef2f2 !important; }
+        .validation-msg { color: #ef4444; font-size: 10px; font-weight: 600; margin-top: 2px; display: none; }
+        .validation-msg.show { display: block; }
+    </style>
+</head>
+
+<body class="bg-hero text-slate-300 font-sans antialiased">
+
+    <nav class="border-b border-slate-700 bg-slate-900/80 backdrop-blur-md sticky top-0 z-40">
+        <div class="container mx-auto px-4 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-yellow-400" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                </svg>
+                <span class="text-white font-bold text-lg tracking-wide">ElektroSys</span>
+            </div>
+            <div class="flex gap-8 text-sm font-medium text-slate-400">
+                <a href="index.html" class="text-white" aria-current="page">Motores</a>
+                <a href="solar.html" class="hover:text-white transition">Solar</a>
+                <button id="btnOpenAbout" class="hover:text-white transition rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400">Sobre</button>
+            </div>
+        </div>
+    </nav>
+
+    <div id="aboutModal" role="dialog" aria-modal="true" aria-labelledby="aboutTitle" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md relative overflow-hidden text-brand-text">
+            <button id="btnCloseAbout" aria-label="Fechar" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"><i class="fa-solid fa-xmark text-xl"></i></button>
+            <div class="bg-brand-blue p-6 text-white text-center">
+                <i class="fa-solid fa-user-tie text-4xl mb-2"></i>
+                <h3 id="aboutTitle" class="text-xl font-bold">Gusttavo Gutierry</h3>
+                <p class="text-blue-200 text-sm">Engenharia Elétrica & Desenvolvimento</p>
+            </div>
+            <div class="p-6 space-y-4">
+                <p class="text-sm text-gray-600 mb-4 text-center">Entre em contato para projetos ou dúvidas técnicas.</p>
+                <a href="https://www.linkedin.com/in/gusttavo-gutierry-ferreira-moraes-bb71841a4/" target="_blank" rel="noopener noreferrer" class="flex items-center gap-4 p-4 rounded-lg border border-gray-200 hover:border-blue-500 hover:bg-blue-50 transition group">
+                    <div class="bg-[#0077b5] text-white w-10 h-10 rounded-full flex items-center justify-center"><i class="fa-brands fa-linkedin-in text-lg"></i></div>
+                    <div><h4 class="font-bold group-hover:text-blue-700 transition">LinkedIn</h4><p class="text-xs text-gray-500">Conectar perfil profissional</p></div>
+                </a>
+                <a href="https://wa.me/5564984395286" target="_blank" rel="noopener noreferrer" class="flex items-center gap-4 p-4 rounded-lg border border-gray-200 hover:border-green-500 hover:bg-green-50 transition group">
+                    <div class="bg-[#25D366] text-white w-10 h-10 rounded-full flex items-center justify-center"><i class="fa-brands fa-whatsapp text-xl"></i></div>
+                    <div><h4 class="font-bold group-hover:text-green-700 transition">WhatsApp</h4><p class="text-xs text-gray-500">+55 64 98439-5286</p></div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <header class="text-center py-10 px-4 relative z-10">
+        <h1 class="text-3xl md:text-4xl font-bold text-white mb-3">
+            Dimensionamento de cabos para <span class="text-blue-400">Motores Trifásicos</span>
+        </h1>
+        <p class="text-white font-bold max-w-2xl mx-auto">
+            Cálculos automáticos com ajuste de bitola por queda de tensão.<br>
+            Altere os valores e veja o resultado em tempo real.
+        </p>
+    </header>
+
+    <main class="container mx-auto px-4 pb-20 relative z-10">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <div class="lg:col-span-4 space-y-4">
+                <div class="bg-white rounded-xl shadow-lg p-6 text-brand-text relative">
+                    <div class="flex items-center gap-2 mb-6 border-b border-gray-100 pb-2">
+                        <i class="fa-solid fa-gear text-blue-600"></i>
+                        <h2 class="font-bold text-lg">Parâmetros</h2>
+                    </div>
+
+                    <div class="space-y-5">
+                        <div>
+                            <label for="inputPower" class="block text-xs font-bold text-gray-500 uppercase mb-1">Potência Mecânica</label>
+                            <div class="flex">
+                                <input type="number" id="inputPower" value="10" min="0.1" max="5000" class="w-full border border-gray-300 rounded-l-lg px-3 py-2 focus:outline-none focus:border-blue-500 font-semibold text-gray-700">
+                                <select id="inputUnit" class="bg-gray-100 border border-l-0 border-gray-300 rounded-r-lg px-3 py-2 text-sm font-semibold text-gray-600">
+                                    <option value="cv">CV</option>
+                                    <option value="hp">HP</option>
+                                    <option value="kw">kW</option>
+                                </select>
+                            </div>
+                            <p id="validationPower" class="validation-msg">Potência deve ser entre 0,1 e 5000.</p>
+                            <div class="text-right text-xs text-gray-400 mt-1">= <span id="displayWatts">7355</span> W</div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Tensão (Trifásico)</label>
+                            <div class="grid grid-cols-4 gap-2" id="voltageSelector">
+                                <button data-volts="220" class="volt-btn border border-gray-200 rounded py-1.5 text-xs font-bold text-gray-500 hover:bg-gray-50">220V</button>
+                                <button data-volts="380" class="volt-btn bg-blue-600 text-white rounded py-1.5 text-xs font-bold shadow-md ring-2 ring-blue-200">380V</button>
+                                <button data-volts="440" class="volt-btn border border-gray-200 rounded py-1.5 text-xs font-bold text-gray-500 hover:bg-gray-50">440V</button>
+                                <button id="btnCustomVolt" class="volt-btn border border-gray-200 rounded py-1.5 text-xs font-bold text-gray-500 hover:bg-gray-50">Outro</button>
+                            </div>
+                            <div id="customVoltageContainer" class="hidden mt-2">
+                                <div class="flex items-center gap-2">
+                                    <input type="number" id="inputCustomVoltage" aria-label="Tensão personalizada em volts" placeholder="Ex: 480" min="100" max="1000" class="w-full border border-blue-300 rounded px-3 py-1.5 text-sm font-semibold text-gray-700 focus:outline-none focus:border-blue-600 focus:ring-1 focus:ring-blue-600">
+                                    <span class="text-sm font-bold text-gray-500">Volts</span>
+                                </div>
+                                <p id="validationVoltage" class="validation-msg">Tensão deve ser entre 100 V e 1.000 V (baixa tensão, NBR 5410).</p>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="installMethod" class="block text-xs font-bold text-gray-500 uppercase mb-1">Método de Instalação</label>
+                            <select id="installMethod" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm font-semibold text-gray-700 focus:outline-none focus:border-blue-500">
+                                <option value="B1">Método B1 - Eletroduto (PVC)</option>
+                                <option value="E">Método E - Multipolar (Bandeja)</option>
+                                <option value="F_TRI" selected>Método F - Trifólio (Bandeja)</option>
+                                <option value="F_JUS">Método F - Justapostos (Bandeja)</option>
+                                <option value="G_HOR">Método G - Espaçados (Horizontal)</option>
+                            </select>
+                            <div id="methodDesc" class="text-xs text-blue-600 mt-1 bg-blue-50 p-2 rounded border border-blue-100">
+                                Cabos unipolares em trifólio ao ar livre ou bandejas. (Padrão Industrial)
+                            </div>
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <label for="inputCos" class="text-xs font-bold text-gray-500">Fator de Potência (cos φ)</label>
+                                <span id="displayCos" class="text-xs font-bold text-blue-600">0,85</span>
+                            </div>
+                            <input type="range" id="inputCos" min="0.5" max="1" step="0.01" value="0.85">
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <label for="inputEff" class="text-xs font-bold text-gray-500">Rendimento (η)</label>
+                                <span id="displayEff" class="text-xs font-bold text-green-600">0,90</span>
+                            </div>
+                            <input type="range" id="inputEff" min="0.5" max="1" step="0.01" value="0.90">
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <label for="inputDist" class="text-xs font-bold text-gray-500">Distância do Quadro</label>
+                                <span class="text-xs font-bold text-gray-700"><span id="displayDist">20</span> m</span>
+                            </div>
+                            <input type="range" id="inputDist" min="1" max="500" value="20">
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <label for="inputTemp" class="text-xs font-bold text-gray-500">Temperatura Ambiente</label>
+                                <span class="text-xs font-bold text-red-600"><span id="displayTemp">30</span> °C</span>
+                            </div>
+                            <input type="range" id="inputTemp" min="10" max="80" step="1" value="30">
+                            <p class="text-[10px] text-gray-400 mt-1 text-right">Fator de Correção: <span id="displayTempFactor">1,00</span></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-800/80 backdrop-blur-md rounded-lg p-4 border border-slate-700 shadow-inner text-center">
+                    <p class="text-[10px] text-slate-400 uppercase tracking-widest mb-1">Queda de Tensão (ΔV)</p>
+                    <div class="text-white text-sm font-serif italic opacity-80">ΔV = √3 · I · L · (R·cosφ + X·senφ)</div>
+                    <p class="text-[10px] text-slate-500 mt-1">R na temperatura do condutor (70/90 °C) + reatância. Limites adotados: 4% em regime, 10% na partida.</p>
+                </div>
+            </div>
+
+            <div class="lg:col-span-8 space-y-6">
+                <div class="bg-white rounded-xl shadow-lg p-0 overflow-hidden flex flex-col md:flex-row relative min-h-[220px]">
+                    <div class="p-6 md:p-8 flex-1 flex flex-col justify-center z-10 border-r border-gray-100">
+                        <p class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-1">Corrente Nominal (In)</p>
+                        <h2 class="text-5xl md:text-6xl font-extrabold text-slate-800 mb-2"><span id="resultIn">14,6</span><span class="text-2xl text-gray-500 ml-1">A</span></h2>
+                        <div class="inline-flex items-center gap-2 bg-gray-100 rounded-full px-3 py-1 w-max">
+                            <span class="text-sm font-semibold text-slate-600">Partida (Ip): <span id="resultIp" class="text-blue-600">~110 A</span></span>
+                        </div>
+                        <p id="ipRatioInfo" class="text-[10px] text-gray-400 mt-1">Ip/In ≈ 7,5x (gaiola esquilo padrão)</p>
+                    </div>
+                    
+                    <div class="flex-1 bg-gradient-to-br from-gray-50 to-gray-100 relative flex items-center justify-center p-2">
+                        <i class="fa-solid fa-bolt text-7xl text-yellow-400 opacity-5 absolute right-2 bottom-2"></i>
+                        <div class="w-full h-full flex items-center justify-center">
+                            <svg viewBox="0 0 300 220" class="w-full max-w-[320px] drop-shadow-sm" style="overflow: visible;">
+                                <defs>
+                                    <marker id="arrowP" markerWidth="4" markerHeight="3" refX="3.5" refY="1.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,3 L3.5,1.5 z" fill="#EAB308" /></marker>
+                                    <marker id="arrowQ" markerWidth="4" markerHeight="3" refX="3.5" refY="1.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,3 L3.5,1.5 z" fill="#FACC15" /></marker>
+                                    <marker id="arrowS" markerWidth="4" markerHeight="3" refX="3.5" refY="1.5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,3 L3.5,1.5 z" fill="#475569" /></marker>
+                                </defs>
+                                <path id="angleArc" fill="none" stroke="#3B82F6" stroke-width="2" opacity="0.6"/>
+                                <text id="angleText" class="phasor-text" fill="#3B82F6">φ</text>
+                                <line id="lineP" stroke="#EAB308" stroke-width="4" marker-end="url(#arrowP)" stroke-linecap="round"/>
+                                <line id="lineQ" stroke="#FACC15" stroke-width="4" stroke-dasharray="6,3" marker-end="url(#arrowQ)" stroke-linecap="round"/>
+                                <line id="lineS" stroke="#475569" stroke-width="3" marker-end="url(#arrowS)" stroke-linecap="round"/>
+                                <text id="textP" text-anchor="middle" class="phasor-text"><tspan class="phasor-label" fill="#EAB308">Ativa (P)</tspan><tspan id="svgValP" x="0" dy="14" class="phasor-value" fill="#A16207">-- kW</tspan></text>
+                                <text id="textQ" text-anchor="start" class="phasor-text"><tspan class="phasor-label" fill="#A16207">Reativa (Q)</tspan><tspan id="svgValQ" x="0" dy="14" class="phasor-value" fill="#CA8A04">-- kVAr</tspan></text>
+                                <text id="textS" text-anchor="end" class="phasor-text"><tspan class="phasor-label" fill="#475569">Aparente (S)</tspan><tspan id="svgValS" x="0" dy="14" class="phasor-value" fill="#1E293B">-- kVA</tspan></text>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="flex items-center gap-2 text-lg font-semibold text-white mt-8">
+                    <i class="fa-solid fa-table-cells-large text-blue-400"></i> Sugestão de Componentes
+                </h3>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-white rounded-xl p-5 shadow-md border-l-4 border-red-500">
+                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-2">Proteção</span>
+                        <h4 id="breakerTitle" class="font-bold text-slate-800">Disjuntor Motor</h4>
+                        <div class="text-3xl font-bold text-red-600 mt-2"><span id="resBreaker">20</span> A</div>
+                        <p id="breakerNote" class="text-[10px] text-gray-400 mt-1">Curva D / Faixa Magnética</p>
+                    </div>
+
+                    <div class="bg-white rounded-xl p-5 shadow-md border-l-4 border-yellow-400">
+                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-2">Alimentação</span>
+                        <h4 id="cableTitle" class="font-bold text-slate-800">Cabo XLPE</h4>
+                        <div class="text-3xl font-bold text-slate-800 mt-2"><span id="resCable">2,5</span> <span id="resCableUnit" class="text-lg">mm²</span></div>
+                        <p id="dropContainer" class="text-[10px] text-green-600 mt-1">Queda de Tensão: <span id="resDrop">1,00</span>%</p>
+                        <p id="startDropContainer" class="text-[10px] text-gray-500 mt-1">Queda na partida: <span id="resStartDrop">–</span>%</p>
+                    </div>
+
+                    <div class="bg-white rounded-xl p-5 shadow-md border-l-4 border-blue-500">
+                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-2">Comando</span>
+                        <h4 class="font-bold text-slate-800">Contator (AC-3)</h4>
+                        <div class="text-3xl font-bold text-slate-800 mt-2">Ie ≥ <span id="resContactor">15</span> A</div>
+                        <p class="text-[10px] text-blue-500 mt-1">Relé: <span id="resRelay">11,7 – 17,5</span> A</p>
+                    </div>
+                </div>
+
+                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r shadow-sm flex gap-3 text-xs text-yellow-800">
+                    <i class="fa-solid fa-triangle-exclamation text-yellow-600 mt-1 text-base"></i>
+                    <p id="disclaimerText"><strong>Isenção de responsabilidade:</strong> Esta ferramenta é para fins educacionais. Considere a norma NBR 5410.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="border-t border-slate-800 bg-slate-900/80 relative z-10">
+        <div class="container mx-auto px-4 py-6 text-center text-xs text-slate-500 space-y-1">
+            <p>© 2026 Gusttavo Gutierry — ElektroSys</p>
+            <p>Ferramenta educacional. Os resultados não substituem projeto elétrico — valide com a NBR 5410.</p>
+        </div>
+    </footer>
+
+    <script>
+    // =========================================================================
+    // ElektroSys v2.0 — Módulos isolados para manutenibilidade
+    // =========================================================================
+
+    // === MÓDULO: CONSTANTES ===
+    const CONSTANTS = {
+        ROOT3: Math.sqrt(3),
+        // Resistividade do cobre na temperatura de operação do condutor:
+        // ρ20 = 0,0172 Ω·mm²/m; α = 0,00393/°C → 70°C (PVC) e 90°C (XLPE/EPR)
+        RHO_COBRE: { pvc: 0.0206, xlpe: 0.0219 },
+        MAX_DROP_ALLOWED: 4.0,   // % — limite ADOTADO p/ circuito terminal (NBR 5410 6.2.7 define 5%/7% da origem)
+        MAX_STARTUP_DROP: 10.0,  // % — queda máxima adotada durante a partida do motor
+        STARTUP_COS: 0.30,       // cos φ típico com rotor bloqueado (partida direta)
+        MIN_SECTION: 2.5,        // mm² — seção mínima de cobre p/ circuitos de força (NBR 5410 Tab. 47)
+        MIN_VOLTAGE: 100,        // V — limite inferior de validação
+        MAX_VOLTAGE: 1000,       // V — NBR 5410 só cobre baixa tensão (≤ 1 kV); acima é NBR 14039
+        MIN_POWER: 0.1,
+        MAX_POWER: 5000,
+    };
+
+    // === MÓDULO: REATÂNCIA INDUTIVA DOS CABOS (Ω/km) ===
+    // Valores típicos para cabos de cobre, 60Hz, conforme disposição
+    // Fonte: Tabelas de fabricantes (Prysmian/Nexans) e literatura técnica
+    const CABLE_REACTANCE = {
+        // seção (mm²) : Xl (Ω/km)
+        // Trifólio (cabos encostados) — menor reatância
+        trifólio: {
+            1.5: 0.110, 2.5: 0.104, 4.0: 0.098, 6.0: 0.093,
+            10: 0.086, 16: 0.081, 25: 0.078, 35: 0.076,
+            50: 0.074, 70: 0.072, 95: 0.071, 120: 0.070,
+            150: 0.069, 185: 0.068, 240: 0.067
+        },
+        // Plano (justapostos ou espaçados) — maior reatância
+        plano: {
+            1.5: 0.115, 2.5: 0.110, 4.0: 0.104, 6.0: 0.098,
+            10: 0.090, 16: 0.085, 25: 0.082, 35: 0.080,
+            50: 0.078, 70: 0.076, 95: 0.074, 120: 0.073,
+            150: 0.072, 185: 0.071, 240: 0.070
+        },
+        // Eletroduto — similar ao trifólio
+        eletroduto: {
+            1.5: 0.110, 2.5: 0.104, 4.0: 0.098, 6.0: 0.093,
+            10: 0.086, 16: 0.081, 25: 0.078, 35: 0.076,
+            50: 0.074, 70: 0.072, 95: 0.071, 120: 0.070,
+            150: 0.069, 185: 0.068, 240: 0.067
+        },
+        // Espaçados (1×De) — maior afastamento entre condutores → maior reatância
+        espaçado: {
+            1.5: 0.190, 2.5: 0.180, 4.0: 0.170, 6.0: 0.160,
+            10: 0.150, 16: 0.145, 25: 0.140, 35: 0.135,
+            50: 0.130, 70: 0.128, 95: 0.125, 120: 0.123,
+            150: 0.122, 185: 0.120, 240: 0.118
+        }
+    };
+
+    // === MÓDULO: FATORES DE AGRUPAMENTO — NBR 5410, Tabela 42 ===
+    // Para cabos em paralelo (múltiplos circuitos na mesma bandeja)
+    // Chave: número de circuitos/cabos multipolares
+    const GROUPING_FACTORS_TABLE42 = {
+        // Arranjo: cabos sobre bandeja (justapostos, encostados)
+        bandeja_encostados: {
+            1: 1.00, 2: 0.80, 3: 0.73, 4: 0.70, 5: 0.68,
+            6: 0.66, 7: 0.64, 8: 0.63, 9: 0.62
+        },
+        // Arranjo: camada única com espaçamento (1xDe)
+        bandeja_espaçados: {
+            1: 1.00, 2: 0.88, 3: 0.82, 4: 0.77, 5: 0.75,
+            6: 0.73, 7: 0.72, 8: 0.71, 9: 0.70
+        },
+        // Arranjo: eletroduto embutido/aparente
+        eletroduto: {
+            1: 1.00, 2: 0.80, 3: 0.70, 4: 0.65, 5: 0.60,
+            6: 0.57, 7: 0.54, 8: 0.52, 9: 0.50
+        }
+    };
+
+    // === MÓDULO: FATORES DE TEMPERATURA — NBR 5410, Tabela 40 ===
+    // Valores tabelados em intervalos de 5°C (pontos de referência para interpolação)
+    const TEMP_FACTORS_REF = {
+        10: { pvc: 1.22, xlpe: 1.15 }, 15: { pvc: 1.17, xlpe: 1.12 },
+        20: { pvc: 1.12, xlpe: 1.08 }, 25: { pvc: 1.06, xlpe: 1.04 },
+        30: { pvc: 1.00, xlpe: 1.00 }, 35: { pvc: 0.94, xlpe: 0.96 },
+        40: { pvc: 0.87, xlpe: 0.91 }, 45: { pvc: 0.79, xlpe: 0.87 },
+        50: { pvc: 0.71, xlpe: 0.82 }, 55: { pvc: 0.61, xlpe: 0.76 },
+        60: { pvc: 0.50, xlpe: 0.71 }, 65: { pvc: 0.00, xlpe: 0.65 },
+        70: { pvc: 0.00, xlpe: 0.58 }, 75: { pvc: 0.00, xlpe: 0.50 },
+        80: { pvc: 0.00, xlpe: 0.41 }
+    };
+
+    // Interpolação linear para temperaturas intermediárias
+    function getTempFactor(tempC, insulationType) {
+        const refs = Object.keys(TEMP_FACTORS_REF).map(Number).sort((a, b) => a - b);
+
+        // Valor exato na tabela
+        if (TEMP_FACTORS_REF[tempC]) {
+            return TEMP_FACTORS_REF[tempC][insulationType];
+        }
+
+        // Encontra os pontos de referência adjacentes
+        let lower = refs[0], upper = refs[refs.length - 1];
+        for (let i = 0; i < refs.length - 1; i++) {
+            if (tempC >= refs[i] && tempC <= refs[i + 1]) {
+                lower = refs[i];
+                upper = refs[i + 1];
+                break;
+            }
+        }
+
+        const fLow = TEMP_FACTORS_REF[lower][insulationType];
+        const fHigh = TEMP_FACTORS_REF[upper][insulationType];
+
+        // Se algum dos limites é zero (PVC acima de 60°C), retorna 0
+        if (fLow === 0 || fHigh === 0) return 0;
+
+        // Interpolação linear
+        const ratio = (tempC - lower) / (upper - lower);
+        return fLow + ratio * (fHigh - fLow);
+    }
+
+    // === MÓDULO: MÉTODOS DE INSTALAÇÃO ===
+    const installationMethods = {
+        'B1': {
+            name: "Cabo PVC (B1)",
+            desc: "Condutores isolados (70°C) em eletroduto embutido/aparente. (Tabela 36)",
+            disclaimer: "Considerado Cabo PVC (70°C), Método B1, 3 condutores carregados.",
+            type: 'pvc',
+            reactanceType: 'eletroduto',
+            groupingType: 'eletroduto',
+            table: [{sec:1.5,amp:15.5},{sec:2.5,amp:21},{sec:4.0,amp:28},{sec:6.0,amp:36},{sec:10.0,amp:50},{sec:16.0,amp:68},{sec:25.0,amp:89},{sec:35.0,amp:111},{sec:50.0,amp:134},{sec:70.0,amp:171},{sec:95.0,amp:207},{sec:120.0,amp:239},{sec:150.0,amp:275},{sec:185.0,amp:314},{sec:240.0,amp:370}]
+        },
+        'E': {
+            name: "Cabo XLPE (E)",
+            desc: "Cabo Multipolar (90°C) em bandeja ventilada ou leito. (Tabela 39)",
+            disclaimer: "Considerado Cabo Multipolar XLPE (90°C), Método E, 3 condutores carregados.",
+            type: 'xlpe',
+            reactanceType: 'trifólio',
+            groupingType: 'bandeja_encostados',
+            table: [{sec:1.5,amp:23},{sec:2.5,amp:32},{sec:4.0,amp:42},{sec:6.0,amp:54},{sec:10.0,amp:75},{sec:16.0,amp:100},{sec:25.0,amp:127},{sec:35.0,amp:158},{sec:50.0,amp:192},{sec:70.0,amp:246},{sec:95.0,amp:298},{sec:120.0,amp:346},{sec:150.0,amp:399},{sec:185.0,amp:456},{sec:240.0,amp:538}]
+        },
+        'F_TRI': {
+            name: "Cabo XLPE (F-Tri)",
+            desc: "Cabos Unipolares (90°C) em TRIFÓLIO sobre bandeja. (Tabela 39)",
+            disclaimer: "Considerado Cabo Unipolar XLPE (90°C), Método F (Trifólio), 3 condutores.",
+            type: 'xlpe',
+            reactanceType: 'trifólio',
+            groupingType: 'bandeja_encostados',
+            table: [{sec:1.5,amp:21},{sec:2.5,amp:29},{sec:4.0,amp:40},{sec:6.0,amp:53},{sec:10.0,amp:74},{sec:16.0,amp:101},{sec:25.0,amp:135},{sec:35.0,amp:169},{sec:50.0,amp:207},{sec:70.0,amp:268},{sec:95.0,amp:328},{sec:120.0,amp:383},{sec:150.0,amp:444},{sec:185.0,amp:510},{sec:240.0,amp:607}]
+        },
+        'F_JUS': {
+            name: "Cabo XLPE (F-Flat)",
+            desc: "Cabos Unipolares (90°C) JUSTAPOSTOS (Plano) sobre bandeja. (Tabela 39)",
+            disclaimer: "Considerado Cabo Unipolar XLPE (90°C), Método F (Justapostos), 3 condutores.",
+            type: 'xlpe',
+            reactanceType: 'plano',
+            groupingType: 'bandeja_encostados',
+            table: [{sec:1.5,amp:22},{sec:2.5,amp:30},{sec:4.0,amp:42},{sec:6.0,amp:55},{sec:10.0,amp:77},{sec:16.0,amp:105},{sec:25.0,amp:141},{sec:35.0,amp:176},{sec:50.0,amp:216},{sec:70.0,amp:279},{sec:95.0,amp:342},{sec:120.0,amp:400},{sec:150.0,amp:464},{sec:185.0,amp:533},{sec:240.0,amp:634}]
+        },
+        'G_HOR': {
+            name: "Cabo XLPE (G-Esp)",
+            desc: "Cabos Unipolares (90°C) ESPAÇADOS (Horizontal) sobre bandeja. (Tabela 39)",
+            disclaimer: "Considerado Cabo Unipolar XLPE (90°C), Método G (Horizontal Espaçado 1xDe), 3 condutores.",
+            type: 'xlpe',
+            reactanceType: 'espaçado',
+            groupingType: 'bandeja_espaçados',
+            table: [{sec:1.5,amp:30},{sec:2.5,amp:41},{sec:4.0,amp:56},{sec:6.0,amp:73},{sec:10.0,amp:101},{sec:16.0,amp:137},{sec:25.0,amp:182},{sec:35.0,amp:226},{sec:50.0,amp:275},{sec:70.0,amp:353},{sec:95.0,amp:430},{sec:120.0,amp:500},{sec:150.0,amp:577},{sec:185.0,amp:661},{sec:240.0,amp:781}]
+        }
+    };
+
+    const standardBreakers = [2, 4, 6, 10, 16, 20, 25, 32, 40, 50, 63, 70, 80, 100, 125, 150, 175, 200, 225, 250, 315, 350, 400, 500, 630, 800, 1000, 1250, 1600];
+
+    // === MÓDULO: VALIDAÇÃO DE INPUTS ===
+    const Validation = {
+        // Sanitiza valores numéricos removendo NaN, Infinity, null, undefined
+        sanitizeNumber(value, fallback = 0) {
+            const num = Number(value);
+            if (!Number.isFinite(num) || Number.isNaN(num)) return fallback;
+            return num;
+        },
+        // Limita valor dentro de range seguro (evita overflow)
+        clamp(value, min, max) {
+            return Math.max(min, Math.min(max, value));
+        },
+        validatePower(value) {
+            return Number.isFinite(value) && value >= CONSTANTS.MIN_POWER && value <= CONSTANTS.MAX_POWER;
+        },
+        validateVoltage(value) {
+            return Number.isFinite(value) && value >= CONSTANTS.MIN_VOLTAGE && value <= CONSTANTS.MAX_VOLTAGE;
+        },
+        validateRange(value, min, max) {
+            return Number.isFinite(value) && value >= min && value <= max;
+        },
+        showError(inputEl, msgEl) {
+            if (inputEl) inputEl.classList.add('input-error');
+            if (msgEl) msgEl.classList.add('show');
+        },
+        clearError(inputEl, msgEl) {
+            if (inputEl) inputEl.classList.remove('input-error');
+            if (msgEl) msgEl.classList.remove('show');
+        }
+    };
+
+    // === MÓDULO: DOM SAFE HELPERS (evita XSS) ===
+    const SafeDOM = {
+        // Cria elemento com texto seguro (nunca usa innerHTML com entrada variável)
+        setText(el, text) {
+            if (el) el.textContent = String(text);
+        },
+        // Atualiza disclaimer com estrutura controlada, sem interpolação HTML
+        buildDisclaimer(el, parts) {
+            if (!el) return;
+            el.textContent = '';
+            const strong = document.createElement('strong');
+            strong.textContent = 'Isenção de responsabilidade: ';
+            el.appendChild(strong);
+            el.appendChild(document.createTextNode(parts.join(' ')));
+        }
+    };
+
+    // === MÓDULO: CÁLCULOS ELÉTRICOS ===
+    const ElecCalc = {
+        // Corrente nominal trifásica
+        nominalCurrent(watts, voltage, cosPhi, efficiency) {
+            const In = watts / (CONSTANTS.ROOT3 * voltage * cosPhi * efficiency);
+            return (isFinite(In) && In > 0) ? In : 0;
+        },
+
+        // Corrente de partida estimada (Ip/In varia com potência do motor)
+        startupCurrent(In, watts) {
+            // Motores menores → Ip/In maior; motores maiores → Ip/In menor
+            // Faixas típicas (gaiola esquilo, partida direta):
+            //   < 5 kW: ~8x | 5–50 kW: ~7,5x | 50–200 kW: ~7x | > 200 kW: ~6x
+            const kW = watts / 1000;
+            let ratio;
+            if (kW < 5) ratio = 8.0;
+            else if (kW < 50) ratio = 7.5;
+            else if (kW < 200) ratio = 7.0;
+            else ratio = 6.0;
+            return { current: Math.round(In * ratio), ratio: ratio };
+        },
+
+        // Queda de tensão com resistência E reatância — ΔV = √3·I·L·(R·cosφ + X·senφ)
+        // R calculada com ρ na temperatura de operação da isolação (70°C PVC / 90°C XLPE)
+        voltageDrop(current, distance, sectionMm2, numCables, voltage, cosPhi, reactanceType, insulationType) {
+            const totalArea = sectionMm2 * numCables;
+            // Resistência por metro (Ω/m) — considerando área total em paralelo
+            const rho = CONSTANTS.RHO_COBRE[insulationType] || CONSTANTS.RHO_COBRE.xlpe;
+            const R_per_m = rho / totalArea;
+
+            // Reatância por metro (Ω/m) — dividida por numCables em paralelo
+            const xlTable = CABLE_REACTANCE[reactanceType] || CABLE_REACTANCE['trifólio'];
+            const Xl_per_km = xlTable[sectionMm2] || 0.08;  // fallback típico
+            const X_per_m = (Xl_per_km / 1000) / numCables;
+
+            const sinPhi = Math.sin(Math.acos(cosPhi));
+            const deltaV = CONSTANTS.ROOT3 * current * distance * (R_per_m * cosPhi + X_per_m * sinPhi);
+            const dropPercent = (deltaV / voltage) * 100;
+
+            return dropPercent;
+        },
+
+        // Fator de agrupamento da NBR 5410 Tabela 42
+        getGroupingFactor(numCables, groupingType) {
+            const table = GROUPING_FACTORS_TABLE42[groupingType] || GROUPING_FACTORS_TABLE42['bandeja_encostados'];
+            if (numCables <= 1) return 1.0;
+            return table[numCables] || table[9] || 0.50;
+        }
+    };
+
+    // === MÓDULO: SELEÇÃO DE CABOS ===
+    function tryFindCable(totalCurrent, numCables, methodData, loadCurrent, dist, voltage, cosPhi, tempFactor, startupCurrent) {
+        const groupFactor = ElecCalc.getGroupingFactor(numCables, methodData.groupingType);
+        const table = methodData.table;
+        const maxLimit = table[table.length - 1].amp;
+
+        // Corrente corrigida que cada cabo deve suportar
+        const currentPerCable = totalCurrent / (numCables * groupFactor * tempFactor);
+        if (currentPerCable > maxLimit) return null;
+
+        // Seção mínima de 2,5 mm² para circuitos de força (NBR 5410 Tab. 47)
+        let startIndex = table.findIndex(c => c.sec >= CONSTANTS.MIN_SECTION && c.amp >= currentPerCable);
+        if (startIndex === -1) startIndex = table.length - 1;
+
+        for (let idx = startIndex; idx < table.length; idx++) {
+            const section = table[idx].sec;
+            if (section < CONSTANTS.MIN_SECTION) continue;
+            const drop = ElecCalc.voltageDrop(loadCurrent, dist, section, numCables, voltage, cosPhi, methodData.reactanceType, methodData.type);
+            // Queda durante a partida: corrente Ip com cos φ de rotor bloqueado (~0,30)
+            const startDrop = ElecCalc.voltageDrop(startupCurrent, dist, section, numCables, voltage, CONSTANTS.STARTUP_COS, methodData.reactanceType, methodData.type);
+
+            if (drop <= CONSTANTS.MAX_DROP_ALLOWED && startDrop <= CONSTANTS.MAX_STARTUP_DROP) {
+                return {
+                    section: section,
+                    numCables: numCables,
+                    drop: drop,
+                    startDrop: startDrop,
+                    groupFactor: groupFactor
+                };
+            }
+        }
+        return null;
+    }
+
+    // === MÓDULO: UI / DIAGRAMA FASORIAL ===
+    function updatePhasorDiagram(P, Q, S, cosPhi, eff) {
+        const svgValP = document.getElementById('svgValP');
+        const svgValQ = document.getElementById('svgValQ');
+        const svgValS = document.getElementById('svgValS');
+
+        svgValP.textContent = formatKilo(P) + " kW";
+        svgValQ.textContent = formatKilo(Q) + " kVAr";
+        svgValS.textContent = formatKilo(S) + " kVA";
+
+        const angleRad = Math.acos(cosPhi);
+        document.getElementById('angleText').textContent = "φ " + (angleRad * 180 / Math.PI).toFixed(0) + "°";
+
+        // --- Triângulo de Potências (escala dinâmica com η) ---
+        // P (ativa elétrica) = P_mec / η → quanto menor η, maior P → triângulo cresce.
+        // Mapeia η ∈ [0.5, 1.0] para pLen ∈ [pLenMax, pLenMin] (inversamente proporcional).
+        // Depois ajusta qLen via tan(φ) mantendo proporção se estourar o viewBox.
+        const originX = 40, originY = 190;
+        const pLenMax = 180, pLenMin = 100, qLenMax = 160;
+
+        const effClamped = Math.max(0.5, Math.min(1.0, eff || 1.0));
+        const effFraction = (1.0 - effClamped) / (1.0 - 0.5); // 0 (η=1) a 1 (η=0.5)
+        let pLen = pLenMin + effFraction * (pLenMax - pLenMin);
+
+        const tanPhi = Math.tan(angleRad);
+        let qLen = pLen * tanPhi;
+
+        // Se qLen estoura, reduz tudo proporcionalmente (mantém forma correta)
+        if (qLen > qLenMax) {
+            const shrink = qLenMax / qLen;
+            pLen *= shrink;
+            qLen = qLenMax;
+        }
+
+        const pEndX = originX + pLen;
+        const qEndY = originY - qLen;
+
+        const lineP = document.getElementById('lineP');
+        const lineQ = document.getElementById('lineQ');
+        const lineS = document.getElementById('lineS');
+        const textP = document.getElementById('textP');
+        const textQ = document.getElementById('textQ');
+        const textS = document.getElementById('textS');
+
+        // P — horizontal fixo
+        lineP.setAttribute('x1', originX); lineP.setAttribute('y1', originY);
+        lineP.setAttribute('x2', pEndX);   lineP.setAttribute('y2', originY);
+
+        // Q — vertical (do fim de P, para cima)
+        lineQ.setAttribute('x1', pEndX);   lineQ.setAttribute('y1', originY);
+        lineQ.setAttribute('x2', pEndX);   lineQ.setAttribute('y2', qEndY);
+
+        // S — hipotenusa (da origem ao vértice P,Q)
+        lineS.setAttribute('x1', originX); lineS.setAttribute('y1', originY);
+        lineS.setAttribute('x2', pEndX);   lineS.setAttribute('y2', qEndY);
+
+        // Labels — P sempre centralizado no mesmo lugar
+        textP.setAttribute('x', originX + (pLen / 2));
+        textP.setAttribute('y', originY + 20);
+        svgValP.setAttribute('x', originX + (pLen / 2));
+
+        textQ.setAttribute('x', pEndX + 10);
+        textQ.setAttribute('y', originY - (qLen / 2));
+        svgValQ.setAttribute('x', pEndX + 10);
+
+        textS.setAttribute('x', (originX + pEndX) / 2 - 15);
+        textS.setAttribute('y', (originY + qEndY) / 2 - 10);
+        svgValS.setAttribute('x', (originX + pEndX) / 2 - 15);
+
+        // Arco do ângulo φ
+        const arcR = 40;
+        const arcEx = originX + arcR * Math.cos(angleRad);
+        const arcEy = originY - arcR * Math.sin(angleRad);
+        document.getElementById('angleArc').setAttribute('d', `M ${originX + arcR} ${originY} A ${arcR} ${arcR} 0 0 0 ${arcEx} ${arcEy}`);
+        document.getElementById('angleText').setAttribute('x', originX + arcR + 10);
+        document.getElementById('angleText').setAttribute('y', originY - 5);
+    }
+
+    function formatKilo(value) { return (value / 1000).toFixed(1).replace('.', ','); }
+    function fmtBR(value, decimals) { return Number(value).toFixed(decimals).replace('.', ','); }
+
+    // === MÓDULO: MODAL ===
+    (function initModal() {
+        const modal = document.getElementById('aboutModal');
+        const btnOpen = document.getElementById('btnOpenAbout');
+        const btnClose = document.getElementById('btnCloseAbout');
+        btnOpen.addEventListener('click', (e) => { e.preventDefault(); modal.classList.remove('hidden'); modal.classList.add('flex'); btnClose.focus(); });
+        function closeModal() { modal.classList.add('hidden'); modal.classList.remove('flex'); btnOpen.focus(); }
+        btnClose.addEventListener('click', closeModal);
+        modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !modal.classList.contains('hidden')) closeModal(); });
+    })();
+
+    // === MÓDULO: CALCULADORA PRINCIPAL ===
+    (function initCalculator() {
+        let currentVoltage = 380;
+        let isCustomVoltage = false;
+
+        // Elementos do DOM
+        const el = {
+            power:    document.getElementById('inputPower'),
+            unit:     document.getElementById('inputUnit'),
+            cos:      document.getElementById('inputCos'),
+            eff:      document.getElementById('inputEff'),
+            dist:     document.getElementById('inputDist'),
+            install:  document.getElementById('installMethod'),
+            temp:     document.getElementById('inputTemp'),
+            customV:  document.getElementById('inputCustomVoltage'),
+        };
+        const disp = {
+            watts:      document.getElementById('displayWatts'),
+            cos:        document.getElementById('displayCos'),
+            eff:        document.getElementById('displayEff'),
+            dist:       document.getElementById('displayDist'),
+            temp:       document.getElementById('displayTemp'),
+            tempFactor: document.getElementById('displayTempFactor'),
+            methodDesc: document.getElementById('methodDesc'),
+        };
+        const out = {
+            In:          document.getElementById('resultIn'),
+            Ip:          document.getElementById('resultIp'),
+            ipRatioInfo: document.getElementById('ipRatioInfo'),
+            breaker:     document.getElementById('resBreaker'),
+            breakerTitle:document.getElementById('breakerTitle'),
+            breakerNote: document.getElementById('breakerNote'),
+            cable:       document.getElementById('resCable'),
+            cableUnit:   document.getElementById('resCableUnit'),
+            cableTitle:  document.getElementById('cableTitle'),
+            drop:        document.getElementById('resDrop'),
+            dropContainer:document.getElementById('dropContainer'),
+            startDrop:   document.getElementById('resStartDrop'),
+            startDropContainer: document.getElementById('startDropContainer'),
+            contactor:   document.getElementById('resContactor'),
+            relay:       document.getElementById('resRelay'),
+            disclaimer:  document.getElementById('disclaimerText'),
+        };
+        const valPower = document.getElementById('validationPower');
+        const valVoltage = document.getElementById('validationVoltage');
+        const customVoltageContainer = document.getElementById('customVoltageContainer');
+
+        // --- Eventos de Tensão ---
+        const btnVolts = document.querySelectorAll('.volt-btn');
+        const btnCustomVolt = document.getElementById('btnCustomVolt');
+
+        btnVolts.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                btnVolts.forEach(b => {
+                    b.className = "volt-btn border border-gray-200 rounded py-1.5 text-xs font-bold text-gray-500 hover:bg-gray-50";
+                });
+                e.target.className = "volt-btn bg-blue-600 text-white rounded py-1.5 text-xs font-bold shadow-md ring-2 ring-blue-200";
+
+                if (e.target.id === 'btnCustomVolt') {
+                    isCustomVoltage = true;
+                    customVoltageContainer.classList.remove('hidden');
+                    let customVal = parseFloat(el.customV.value);
+                    if (Validation.validateVoltage(customVal)) {
+                        currentVoltage = customVal;
+                        Validation.clearError(el.customV, valVoltage);
+                    }
+                } else {
+                    isCustomVoltage = false;
+                    customVoltageContainer.classList.add('hidden');
+                    currentVoltage = parseInt(e.target.dataset.volts);
+                    Validation.clearError(el.customV, valVoltage);
+                }
+                calculate();
+            });
+        });
+
+        el.customV.addEventListener('input', (e) => {
+            if (isCustomVoltage) {
+                let val = parseFloat(e.target.value);
+                if (Validation.validateVoltage(val)) {
+                    currentVoltage = val;
+                    Validation.clearError(el.customV, valVoltage);
+                    calculate();
+                } else {
+                    Validation.showError(el.customV, valVoltage);
+                }
+            }
+        });
+
+        // --- Eventos Gerais ---
+        [el.install, el.temp, el.power, el.unit, el.cos, el.eff, el.dist].forEach(
+            e => e.addEventListener(e.tagName === 'SELECT' ? 'change' : 'input', calculate)
+        );
+
+        // --- Função Principal ---
+        function calculate() {
+            // 1. Ler e validar/sanitizar inputs (proteção contra NaN, Infinity, overflow)
+            let powerVal = Validation.sanitizeNumber(el.power.value, CONSTANTS.MIN_POWER);
+            if (!Validation.validatePower(powerVal)) {
+                Validation.showError(el.power, valPower);
+                powerVal = Validation.clamp(powerVal, CONSTANTS.MIN_POWER, CONSTANTS.MAX_POWER);
+            } else {
+                Validation.clearError(el.power, valPower);
+            }
+
+            // Whitelist de unidades (evita valores arbitrários)
+            const ALLOWED_UNITS = ['cv', 'hp', 'kw'];
+            const unit = ALLOWED_UNITS.includes(el.unit.value) ? el.unit.value : 'cv';
+
+            // Sanitização com clamp para evitar valores fora da faixa esperada
+            const cosPhi = Validation.clamp(Validation.sanitizeNumber(el.cos.value, 0.85), 0.5, 1);
+            const eff    = Validation.clamp(Validation.sanitizeNumber(el.eff.value, 0.90), 0.5, 1);
+            const dist   = Validation.clamp(Validation.sanitizeNumber(el.dist.value, 20), 1, 500);
+            const tempVal = Validation.clamp(Math.round(Validation.sanitizeNumber(el.temp.value, 30)), 10, 80);
+
+            // Whitelist de métodos de instalação (evita injeção via dropdown manipulado)
+            const methodKey = Object.prototype.hasOwnProperty.call(installationMethods, el.install.value)
+                ? el.install.value
+                : 'F_TRI';
+            const methodData = installationMethods[methodKey];
+
+            // Validação adicional da tensão corrente (defesa em profundidade)
+            if (!Validation.validateVoltage(currentVoltage)) {
+                currentVoltage = 380;
+            }
+
+            // 2. Fator de temperatura (com interpolação)
+            const tFactor = getTempFactor(tempVal, methodData.type);
+
+            // 3. Atualizar displays (textContent — imune a XSS)
+            SafeDOM.setText(disp.temp, tempVal);
+            SafeDOM.setText(disp.tempFactor, tFactor > 0 ? fmtBR(tFactor, 2) : "N/A (Inválido)");
+            SafeDOM.setText(disp.methodDesc, methodData.desc);
+            SafeDOM.setText(out.cableTitle, methodData.name);
+            SafeDOM.buildDisclaimer(out.disclaimer, [
+                methodData.disclaimer,
+                `Temp: ${tempVal}°C (Fator ${fmtBR(tFactor, 2)}).`,
+                'ΔV com R na temperatura do condutor + X; limites adotados: 4% em regime e 10% na partida.',
+                'Sobrecarga protegida pelo relé térmico (0,8–1,2×In); disjuntor atua no curto-circuito — confirme In do disjuntor ≤ Iz do cabo.',
+                'Valide com a NBR 5410.'
+            ]);
+            SafeDOM.setText(disp.cos, fmtBR(cosPhi, 2));
+            SafeDOM.setText(disp.eff, fmtBR(eff, 2));
+            SafeDOM.setText(disp.dist, dist);
+
+            // 4. Conversão de potência
+            let watts = 0;
+            if (unit === 'cv') watts = powerVal * 735.5;
+            else if (unit === 'hp') watts = powerVal * 745.7;
+            else watts = powerVal * 1000;
+            disp.watts.innerText = Math.round(watts).toLocaleString('pt-BR');
+
+            // 5. Corrente nominal
+            const In = ElecCalc.nominalCurrent(watts, currentVoltage, cosPhi, eff);
+            out.In.innerText = fmtBR(In, 1);
+
+            // 6. Potências elétricas para diagrama fasorial (triângulo de potências)
+            // P_elétrica = potência ativa consumida da rede = P_mecânica / η
+            // Assim P, Q e S variam TODOS com o rendimento (antes, P ficava travado no valor mecânico).
+            const P_el = eff > 0 ? watts / eff : 0;
+            const S = CONSTANTS.ROOT3 * currentVoltage * In;
+            let Q = Math.sqrt(Math.max(0, S * S - P_el * P_el));
+            if (!isFinite(Q)) Q = 0;
+            updatePhasorDiagram(P_el, Q, S, cosPhi, eff);
+
+            // 7. Corrente de partida (variável com potência)
+            const startup = ElecCalc.startupCurrent(In, watts);
+            out.Ip.innerText = "~" + startup.current + " A";
+            out.ipRatioInfo.innerText = `Ip/In ≈ ${fmtBR(startup.ratio, 1)}x (gaiola esquilo, partida direta)`;
+
+            // 8. Disjuntor
+            if (In > 100) {
+                out.breakerTitle.innerText = "Disjuntor Caixa Moldada";
+                out.breakerNote.innerText = "Ajuste magnético ≥ Ip";
+            } else {
+                out.breakerTitle.innerText = "Disjuntor Motor";
+                out.breakerNote.innerText = "Curva D / Faixa Magnética";
+            }
+
+            const targetBreakerCurrent = In * 1.25;
+            let selectedBreaker = standardBreakers.find(b => b >= targetBreakerCurrent);
+            if (!selectedBreaker && In > 0) selectedBreaker = "> 1600";
+            out.breaker.innerText = selectedBreaker || 0;
+
+            // 9. Dimensionamento de cabo
+            out.dropContainer.className = "text-[10px] text-green-600 mt-1";
+            out.cableUnit.innerText = "mm²";
+            out.cable.className = "text-3xl font-bold text-slate-800 mt-2";
+            out.cableTitle.className = "font-bold text-slate-800";
+
+            let solutionFound = false;
+
+            if (tFactor > 0 && In > 0) {
+                for (let numCables = 1; numCables <= 4; numCables++) {
+                    const result = tryFindCable(In, numCables, methodData, In, dist, currentVoltage, cosPhi, tFactor, startup.current);
+                    if (result) {
+                        solutionFound = true;
+                        const secText = String(result.section).replace('.', ',');
+                        if (numCables === 1) {
+                            out.cable.innerText = secText;
+                            out.cableTitle.innerText = methodData.name;
+                        } else {
+                            out.cable.innerText = numCables + "x " + secText;
+                            out.cableTitle.innerText = numCables + "x " + methodData.name;
+                        }
+                        out.drop.innerText = fmtBR(result.drop, 2);
+                        out.startDrop.innerText = fmtBR(result.startDrop, 2);
+
+                        // Mostrar fator de agrupamento usado (sem innerHTML — seguro)
+                        if (numCables > 1) {
+                            out.disclaimer.appendChild(document.createTextNode(
+                                ` Fator de agrupamento: ${fmtBR(result.groupFactor, 2)} (Tab.42, ${numCables} circuitos).`
+                            ));
+                        }
+                        break;
+                    }
+                }
+            }
+
+            if (!solutionFound && In > 0) {
+                if (tFactor === 0) {
+                    out.cableTitle.innerText = "Não Suportado";
+                    out.cable.innerText = "Temp > Limite";
+                } else {
+                    out.cableTitle.innerText = "Barramento / Busway";
+                    out.cableTitle.className = "font-bold text-blue-600";
+                    out.cable.innerText = "Projeto";
+                }
+                out.cableUnit.innerText = "Espec.";
+                out.cable.className = "text-2xl font-bold text-blue-600 mt-2";
+                out.dropContainer.className = "text-[10px] text-gray-500 mt-1";
+                out.drop.innerText = "-";
+                out.startDrop.innerText = "-";
+            }
+
+            // 10. Contator e relé térmico
+            out.contactor.innerText = Math.ceil(In);
+            const relayMin = (In > 0) ? fmtBR(In * 0.8, 1) : "0";
+            const relayMax = (In > 0) ? fmtBR(In * 1.2, 1) : "0";
+            out.relay.innerText = `${relayMin} – ${relayMax}`;
+        }
+
+        // Executar cálculo inicial
+        calculate();
+    })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ElektroSys - Simulador de Sistema Fotovoltaico | Dimensionamento Solar Online</title>
+
+    <!-- Segurança: Content Security Policy -->
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self';
+        script-src 'self' 'unsafe-inline';
+        style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com;
+        font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com data:;
+        img-src 'self' data:;
+        connect-src 'self';
+        frame-ancestors 'none';
+        base-uri 'self';
+        form-action 'self';
+    ">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23FFD700'%3E%3Cpath d='M13 2L3 14h9l-1 8 10-12h-9l1-8z'/%3E%3C/svg%3E">
+
+    <link rel="stylesheet" href="styles.css">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+          crossorigin="anonymous"
+          referrerpolicy="no-referrer">
+
+    <!-- SEO -->
+    <meta name="description" content="Simulador online gratuito de sistema fotovoltaico: quantos módulos cabem no seu telhado ou terreno, potência de pico, inversor sugerido, geração mensal e economia estimada.">
+    <meta name="keywords" content="simulador fotovoltaico, dimensionamento solar, quantos paineis solares, potência kWp, geração solar mensal, economia energia solar, calculadora solar online">
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="Gusttavo Gutierry">
+    <meta http-equiv="content-language" content="pt-BR">
+    <link rel="canonical" href="https://elektrosys.eng.br/solar.html">
+
+    <!-- Open Graph (Redes Sociais) -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="ElektroSys | Simulador de Sistema Fotovoltaico">
+    <meta property="og:description" content="Descubra quantos módulos solares cabem no seu telhado ou terreno e a economia mensal estimada. Online e grátis.">
+    <meta property="og:url" content="https://elektrosys.eng.br/solar.html">
+    <meta property="og:image" content="https://elektrosys.eng.br/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://elektrosys.eng.br/og-image.png">
+    <meta name="theme-color" content="#0f172a">
+
+    <style>
+        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none; height: 16px; width: 16px; border-radius: 50%;
+            background: #3b82f6; margin-top: -6px; cursor: pointer;
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%; height: 4px; cursor: pointer; background: #e2e8f0; border-radius: 2px;
+        }
+        input[type=range]::-moz-range-thumb {
+            height: 16px; width: 16px; border-radius: 50%; border: none;
+            background: #3b82f6; cursor: pointer;
+        }
+        input[type=range]::-moz-range-track {
+            width: 100%; height: 4px; cursor: pointer; background: #e2e8f0; border-radius: 2px;
+        }
+        body.bg-hero {
+            background-color: #0f172a;
+            background-image:
+                radial-gradient(1100px 600px at 85% -10%, rgba(59, 130, 246, 0.18), transparent 60%),
+                radial-gradient(900px 500px at 5% 110%, rgba(234, 179, 8, 0.10), transparent 60%);
+        }
+        #aboutModal.hidden { display: none; }
+        details.adv > summary { cursor: pointer; list-style: none; }
+        details.adv > summary::-webkit-details-marker { display: none; }
+        details.adv > summary .chev { transition: transform 0.2s; }
+        details.adv[open] > summary .chev { transform: rotate(180deg); }
+        canvas { max-width: 100%; height: auto; }
+    </style>
+</head>
+
+<body class="bg-hero text-slate-300 font-sans antialiased">
+
+    <nav class="border-b border-slate-700 bg-slate-900/80 backdrop-blur-md sticky top-0 z-40">
+        <div class="container mx-auto px-4 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-yellow-400" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                </svg>
+                <span class="text-white font-bold text-lg tracking-wide">ElektroSys</span>
+            </div>
+            <div class="flex gap-8 text-sm font-medium text-slate-400">
+                <a href="index.html" class="hover:text-white transition">Motores</a>
+                <a href="solar.html" class="text-white" aria-current="page">Solar</a>
+                <button id="btnOpenAbout" class="hover:text-white transition rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400">Sobre</button>
+            </div>
+        </div>
+    </nav>
+
+    <div id="aboutModal" role="dialog" aria-modal="true" aria-labelledby="aboutTitle" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md relative overflow-hidden text-brand-text">
+            <button id="btnCloseAbout" aria-label="Fechar" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"><i class="fa-solid fa-xmark text-xl"></i></button>
+            <div class="bg-brand-blue p-6 text-white text-center">
+                <i class="fa-solid fa-user-tie text-4xl mb-2"></i>
+                <h3 id="aboutTitle" class="text-xl font-bold">Gusttavo Gutierry</h3>
+                <p class="text-blue-200 text-sm">Engenharia Elétrica & Desenvolvimento</p>
+            </div>
+            <div class="p-6 space-y-4">
+                <p class="text-sm text-gray-600 mb-4 text-center">Entre em contato para projetos ou dúvidas técnicas.</p>
+                <a href="https://www.linkedin.com/in/gusttavo-gutierry-ferreira-moraes-bb71841a4/" target="_blank" rel="noopener noreferrer" class="flex items-center gap-4 p-4 rounded-lg border border-gray-200 hover:border-blue-500 hover:bg-blue-50 transition group">
+                    <div class="bg-[#0077b5] text-white w-10 h-10 rounded-full flex items-center justify-center"><i class="fa-brands fa-linkedin-in text-lg"></i></div>
+                    <div><h4 class="font-bold group-hover:text-blue-700 transition">LinkedIn</h4><p class="text-xs text-gray-500">Conectar perfil profissional</p></div>
+                </a>
+                <a href="https://wa.me/5564984395286" target="_blank" rel="noopener noreferrer" class="flex items-center gap-4 p-4 rounded-lg border border-gray-200 hover:border-green-500 hover:bg-green-50 transition group">
+                    <div class="bg-[#25D366] text-white w-10 h-10 rounded-full flex items-center justify-center"><i class="fa-brands fa-whatsapp text-xl"></i></div>
+                    <div><h4 class="font-bold group-hover:text-green-700 transition">WhatsApp</h4><p class="text-xs text-gray-500">+55 64 98439-5286</p></div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <header class="text-center py-10 px-4 relative z-10">
+        <h1 class="text-3xl md:text-4xl font-bold text-white mb-3">
+            Simulador de <span class="text-yellow-400">Sistema Fotovoltaico</span>
+        </h1>
+        <p class="text-white font-bold max-w-2xl mx-auto">
+            Quantos módulos cabem no seu telhado ou terreno, potência de pico e economia estimada.<br>
+            Altere os valores e veja o arranjo em tempo real.
+        </p>
+    </header>
+
+    <main class="container mx-auto px-4 pb-20 relative z-10">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+            <div class="lg:col-span-4 space-y-4">
+                <div class="bg-white rounded-xl shadow-lg p-6 text-brand-text relative">
+                    <div class="flex items-center gap-2 mb-6 border-b border-gray-100 pb-2">
+                        <i class="fa-solid fa-sun text-yellow-500"></i>
+                        <h2 class="font-bold text-lg">Parâmetros</h2>
+                    </div>
+
+                    <div class="space-y-5">
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <label for="widthSlider" class="text-xs font-bold text-gray-500 uppercase">Largura da Área</label>
+                                <span class="text-xs font-bold text-gray-700"><span id="displayWidth">11,5</span> m</span>
+                            </div>
+                            <input type="range" id="widthSlider" min="3" max="100" step="0.5" value="11.5">
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <label for="lengthSlider" class="text-xs font-bold text-gray-500 uppercase">Comprimento da Área</label>
+                                <span class="text-xs font-bold text-gray-700"><span id="displayLength">25,0</span> m</span>
+                            </div>
+                            <input type="range" id="lengthSlider" min="3" max="100" step="0.5" value="25">
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <label for="marginSlider" class="text-xs font-bold text-gray-500 uppercase">Recuo Perimetral</label>
+                                <span class="text-xs font-bold text-gray-700"><span id="displayMargin">0,5</span> m</span>
+                            </div>
+                            <input type="range" id="marginSlider" min="0" max="3" step="0.1" value="0.5">
+                            <p class="text-[10px] text-gray-400 mt-1 text-right">Faixa livre p/ manutenção e bordas (NBR 5410 / bombeiros)</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Tipo de Instalação</label>
+                            <div class="grid grid-cols-2 gap-2" id="structureGroup">
+                                <button type="button" data-value="roof" aria-pressed="true" class="tile-btn bg-blue-600 text-white rounded py-2 text-xs font-bold shadow-md ring-2 ring-blue-200">Telhado Inclinado</button>
+                                <button type="button" data-value="ground" aria-pressed="false" class="tile-btn border border-gray-200 rounded py-2 text-xs font-bold text-gray-500 hover:bg-gray-50">Laje / Solo</button>
+                            </div>
+                            <p id="structureNote" class="text-[10px] text-blue-600 mt-1 bg-blue-50 p-2 rounded border border-blue-100">Módulos coplanares ao telhado, sem corredor entre fileiras.</p>
+                        </div>
+
+                        <div>
+                            <label for="panelSelect" class="block text-xs font-bold text-gray-500 uppercase mb-1">Módulo Fotovoltaico</label>
+                            <select id="panelSelect" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm font-semibold text-gray-700 focus:outline-none focus:border-blue-500">
+                                <option value="450" data-w="1.0" data-l="1.8">450 Wp — 1,8 × 1,0 m</option>
+                                <option value="550" data-w="1.1" data-l="2.2" selected>550 Wp — 2,2 × 1,1 m</option>
+                                <option value="650" data-w="1.3" data-l="2.4">650 Wp — 2,4 × 1,3 m</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Orientação do Módulo</label>
+                            <div class="grid grid-cols-2 gap-2" id="orientationGroup">
+                                <button type="button" data-value="portrait" aria-pressed="true" class="tile-btn bg-blue-600 text-white rounded py-2 text-xs font-bold shadow-md ring-2 ring-blue-200">Retrato</button>
+                                <button type="button" data-value="landscape" aria-pressed="false" class="tile-btn border border-gray-200 rounded py-2 text-xs font-bold text-gray-500 hover:bg-gray-50">Paisagem</button>
+                            </div>
+                        </div>
+
+                        <details class="adv border border-gray-200 rounded-lg overflow-hidden">
+                            <summary class="px-3 py-2.5 text-xs font-bold text-gray-500 uppercase bg-gray-50 flex justify-between items-center">
+                                Parâmetros Avançados <span class="chev text-gray-400">▼</span>
+                            </summary>
+                            <div class="p-3 space-y-4 border-t border-gray-200">
+                                <div>
+                                    <label for="hspInput" class="block text-xs font-bold text-gray-500 mb-1">Irradiação — HSP (kWh/m²·dia)</label>
+                                    <input type="number" id="hspInput" min="1" max="8" step="0.1" value="4.8" class="w-full border border-gray-300 rounded px-3 py-1.5 text-sm font-semibold text-gray-700 focus:outline-none focus:border-blue-500">
+                                    <p class="text-[10px] text-gray-400 mt-1">Consulte o CRESESB para a sua cidade.</p>
+                                </div>
+                                <div>
+                                    <label for="prInput" class="block text-xs font-bold text-gray-500 mb-1">Taxa de Desempenho — PR (%)</label>
+                                    <input type="number" id="prInput" min="50" max="95" step="1" value="80" class="w-full border border-gray-300 rounded px-3 py-1.5 text-sm font-semibold text-gray-700 focus:outline-none focus:border-blue-500">
+                                </div>
+                                <div>
+                                    <label for="rateInput" class="block text-xs font-bold text-gray-500 mb-1">Tarifa de Energia (R$/kWh)</label>
+                                    <input type="number" id="rateInput" min="0" max="5" step="0.01" value="0.95" class="w-full border border-gray-300 rounded px-3 py-1.5 text-sm font-semibold text-gray-700 focus:outline-none focus:border-blue-500">
+                                </div>
+                                <div>
+                                    <label for="phaseSelect" class="block text-xs font-bold text-gray-500 mb-1">Padrão de Entrada</label>
+                                    <select id="phaseSelect" class="w-full border border-gray-300 rounded px-3 py-1.5 text-sm font-semibold text-gray-700 focus:outline-none focus:border-blue-500">
+                                        <option value="30">Monofásico (disp. 30 kWh)</option>
+                                        <option value="50">Bifásico (disp. 50 kWh)</option>
+                                        <option value="100" selected>Trifásico (disp. 100 kWh)</option>
+                                    </select>
+                                    <p class="text-[10px] text-gray-400 mt-1">Custo de disponibilidade descontado da economia.</p>
+                                </div>
+                                <div>
+                                    <label for="corridorInput" class="block text-xs font-bold text-gray-500 mb-1">Corredor entre Fileiras (m) — Laje/Solo</label>
+                                    <input type="number" id="corridorInput" min="0" max="5" step="0.1" value="1.4" class="w-full border border-gray-300 rounded px-3 py-1.5 text-sm font-semibold text-gray-700 focus:outline-none focus:border-blue-500">
+                                    <p class="text-[10px] text-gray-400 mt-1">Evita sombreamento entre fileiras; depende da latitude e da altura da fileira.</p>
+                                </div>
+                            </div>
+                        </details>
+                    </div>
+                </div>
+
+                <div class="bg-slate-800/80 backdrop-blur-md rounded-lg p-4 border border-slate-700 shadow-inner text-center">
+                    <p class="text-[10px] text-slate-400 uppercase tracking-widest mb-1">Geração Mensal Estimada</p>
+                    <div class="text-white text-sm font-serif italic opacity-80">E = P<sub>pico</sub> · HSP · PR · 30,42</div>
+                    <p class="text-[10px] text-slate-500 mt-1">kWp × horas de sol pleno × taxa de desempenho × dias/mês</p>
+                </div>
+            </div>
+
+            <div class="lg:col-span-8 space-y-6">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="bg-white rounded-xl p-5 shadow-md border-l-4 border-slate-400">
+                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-2">Área Total / Útil</span>
+                        <div class="text-2xl font-bold text-slate-800 mt-1"><span id="resAreaTotal">287,5</span><span class="text-sm text-gray-500"> m²</span></div>
+                        <p class="text-[10px] text-gray-400 mt-1">Útil: <span id="resAreaUtil">252,0</span> m²</p>
+                    </div>
+
+                    <div class="bg-white rounded-xl p-5 shadow-md border-l-4 border-yellow-400">
+                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-2">Módulos</span>
+                        <div class="text-2xl font-bold text-yellow-600 mt-1"><span id="resCount">0</span></div>
+                        <p class="text-[10px] text-gray-400 mt-1">Arranjo: <span id="resArrangement">0 × 0</span></p>
+                    </div>
+
+                    <div class="bg-white rounded-xl p-5 shadow-md border-l-4 border-blue-500">
+                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-2">Potência de Pico</span>
+                        <div class="text-2xl font-bold text-slate-800 mt-1"><span id="resPower">0</span><span class="text-sm text-gray-500"> kWp</span></div>
+                        <p class="text-[10px] text-blue-500 mt-1">Inversor sugerido: <span id="resInverter">–</span> kW</p>
+                    </div>
+
+                    <div class="bg-white rounded-xl p-5 shadow-md border-l-4 border-green-500">
+                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-2">Geração / Economia</span>
+                        <div class="text-2xl font-bold text-slate-800 mt-1"><span id="resGen">0</span><span class="text-sm text-gray-500"> kWh/mês</span></div>
+                        <p class="text-[10px] text-green-600 font-bold mt-1"><span id="resSavings">R$ 0,00</span> /mês</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-lg p-6 text-brand-text">
+                    <div class="flex items-center gap-2 mb-1">
+                        <i class="fa-solid fa-table-cells-large text-blue-600"></i>
+                        <h3 class="font-bold text-lg">Arranjo Espacial dos Módulos</h3>
+                    </div>
+                    <p class="text-xs text-gray-500 mb-4">
+                        Tracejado = área útil após o recuo. Em laje/solo, as faixas âmbar são os corredores anti-sombra entre fileiras.
+                    </p>
+                    <div class="bg-slate-900 rounded-lg p-3 flex items-center justify-center">
+                        <canvas id="layoutCanvas" width="650" height="420" role="img" aria-label="Desenho do arranjo dos módulos fotovoltaicos na área informada"></canvas>
+                    </div>
+                </div>
+
+                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r shadow-sm flex gap-3 text-xs text-yellow-800">
+                    <i class="fa-solid fa-triangle-exclamation text-yellow-600 mt-1 text-base"></i>
+                    <p id="disclaimerText"><strong>Isenção de responsabilidade:</strong> Estimativa educacional. A economia desconta o custo de disponibilidade, mas NÃO modela o Fio B (Lei 14.300/2022), simultaneidade de consumo nem sombreamentos locais. Dimensionamento definitivo exige projeto com análise de irradiação, estrutura e rede da distribuidora.</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="border-t border-slate-800 bg-slate-900/80 relative z-10">
+        <div class="container mx-auto px-4 py-6 text-center text-xs text-slate-500 space-y-1">
+            <p>© 2026 Gusttavo Gutierry — ElektroSys</p>
+            <p>Ferramenta educacional. Os resultados não substituem projeto elétrico — valide com a NBR 5410.</p>
+        </div>
+    </footer>
+
+    <script>
+    // =========================================================================
+    // ElektroSys Solar v1.0 — mesmo padrão de módulos do index.html
+    // =========================================================================
+
+    const SOLAR = {
+        DAYS_PER_MONTH: 30.42,     // 365/12
+        INVERTER_RATIO: 1.25,      // sobredimensionamento DC/AC típico (1,1–1,5)
+        MIN_DIM: 3, MAX_DIM: 100,  // m — limites da área
+    };
+
+    function fmtBR(value, decimals) { return Number(value).toFixed(decimals).replace('.', ','); }
+    function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+    function sanitize(v, fallback) {
+        const n = Number(v);
+        return Number.isFinite(n) ? n : fallback;
+    }
+
+    // === MODAL (idêntico ao index) ===
+    (function initModal() {
+        const modal = document.getElementById('aboutModal');
+        const btnOpen = document.getElementById('btnOpenAbout');
+        const btnClose = document.getElementById('btnCloseAbout');
+        btnOpen.addEventListener('click', (e) => { e.preventDefault(); modal.classList.remove('hidden'); modal.classList.add('flex'); btnClose.focus(); });
+        function closeModal() { modal.classList.add('hidden'); modal.classList.remove('flex'); btnOpen.focus(); }
+        btnClose.addEventListener('click', closeModal);
+        modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+        document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !modal.classList.contains('hidden')) closeModal(); });
+    })();
+
+    // === GRUPOS DE BOTÕES (tiles) — acessíveis via teclado, padrão volt-btn ===
+    const TILE_ON  = "tile-btn bg-blue-600 text-white rounded py-2 text-xs font-bold shadow-md ring-2 ring-blue-200";
+    const TILE_OFF = "tile-btn border border-gray-200 rounded py-2 text-xs font-bold text-gray-500 hover:bg-gray-50";
+
+    function setupTiles(groupId, onChange) {
+        const btns = document.querySelectorAll(`#${groupId} button[data-value]`);
+        btns.forEach(btn => btn.addEventListener('click', () => {
+            btns.forEach(b => { b.className = TILE_OFF; b.setAttribute('aria-pressed', 'false'); });
+            btn.className = TILE_ON;
+            btn.setAttribute('aria-pressed', 'true');
+            onChange();
+        }));
+    }
+    function tileValue(groupId) {
+        const active = document.querySelector(`#${groupId} button[aria-pressed="true"]`);
+        return active ? active.dataset.value : '';
+    }
+
+    // === CÁLCULO PRINCIPAL ===
+    const el = {
+        width:    document.getElementById('widthSlider'),
+        length:   document.getElementById('lengthSlider'),
+        margin:   document.getElementById('marginSlider'),
+        panel:    document.getElementById('panelSelect'),
+        hsp:      document.getElementById('hspInput'),
+        pr:       document.getElementById('prInput'),
+        rate:     document.getElementById('rateInput'),
+        phase:    document.getElementById('phaseSelect'),
+        corridor: document.getElementById('corridorInput'),
+    };
+
+    function calculate() {
+        // 1. Inputs sanitizados
+        const wTerreno = clamp(sanitize(el.width.value, 11.5), SOLAR.MIN_DIM, SOLAR.MAX_DIM);
+        const lTerreno = clamp(sanitize(el.length.value, 25), SOLAR.MIN_DIM, SOLAR.MAX_DIM);
+        const margin   = clamp(sanitize(el.margin.value, 0.5), 0, 3);
+        const hsp      = clamp(sanitize(el.hsp.value, 4.8), 1, 8);
+        const pr       = clamp(sanitize(el.pr.value, 80), 50, 95) / 100;
+        const rate     = clamp(sanitize(el.rate.value, 0.95), 0, 5);
+        const corridor = clamp(sanitize(el.corridor.value, 1.4), 0, 5);
+        const availabilityKWh = sanitize(el.phase.value, 100);
+
+        const structure   = tileValue('structureGroup') || 'roof';
+        const orientation = tileValue('orientationGroup') || 'portrait';
+
+        const opt = el.panel.options[el.panel.selectedIndex];
+        const pPower = sanitize(opt.value, 550);
+        const pW_raw = sanitize(opt.dataset.w, 1.1);
+        const pL_raw = sanitize(opt.dataset.l, 2.2);
+
+        // 2. Dimensões do módulo conforme orientação (pW = ao longo da largura; pL = profundidade)
+        const pW = (orientation === 'portrait') ? pW_raw : pL_raw;
+        const pL = (orientation === 'portrait') ? pL_raw : pW_raw;
+
+        // 3. Área útil após recuo
+        const wUtil = Math.max(0, wTerreno - 2 * margin);
+        const lUtil = Math.max(0, lTerreno - 2 * margin);
+
+        // 4. Arranjo: colunas × fileiras
+        let cols = 0, rows = 0;
+        if (wUtil >= pW && lUtil >= pL) {
+            cols = Math.floor(wUtil / pW);
+            if (structure === 'roof') {
+                // Coplanar ao telhado: sem auto-sombreamento, módulos encostados
+                rows = Math.floor(lUtil / pL);
+            } else {
+                // Laje/solo: fileiras com corredor anti-sombra entre elas
+                // rows·pL + (rows−1)·corridor ≤ lUtil  →  rows ≤ (lUtil+corridor)/(pL+corridor)
+                rows = Math.floor((lUtil + corridor) / (pL + corridor));
+            }
+        }
+        const totalPanels = cols * rows;
+        const kWp = (totalPanels * pPower) / 1000;
+
+        // 5. Energia e economia
+        const monthlyGen = kWp * hsp * pr * SOLAR.DAYS_PER_MONTH;
+        // Economia honesta: desconta o custo de disponibilidade (kWh mínimo faturado)
+        const compensable = Math.max(0, monthlyGen - availabilityKWh);
+        const monthlySavings = totalPanels > 0 ? compensable * rate : 0;
+
+        // 6. Inversor sugerido (ratio DC/AC típico de 1,25)
+        const inverterKW = kWp / SOLAR.INVERTER_RATIO;
+
+        // 7. Atualizar UI (textContent — imune a XSS)
+        document.getElementById('displayWidth').textContent = fmtBR(wTerreno, 1);
+        document.getElementById('displayLength').textContent = fmtBR(lTerreno, 1);
+        document.getElementById('displayMargin').textContent = fmtBR(margin, 1);
+        document.getElementById('resAreaTotal').textContent = fmtBR(wTerreno * lTerreno, 1);
+        document.getElementById('resAreaUtil').textContent = fmtBR(wUtil * lUtil, 1);
+        document.getElementById('resCount').textContent = totalPanels;
+        document.getElementById('resArrangement').textContent = `${cols} × ${rows}`;
+        document.getElementById('resPower').textContent = fmtBR(kWp, 2);
+        document.getElementById('resInverter').textContent = totalPanels > 0 ? fmtBR(inverterKW, 1) : '–';
+        document.getElementById('resGen').textContent = Math.round(monthlyGen).toLocaleString('pt-BR');
+        document.getElementById('resSavings').textContent =
+            monthlySavings.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+        document.getElementById('structureNote').textContent = (structure === 'roof')
+            ? 'Módulos coplanares ao telhado, sem corredor entre fileiras.'
+            : `Fileiras com corredor anti-sombra de ${fmtBR(corridor, 1)} m (ajuste nos parâmetros avançados).`;
+
+        drawLayout(wTerreno, lTerreno, margin, cols, rows, pW, pL, structure, corridor);
+    }
+
+    // === DESENHO DO ARRANJO ===
+    function drawLayout(wTerreno, lTerreno, margin, cols, rows, pW, pL, structure, corridor) {
+        const canvas = document.getElementById('layoutCanvas');
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        if (wTerreno <= 0 || lTerreno <= 0) return;
+
+        const padding = 24;
+        const maxW = canvas.width - 2 * padding;
+        const maxH = canvas.height - 2 * padding;
+        const scale = Math.min(maxW / wTerreno, maxH / lTerreno);
+        const offsetX = padding + (maxW - wTerreno * scale) / 2;
+        const offsetY = padding + (maxH - lTerreno * scale) / 2;
+
+        // 1. Terreno
+        ctx.fillStyle = '#1e293b';
+        ctx.fillRect(offsetX, offsetY, wTerreno * scale, lTerreno * scale);
+        ctx.strokeStyle = '#475569';
+        ctx.lineWidth = 2;
+        ctx.strokeRect(offsetX, offsetY, wTerreno * scale, lTerreno * scale);
+
+        // 2. Área útil (tracejado)
+        if (margin > 0 && wTerreno > 2 * margin && lTerreno > 2 * margin) {
+            ctx.strokeStyle = '#64748b';
+            ctx.lineWidth = 1;
+            ctx.setLineDash([4, 4]);
+            ctx.strokeRect(offsetX + margin * scale, offsetY + margin * scale,
+                (wTerreno - 2 * margin) * scale, (lTerreno - 2 * margin) * scale);
+            ctx.setLineDash([]);
+        }
+
+        // 3. Módulos centralizados na área útil
+        const wUtil = wTerreno - 2 * margin;
+        const usedW = cols * pW;
+        const usedL = (structure === 'roof') ? rows * pL : rows * pL + Math.max(0, rows - 1) * corridor;
+        const lUtil = lTerreno - 2 * margin;
+        const startX = offsetX + margin * scale + Math.max(0, (wUtil - usedW)) * scale / 2;
+        const startY = offsetY + margin * scale + Math.max(0, (lUtil - usedL)) * scale / 2;
+
+        for (let r = 0; r < rows; r++) {
+            const pitch = (structure === 'ground') ? (pL + corridor) : pL;
+            const currentY = startY + r * pitch * scale;
+
+            // Corredor anti-sombra (faixa âmbar)
+            if (structure === 'ground' && r > 0) {
+                ctx.fillStyle = 'rgba(245, 158, 11, 0.12)';
+                ctx.fillRect(startX, currentY - corridor * scale, usedW * scale, corridor * scale);
+            }
+
+            for (let c = 0; c < cols; c++) {
+                const currentX = startX + c * pW * scale;
+                ctx.fillStyle = '#2563eb';
+                ctx.fillRect(currentX, currentY, pW * scale, pL * scale);
+                ctx.strokeStyle = '#93c5fd';
+                ctx.lineWidth = 0.5;
+                ctx.strokeRect(currentX + 0.5, currentY + 0.5, pW * scale - 1, pL * scale - 1);
+                // Reflexo sutil na metade superior do módulo
+                ctx.fillStyle = 'rgba(255,255,255,0.06)';
+                ctx.fillRect(currentX + 1, currentY + 1, pW * scale - 2, pL * scale / 2 - 1);
+            }
+        }
+    }
+
+    // === EVENTOS ===
+    setupTiles('structureGroup', calculate);
+    setupTiles('orientationGroup', calculate);
+    [el.width, el.length, el.margin, el.hsp, el.pr, el.rate, el.corridor].forEach(
+        input => input.addEventListener('input', calculate)
+    );
+    [el.panel, el.phase].forEach(sel => sel.addEventListener('change', calculate));
+
+    calculate();
+    </script>
+</body>
+</html>
