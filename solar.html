@@ -20,11 +20,11 @@
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <meta name="referrer" content="strict-origin-when-cross-origin">
 
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23FFD700'%3E%3Cpath d='M13 2L3 14h9l-1 8 10-12h-9l1-8z'/%3E%3C/svg%3E">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%232C7BE5'%3E%3Cpath d='M13 2L3 14h9l-1 8 10-12h-9l1-8z'/%3E%3C/svg%3E">
 
     <link rel="stylesheet" href="styles.css">
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
@@ -32,8 +32,8 @@
           referrerpolicy="no-referrer">
 
     <!-- SEO -->
-    <meta name="description" content="Simulador online gratuito de sistema fotovoltaico: quantos módulos cabem no seu telhado ou terreno, potência de pico, inversor sugerido, geração mensal e economia estimada.">
-    <meta name="keywords" content="simulador fotovoltaico, dimensionamento solar, quantos paineis solares, potência kWp, geração solar mensal, economia energia solar, calculadora solar online">
+    <meta name="description" content="Simulador online gratuito de sistema fotovoltaico: dimensione por área ou por consumo (kWh), veja o arranjo dos módulos, potência de pico, inversor, geração, economia e monte um orçamento itemizado em PDF.">
+    <meta name="keywords" content="simulador fotovoltaico, dimensionamento solar, orçamento energia solar, quantos paineis solares, potência kWp, geração solar mensal, proposta solar PDF">
     <meta name="robots" content="index, follow">
     <meta name="author" content="Gusttavo Gutierry">
     <meta http-equiv="content-language" content="pt-BR">
@@ -42,36 +42,36 @@
     <!-- Open Graph (Redes Sociais) -->
     <meta property="og:type" content="website">
     <meta property="og:title" content="ElektroSys | Simulador de Sistema Fotovoltaico">
-    <meta property="og:description" content="Descubra quantos módulos solares cabem no seu telhado ou terreno e a economia mensal estimada. Online e grátis.">
+    <meta property="og:description" content="Dimensione por área ou consumo, monte o arranjo e gere um orçamento itemizado em PDF. Online e grátis.">
     <meta property="og:url" content="https://elektrosys.eng.br/solar.html">
     <meta property="og:image" content="https://elektrosys.eng.br/og-image.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:image" content="https://elektrosys.eng.br/og-image.png">
-    <meta name="theme-color" content="#0f172a">
+    <meta name="theme-color" content="#0A1B2E">
 
     <style>
+        .grid-bp {
+            background-image:
+                linear-gradient(rgba(44,123,229,0.06) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(44,123,229,0.06) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
         input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; }
         input[type=range]::-webkit-slider-thumb {
             -webkit-appearance: none; height: 16px; width: 16px; border-radius: 50%;
-            background: #3b82f6; margin-top: -6px; cursor: pointer;
+            background: #2C7BE5; margin-top: -6px; cursor: pointer;
         }
         input[type=range]::-webkit-slider-runnable-track {
-            width: 100%; height: 4px; cursor: pointer; background: #e2e8f0; border-radius: 2px;
+            width: 100%; height: 4px; cursor: pointer; background: #21425F; border-radius: 2px;
         }
         input[type=range]::-moz-range-thumb {
             height: 16px; width: 16px; border-radius: 50%; border: none;
-            background: #3b82f6; cursor: pointer;
+            background: #2C7BE5; cursor: pointer;
         }
         input[type=range]::-moz-range-track {
-            width: 100%; height: 4px; cursor: pointer; background: #e2e8f0; border-radius: 2px;
-        }
-        body.bg-hero {
-            background-color: #0f172a;
-            background-image:
-                radial-gradient(1100px 600px at 85% -10%, rgba(59, 130, 246, 0.18), transparent 60%),
-                radial-gradient(900px 500px at 5% 110%, rgba(234, 179, 8, 0.10), transparent 60%);
+            width: 100%; height: 4px; cursor: pointer; background: #21425F; border-radius: 2px;
         }
         #aboutModal.hidden { display: none; }
         details.adv > summary { cursor: pointer; list-style: none; }
@@ -79,107 +79,195 @@
         details.adv > summary .chev { transition: transform 0.2s; }
         details.adv[open] > summary .chev { transform: rotate(180deg); }
         canvas { max-width: 100%; height: auto; }
+        select option { background-color: #0E2841; color: #E8F0F8; }
+        /* inputs de preço/quantidade */
+        .num-in { background:#06121E; border:1px solid #21425F; border-radius:6px; padding:6px 8px;
+                  color:#E8F0F8; font-family:'IBM Plex Mono',monospace; font-size:13px; width:100%; }
+        .num-in:focus { outline:none; border-color:#2C7BE5; }
+
+        /* ===== Documento de proposta (somente impressão / PDF) ===== */
+        #printArea { display: none; }
+        @media print {
+            @page { margin: 14mm; }
+            body > *:not(#printArea) { display: none !important; }
+            #printArea { display: block !important; }
+            html, body { background:#fff !important; }
+        }
+        .doc { color:#141413; font-family:'IBM Plex Sans', Arial, sans-serif; font-size:12px; line-height:1.5; }
+        .doc-head { display:flex; justify-content:space-between; align-items:flex-start; border-bottom:3px solid #2C7BE5; padding-bottom:12px; margin-bottom:18px; }
+        .doc-brand { font-family:'Barlow Semi Condensed', Arial, sans-serif; font-weight:700; font-size:26px; letter-spacing:.5px; color:#0A1B2E; }
+        .doc-brand span { color:#2C7BE5; }
+        .doc-sub { font-size:11px; color:#6b7280; text-transform:uppercase; letter-spacing:.15em; }
+        .doc-meta { text-align:right; font-size:11px; color:#374151; }
+        .doc-title { font-family:'Barlow Semi Condensed', Arial, sans-serif; font-size:22px; color:#0A1B2E; margin:0 0 6px; }
+        .doc-client { display:flex; gap:32px; font-size:13px; margin:10px 0 18px; }
+        .doc h2 { font-family:'Barlow Semi Condensed', Arial, sans-serif; font-size:15px; color:#0A1B2E; text-transform:uppercase; letter-spacing:.05em; border-bottom:1px solid #d1d5db; padding-bottom:4px; margin:18px 0 10px; }
+        .doc-table { width:100%; border-collapse:collapse; font-size:12px; }
+        .doc-table th, .doc-table td { text-align:left; padding:7px 8px; border-bottom:1px solid #e5e7eb; }
+        .doc-table th { background:#f3f4f6; font-weight:600; color:#374151; }
+        .doc-table td.r, .doc-table th.r { text-align:right; font-family:'IBM Plex Mono',monospace; }
+        .doc-total { display:flex; justify-content:space-between; align-items:center; margin-top:14px; padding:12px 16px; background:#eef4fd; border:1px solid #2C7BE5; border-radius:8px; }
+        .doc-total .lbl { font-weight:600; color:#0A1B2E; }
+        .doc-total .val { font-family:'Barlow Semi Condensed',Arial,sans-serif; font-size:24px; font-weight:700; color:#1E5FB8; }
+        .doc-notes { font-size:12px; white-space:pre-wrap; color:#374151; }
+        .doc-foot { margin-top:22px; padding-top:10px; border-top:1px solid #d1d5db; font-size:10px; color:#6b7280; }
     </style>
 </head>
 
-<body class="bg-hero text-slate-300 font-sans antialiased">
+<body class="bg-navy grid-bp text-muted font-sans antialiased">
 
-    <nav class="border-b border-slate-700 bg-slate-900/80 backdrop-blur-md sticky top-0 z-40">
+    <nav class="border-b border-line bg-navy/85 backdrop-blur-md sticky top-0 z-40">
         <div class="container mx-auto px-4 h-16 flex items-center justify-between">
-            <div class="flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-yellow-400" viewBox="0 0 24 24" fill="currentColor">
+            <a href="index.html" class="flex items-center gap-2.5">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-primary" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
                 </svg>
-                <span class="text-white font-bold text-lg tracking-wide">ElektroSys</span>
+                <span class="text-fg font-display font-bold text-xl tracking-wide">ELEKTRO<span class="text-primary">SYS</span></span>
+            </a>
+            <div class="hidden md:flex items-center gap-7 text-sm font-medium text-muted">
+                <a href="index.html" class="hover:text-fg transition">Motores</a>
+                <a href="solar.html" class="text-fg" aria-current="page">Solar</a>
+                <button id="btnOpenAbout" class="hover:text-fg transition rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-primary">Sobre</button>
+                <a href="https://wa.me/5564984395286" target="_blank" rel="noopener noreferrer" class="bg-primary hover:bg-primary-700 text-white font-semibold px-4 py-2 rounded-md transition">Solicitar projeto</a>
             </div>
-            <div class="flex gap-8 text-sm font-medium text-slate-400">
-                <a href="index.html" class="hover:text-white transition">Motores</a>
-                <a href="solar.html" class="text-white" aria-current="page">Solar</a>
-                <button id="btnOpenAbout" class="hover:text-white transition rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-400">Sobre</button>
-            </div>
+            <a href="https://wa.me/5564984395286" target="_blank" rel="noopener noreferrer" class="md:hidden bg-primary hover:bg-primary-700 text-white font-semibold px-3.5 py-2 rounded-md text-sm transition">Projeto</a>
         </div>
     </nav>
 
-    <div id="aboutModal" role="dialog" aria-modal="true" aria-labelledby="aboutTitle" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-xl shadow-2xl w-full max-w-md relative overflow-hidden text-brand-text">
-            <button id="btnCloseAbout" aria-label="Fechar" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500"><i class="fa-solid fa-xmark text-xl"></i></button>
-            <div class="bg-brand-blue p-6 text-white text-center">
+    <div id="aboutModal" role="dialog" aria-modal="true" aria-labelledby="aboutTitle" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-panel border border-line rounded-xl shadow-2xl w-full max-w-md relative overflow-hidden text-fg">
+            <button id="btnCloseAbout" aria-label="Fechar" class="absolute top-4 right-4 text-muted hover:text-fg rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-primary z-10"><i class="fa-solid fa-xmark text-xl"></i></button>
+            <div class="bg-primary p-6 text-white text-center">
                 <i class="fa-solid fa-user-tie text-4xl mb-2"></i>
-                <h3 id="aboutTitle" class="text-xl font-bold">Gusttavo Gutierry</h3>
-                <p class="text-blue-200 text-sm">Engenharia Elétrica & Desenvolvimento</p>
+                <h3 id="aboutTitle" class="text-xl font-display font-bold tracking-wide">Gusttavo Gutierry</h3>
+                <p class="text-white/80 text-sm">Engenharia Elétrica & Desenvolvimento</p>
             </div>
             <div class="p-6 space-y-4">
-                <p class="text-sm text-gray-600 mb-4 text-center">Entre em contato para projetos ou dúvidas técnicas.</p>
-                <a href="https://www.linkedin.com/in/gusttavo-gutierry-ferreira-moraes-bb71841a4/" target="_blank" rel="noopener noreferrer" class="flex items-center gap-4 p-4 rounded-lg border border-gray-200 hover:border-blue-500 hover:bg-blue-50 transition group">
-                    <div class="bg-[#0077b5] text-white w-10 h-10 rounded-full flex items-center justify-center"><i class="fa-brands fa-linkedin-in text-lg"></i></div>
-                    <div><h4 class="font-bold group-hover:text-blue-700 transition">LinkedIn</h4><p class="text-xs text-gray-500">Conectar perfil profissional</p></div>
+                <p class="text-sm text-muted mb-2 text-center">Projetos, laudos e consultoria em instalações elétricas. Fale direto comigo.</p>
+                <a href="https://www.linkedin.com/in/gusttavo-gutierry-ferreira-moraes-bb71841a4/" target="_blank" rel="noopener noreferrer" class="flex items-center gap-4 p-4 rounded-lg border border-line hover:border-primary hover:bg-panel-2 transition group">
+                    <div class="bg-[#0077b5] text-white w-10 h-10 rounded-full flex items-center justify-center shrink-0"><i class="fa-brands fa-linkedin-in text-lg"></i></div>
+                    <div><h4 class="font-semibold text-fg group-hover:text-sky transition">LinkedIn</h4><p class="text-xs text-muted">Conectar perfil profissional</p></div>
                 </a>
-                <a href="https://wa.me/5564984395286" target="_blank" rel="noopener noreferrer" class="flex items-center gap-4 p-4 rounded-lg border border-gray-200 hover:border-green-500 hover:bg-green-50 transition group">
-                    <div class="bg-[#25D366] text-white w-10 h-10 rounded-full flex items-center justify-center"><i class="fa-brands fa-whatsapp text-xl"></i></div>
-                    <div><h4 class="font-bold group-hover:text-green-700 transition">WhatsApp</h4><p class="text-xs text-gray-500">+55 64 98439-5286</p></div>
+                <a href="https://wa.me/5564984395286" target="_blank" rel="noopener noreferrer" class="flex items-center gap-4 p-4 rounded-lg border border-line hover:border-signal hover:bg-panel-2 transition group">
+                    <div class="bg-[#25D366] text-white w-10 h-10 rounded-full flex items-center justify-center shrink-0"><i class="fa-brands fa-whatsapp text-xl"></i></div>
+                    <div><h4 class="font-semibold text-fg group-hover:text-signal transition">WhatsApp</h4><p class="text-xs text-muted">+55 64 98439-5286</p></div>
                 </a>
             </div>
         </div>
     </div>
 
-    <header class="text-center py-10 px-4 relative z-10">
-        <h1 class="text-3xl md:text-4xl font-bold text-white mb-3">
-            Simulador de <span class="text-yellow-400">Sistema Fotovoltaico</span>
-        </h1>
-        <p class="text-white font-bold max-w-2xl mx-auto">
-            Quantos módulos cabem no seu telhado ou terreno, potência de pico e economia estimada.<br>
-            Altere os valores e veja o arranjo em tempo real.
-        </p>
+    <!-- HERO -->
+    <header class="relative z-10 border-b border-line overflow-hidden">
+        <div class="container mx-auto px-4 py-14 md:py-20 grid lg:grid-cols-12 gap-10 items-center">
+            <div class="lg:col-span-7">
+                <p class="font-mono text-xs uppercase tracking-[0.25em] text-primary mb-5">Ferramenta · Energia Solar</p>
+                <h1 class="font-display text-4xl md:text-6xl font-bold text-fg leading-[1.02] mb-5">
+                    Simulador de<br><span class="text-sky">sistema fotovoltaico</span>
+                </h1>
+                <p class="text-muted text-base md:text-lg max-w-xl mb-8 leading-relaxed">
+                    Dimensione por área ou por consumo (kWh), veja o arranjo dos módulos, potência, inversor e geração — e monte um orçamento itemizado para enviar em PDF.
+                </p>
+                <div class="flex flex-wrap gap-3">
+                    <a href="#ferramenta" class="inline-flex items-center gap-2 bg-primary hover:bg-primary-700 text-white font-semibold px-6 py-3 rounded-md transition">
+                        <i class="fa-solid fa-solar-panel"></i> Abrir o simulador
+                    </a>
+                    <a href="https://wa.me/5564984395286" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 border border-line text-fg hover:bg-panel px-6 py-3 rounded-md transition">
+                        <i class="fa-solid fa-drafting-compass"></i> Solicitar projeto
+                    </a>
+                </div>
+            </div>
+            <div class="lg:col-span-5">
+                <div class="grid-bp bg-panel border border-line rounded-xl p-6 shadow-lg">
+                    <p class="font-mono text-[11px] uppercase tracking-widest text-muted mb-5">// base de cálculo</p>
+                    <div class="space-y-5 font-mono text-sm text-fg">
+                        <div>
+                            <span class="text-muted text-xs block mb-1">geração mensal</span>
+                            E = P<sub>pico</sub> · HSP · PR · 30,42
+                        </div>
+                        <div>
+                            <span class="text-muted text-xs block mb-1">nº de placas p/ meta</span>
+                            N = ⌈ (kWh / (HSP·PR·30,42)) · 1000 / W<sub>mód</sub> ⌉
+                        </div>
+                    </div>
+                    <div class="flex flex-wrap gap-2 mt-6 pt-5 border-t border-line">
+                        <span class="font-mono text-[10px] uppercase tracking-wider text-sky border border-line rounded px-2 py-1">HSP · CRESESB</span>
+                        <span class="font-mono text-[10px] uppercase tracking-wider text-sky border border-line rounded px-2 py-1">Orçamento</span>
+                        <span class="font-mono text-[10px] uppercase tracking-wider text-sky border border-line rounded px-2 py-1">Proposta PDF</span>
+                        <span class="font-mono text-[10px] uppercase tracking-wider text-sky border border-line rounded px-2 py-1">Lei 14.300</span>
+                    </div>
+                </div>
+            </div>
+        </div>
     </header>
 
-    <main class="container mx-auto px-4 pb-20 relative z-10">
+    <!-- FERRAMENTA -->
+    <main id="ferramenta" class="container mx-auto px-4 py-14 relative z-10">
+        <div class="flex items-center gap-3 mb-8">
+            <span class="font-mono text-xs uppercase tracking-[0.25em] text-primary">// simulador</span>
+            <div class="h-px flex-1 bg-line"></div>
+        </div>
+
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
             <div class="lg:col-span-4 space-y-4">
-                <div class="bg-white rounded-xl shadow-lg p-6 text-brand-text relative">
-                    <div class="flex items-center gap-2 mb-6 border-b border-gray-100 pb-2">
-                        <i class="fa-solid fa-sun text-yellow-500"></i>
-                        <h2 class="font-bold text-lg">Parâmetros</h2>
+                <div class="bg-panel border border-line rounded-xl p-6 text-fg relative">
+                    <div class="flex items-center gap-2 mb-6 border-b border-line pb-3">
+                        <i class="fa-solid fa-sliders text-primary"></i>
+                        <h2 class="font-display font-bold text-lg tracking-wide">PARÂMETROS</h2>
                     </div>
 
                     <div class="space-y-5">
                         <div>
-                            <div class="flex justify-between mb-1">
-                                <label for="widthSlider" class="text-xs font-bold text-gray-500 uppercase">Largura da Área</label>
-                                <span class="text-xs font-bold text-gray-700"><span id="displayWidth">11,5</span> m</span>
+                            <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-2">Dimensionar por</label>
+                            <div class="grid grid-cols-2 gap-2" id="modeGroup">
+                                <button type="button" data-value="area" aria-pressed="true" class="tile-btn bg-primary text-white rounded-md py-2 text-xs font-semibold ring-1 ring-sky transition">Área disponível</button>
+                                <button type="button" data-value="consumo" aria-pressed="false" class="tile-btn border border-line rounded-md py-2 text-xs font-semibold text-muted hover:bg-panel-2 transition">Consumo (kWh)</button>
+                            </div>
+                        </div>
+
+                        <div id="consumoBox" class="hidden">
+                            <label for="targetKwh" class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Consumo Alvo (kWh/mês)</label>
+                            <input type="number" id="targetKwh" min="1" max="100000" step="10" value="500" class="w-full bg-ink border border-primary/50 rounded-md px-3 py-2 text-sm font-mono font-semibold text-fg focus:outline-none focus:border-primary">
+                            <p id="metaInfo" class="text-[10px] text-sky mt-1.5">Informe seu consumo médio; o sistema calcula as placas necessárias.</p>
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between mb-1.5">
+                                <label for="widthSlider" class="text-xs font-semibold text-muted uppercase tracking-wider">Largura da Área</label>
+                                <span class="text-xs font-bold text-fg font-mono"><span id="displayWidth">11,5</span> m</span>
                             </div>
                             <input type="range" id="widthSlider" min="3" max="100" step="0.5" value="11.5">
                         </div>
 
                         <div>
-                            <div class="flex justify-between mb-1">
-                                <label for="lengthSlider" class="text-xs font-bold text-gray-500 uppercase">Comprimento da Área</label>
-                                <span class="text-xs font-bold text-gray-700"><span id="displayLength">25,0</span> m</span>
+                            <div class="flex justify-between mb-1.5">
+                                <label for="lengthSlider" class="text-xs font-semibold text-muted uppercase tracking-wider">Comprimento da Área</label>
+                                <span class="text-xs font-bold text-fg font-mono"><span id="displayLength">25,0</span> m</span>
                             </div>
                             <input type="range" id="lengthSlider" min="3" max="100" step="0.5" value="25">
                         </div>
 
                         <div>
-                            <div class="flex justify-between mb-1">
-                                <label for="marginSlider" class="text-xs font-bold text-gray-500 uppercase">Recuo Perimetral</label>
-                                <span class="text-xs font-bold text-gray-700"><span id="displayMargin">0,5</span> m</span>
+                            <div class="flex justify-between mb-1.5">
+                                <label for="marginSlider" class="text-xs font-semibold text-muted uppercase tracking-wider">Recuo Perimetral</label>
+                                <span class="text-xs font-bold text-fg font-mono"><span id="displayMargin">0,5</span> m</span>
                             </div>
                             <input type="range" id="marginSlider" min="0" max="3" step="0.1" value="0.5">
-                            <p class="text-[10px] text-gray-400 mt-1 text-right">Faixa livre p/ manutenção e bordas (NBR 5410 / bombeiros)</p>
+                            <p class="text-[10px] text-muted mt-1 text-right">Faixa livre p/ manutenção e bordas</p>
                         </div>
 
                         <div>
-                            <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Tipo de Instalação</label>
+                            <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-2">Tipo de Instalação</label>
                             <div class="grid grid-cols-2 gap-2" id="structureGroup">
-                                <button type="button" data-value="roof" aria-pressed="true" class="tile-btn bg-blue-600 text-white rounded py-2 text-xs font-bold shadow-md ring-2 ring-blue-200">Telhado Inclinado</button>
-                                <button type="button" data-value="ground" aria-pressed="false" class="tile-btn border border-gray-200 rounded py-2 text-xs font-bold text-gray-500 hover:bg-gray-50">Laje / Solo</button>
+                                <button type="button" data-value="roof" aria-pressed="true" class="tile-btn bg-primary text-white rounded-md py-2 text-xs font-semibold ring-1 ring-sky transition">Telhado Inclinado</button>
+                                <button type="button" data-value="ground" aria-pressed="false" class="tile-btn border border-line rounded-md py-2 text-xs font-semibold text-muted hover:bg-panel-2 transition">Laje / Solo</button>
                             </div>
-                            <p id="structureNote" class="text-[10px] text-blue-600 mt-1 bg-blue-50 p-2 rounded border border-blue-100">Módulos coplanares ao telhado, sem corredor entre fileiras.</p>
+                            <p id="structureNote" class="text-[10px] text-sky mt-1.5 bg-primary/10 p-2 rounded border border-primary/20">Módulos coplanares ao telhado, sem corredor entre fileiras.</p>
                         </div>
 
                         <div>
-                            <label for="panelSelect" class="block text-xs font-bold text-gray-500 uppercase mb-1">Módulo Fotovoltaico</label>
-                            <select id="panelSelect" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm font-semibold text-gray-700 focus:outline-none focus:border-blue-500">
+                            <label for="panelSelect" class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Módulo Fotovoltaico</label>
+                            <select id="panelSelect" class="w-full bg-ink border border-line rounded-md px-3 py-2 text-sm font-semibold text-fg focus:outline-none focus:border-primary">
                                 <option value="450" data-w="1.0" data-l="1.8">450 Wp — 1,8 × 1,0 m</option>
                                 <option value="550" data-w="1.1" data-l="2.2" selected>550 Wp — 2,2 × 1,1 m</option>
                                 <option value="650" data-w="1.3" data-l="2.4">650 Wp — 2,4 × 1,3 m</option>
@@ -187,131 +275,468 @@
                         </div>
 
                         <div>
-                            <label class="block text-xs font-bold text-gray-500 uppercase mb-2">Orientação do Módulo</label>
+                            <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-2">Orientação do Módulo</label>
                             <div class="grid grid-cols-2 gap-2" id="orientationGroup">
-                                <button type="button" data-value="portrait" aria-pressed="true" class="tile-btn bg-blue-600 text-white rounded py-2 text-xs font-bold shadow-md ring-2 ring-blue-200">Retrato</button>
-                                <button type="button" data-value="landscape" aria-pressed="false" class="tile-btn border border-gray-200 rounded py-2 text-xs font-bold text-gray-500 hover:bg-gray-50">Paisagem</button>
+                                <button type="button" data-value="portrait" aria-pressed="true" class="tile-btn bg-primary text-white rounded-md py-2 text-xs font-semibold ring-1 ring-sky transition">Retrato</button>
+                                <button type="button" data-value="landscape" aria-pressed="false" class="tile-btn border border-line rounded-md py-2 text-xs font-semibold text-muted hover:bg-panel-2 transition">Paisagem</button>
                             </div>
                         </div>
 
-                        <details class="adv border border-gray-200 rounded-lg overflow-hidden">
-                            <summary class="px-3 py-2.5 text-xs font-bold text-gray-500 uppercase bg-gray-50 flex justify-between items-center">
-                                Parâmetros Avançados <span class="chev text-gray-400">▼</span>
+                        <details class="adv border border-line rounded-lg overflow-hidden">
+                            <summary class="px-3 py-2.5 text-xs font-semibold text-muted uppercase tracking-wider bg-ink flex justify-between items-center">
+                                Parâmetros Avançados <span class="chev text-muted">▼</span>
                             </summary>
-                            <div class="p-3 space-y-4 border-t border-gray-200">
+                            <div class="p-3 space-y-4 border-t border-line">
                                 <div>
-                                    <label for="hspInput" class="block text-xs font-bold text-gray-500 mb-1">Irradiação — HSP (kWh/m²·dia)</label>
-                                    <input type="number" id="hspInput" min="1" max="8" step="0.1" value="4.8" class="w-full border border-gray-300 rounded px-3 py-1.5 text-sm font-semibold text-gray-700 focus:outline-none focus:border-blue-500">
-                                    <p class="text-[10px] text-gray-400 mt-1">Consulte o CRESESB para a sua cidade.</p>
+                                    <label for="hspInput" class="block text-xs font-semibold text-muted mb-1">Irradiação — HSP (kWh/m²·dia)</label>
+                                    <input type="number" id="hspInput" min="1" max="8" step="0.1" value="4.8" class="w-full bg-ink border border-line rounded-md px-3 py-1.5 text-sm font-mono font-semibold text-fg focus:outline-none focus:border-primary">
+                                    <p class="text-[10px] text-muted mt-1">Consulte o CRESESB para a sua cidade.</p>
                                 </div>
                                 <div>
-                                    <label for="prInput" class="block text-xs font-bold text-gray-500 mb-1">Taxa de Desempenho — PR (%)</label>
-                                    <input type="number" id="prInput" min="50" max="95" step="1" value="80" class="w-full border border-gray-300 rounded px-3 py-1.5 text-sm font-semibold text-gray-700 focus:outline-none focus:border-blue-500">
+                                    <label for="prInput" class="block text-xs font-semibold text-muted mb-1">Taxa de Desempenho — PR (%)</label>
+                                    <input type="number" id="prInput" min="50" max="95" step="1" value="80" class="w-full bg-ink border border-line rounded-md px-3 py-1.5 text-sm font-mono font-semibold text-fg focus:outline-none focus:border-primary">
                                 </div>
                                 <div>
-                                    <label for="rateInput" class="block text-xs font-bold text-gray-500 mb-1">Tarifa de Energia (R$/kWh)</label>
-                                    <input type="number" id="rateInput" min="0" max="5" step="0.01" value="0.95" class="w-full border border-gray-300 rounded px-3 py-1.5 text-sm font-semibold text-gray-700 focus:outline-none focus:border-blue-500">
+                                    <label for="rateInput" class="block text-xs font-semibold text-muted mb-1">Tarifa de Energia (R$/kWh)</label>
+                                    <input type="number" id="rateInput" min="0" max="5" step="0.01" value="0.95" class="w-full bg-ink border border-line rounded-md px-3 py-1.5 text-sm font-mono font-semibold text-fg focus:outline-none focus:border-primary">
                                 </div>
                                 <div>
-                                    <label for="phaseSelect" class="block text-xs font-bold text-gray-500 mb-1">Padrão de Entrada</label>
-                                    <select id="phaseSelect" class="w-full border border-gray-300 rounded px-3 py-1.5 text-sm font-semibold text-gray-700 focus:outline-none focus:border-blue-500">
+                                    <label for="phaseSelect" class="block text-xs font-semibold text-muted mb-1">Padrão de Entrada</label>
+                                    <select id="phaseSelect" class="w-full bg-ink border border-line rounded-md px-3 py-1.5 text-sm font-semibold text-fg focus:outline-none focus:border-primary">
                                         <option value="30">Monofásico (disp. 30 kWh)</option>
                                         <option value="50">Bifásico (disp. 50 kWh)</option>
                                         <option value="100" selected>Trifásico (disp. 100 kWh)</option>
                                     </select>
-                                    <p class="text-[10px] text-gray-400 mt-1">Custo de disponibilidade descontado da economia.</p>
+                                    <p class="text-[10px] text-muted mt-1">Custo de disponibilidade descontado da economia.</p>
                                 </div>
                                 <div>
-                                    <label for="corridorInput" class="block text-xs font-bold text-gray-500 mb-1">Corredor entre Fileiras (m) — Laje/Solo</label>
-                                    <input type="number" id="corridorInput" min="0" max="5" step="0.1" value="1.4" class="w-full border border-gray-300 rounded px-3 py-1.5 text-sm font-semibold text-gray-700 focus:outline-none focus:border-blue-500">
-                                    <p class="text-[10px] text-gray-400 mt-1">Evita sombreamento entre fileiras; depende da latitude e da altura da fileira.</p>
+                                    <label for="corridorInput" class="block text-xs font-semibold text-muted mb-1">Corredor entre Fileiras (m) — Laje/Solo</label>
+                                    <input type="number" id="corridorInput" min="0" max="5" step="0.1" value="1.4" class="w-full bg-ink border border-line rounded-md px-3 py-1.5 text-sm font-mono font-semibold text-fg focus:outline-none focus:border-primary">
+                                    <p class="text-[10px] text-muted mt-1">Evita sombreamento entre fileiras; depende da latitude e da altura da fileira.</p>
                                 </div>
                             </div>
                         </details>
                     </div>
                 </div>
-
-                <div class="bg-slate-800/80 backdrop-blur-md rounded-lg p-4 border border-slate-700 shadow-inner text-center">
-                    <p class="text-[10px] text-slate-400 uppercase tracking-widest mb-1">Geração Mensal Estimada</p>
-                    <div class="text-white text-sm font-serif italic opacity-80">E = P<sub>pico</sub> · HSP · PR · 30,42</div>
-                    <p class="text-[10px] text-slate-500 mt-1">kWp × horas de sol pleno × taxa de desempenho × dias/mês</p>
-                </div>
             </div>
 
             <div class="lg:col-span-8 space-y-6">
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div class="bg-white rounded-xl p-5 shadow-md border-l-4 border-slate-400">
-                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-2">Área Total / Útil</span>
-                        <div class="text-2xl font-bold text-slate-800 mt-1"><span id="resAreaTotal">287,5</span><span class="text-sm text-gray-500"> m²</span></div>
-                        <p class="text-[10px] text-gray-400 mt-1">Útil: <span id="resAreaUtil">252,0</span> m²</p>
+                    <div class="bg-panel rounded-xl p-5 border border-line border-l-4 border-l-muted">
+                        <span class="text-[10px] font-semibold text-muted uppercase tracking-wider block mb-2">Área Total / Útil</span>
+                        <div class="text-2xl font-bold text-fg mt-1 font-mono"><span id="resAreaTotal">287,5</span><span class="text-sm text-muted"> m²</span></div>
+                        <p class="text-[10px] text-muted mt-1">Útil: <span id="resAreaUtil">252,0</span> m²</p>
                     </div>
 
-                    <div class="bg-white rounded-xl p-5 shadow-md border-l-4 border-yellow-400">
-                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-2">Módulos</span>
-                        <div class="text-2xl font-bold text-yellow-600 mt-1"><span id="resCount">0</span></div>
-                        <p class="text-[10px] text-gray-400 mt-1">Arranjo: <span id="resArrangement">0 × 0</span></p>
+                    <div class="bg-panel rounded-xl p-5 border border-line border-l-4 border-l-primary">
+                        <span class="text-[10px] font-semibold text-muted uppercase tracking-wider block mb-2">Módulos</span>
+                        <div class="text-2xl font-bold text-sky mt-1 font-mono"><span id="resCount">0</span></div>
+                        <p class="text-[10px] text-muted mt-1">Arranjo: <span id="resArrangement">0 × 0</span></p>
                     </div>
 
-                    <div class="bg-white rounded-xl p-5 shadow-md border-l-4 border-blue-500">
-                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-2">Potência de Pico</span>
-                        <div class="text-2xl font-bold text-slate-800 mt-1"><span id="resPower">0</span><span class="text-sm text-gray-500"> kWp</span></div>
-                        <p class="text-[10px] text-blue-500 mt-1">Inversor sugerido: <span id="resInverter">–</span> kW</p>
+                    <div class="bg-panel rounded-xl p-5 border border-line border-l-4 border-l-sky">
+                        <span class="text-[10px] font-semibold text-muted uppercase tracking-wider block mb-2">Potência de Pico</span>
+                        <div class="text-2xl font-bold text-fg mt-1 font-mono"><span id="resPower">0</span><span class="text-sm text-muted"> kWp</span></div>
+                        <p class="text-[10px] text-sky mt-1">Inversor: <span id="resInverter">–</span> kW</p>
                     </div>
 
-                    <div class="bg-white rounded-xl p-5 shadow-md border-l-4 border-green-500">
-                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-2">Geração / Economia</span>
-                        <div class="text-2xl font-bold text-slate-800 mt-1"><span id="resGen">0</span><span class="text-sm text-gray-500"> kWh/mês</span></div>
-                        <p class="text-[10px] text-green-600 font-bold mt-1"><span id="resSavings">R$ 0,00</span> /mês</p>
+                    <div class="bg-panel rounded-xl p-5 border border-line border-l-4 border-l-signal">
+                        <span class="text-[10px] font-semibold text-muted uppercase tracking-wider block mb-2">Geração / Economia</span>
+                        <div class="text-2xl font-bold text-fg mt-1 font-mono"><span id="resGen">0</span><span class="text-sm text-muted"> kWh</span></div>
+                        <p class="text-[10px] text-signal font-bold mt-1"><span id="resSavings">R$ 0,00</span> /mês</p>
                     </div>
                 </div>
 
-                <div class="bg-white rounded-xl shadow-lg p-6 text-brand-text">
-                    <div class="flex items-center gap-2 mb-1">
-                        <i class="fa-solid fa-table-cells-large text-blue-600"></i>
-                        <h3 class="font-bold text-lg">Arranjo Espacial dos Módulos</h3>
+                <div id="metaWarn" class="hidden bg-alert/10 border border-alert/40 rounded-lg p-3 text-xs text-alert flex items-center gap-2">
+                    <i class="fa-solid fa-circle-exclamation"></i> <span id="metaWarnText"></span>
+                </div>
+
+                <div class="bg-panel border border-line rounded-xl p-6 text-fg">
+                    <div class="flex items-center gap-2 mb-3">
+                        <i class="fa-solid fa-table-cells-large text-primary"></i>
+                        <h3 class="font-display font-bold text-lg tracking-wide">ARRANJO ESPACIAL DOS MÓDULOS</h3>
                     </div>
-                    <p class="text-xs text-gray-500 mb-4">
-                        Tracejado = área útil após o recuo. Em laje/solo, as faixas âmbar são os corredores anti-sombra entre fileiras.
+                    <div class="flex flex-wrap items-center gap-2 mb-3">
+                        <span class="text-[10px] font-semibold text-muted uppercase tracking-wider">Arrastar</span>
+                        <div class="flex gap-1" id="dragModeGroup">
+                            <button type="button" data-value="group" aria-pressed="true" class="dragmode-btn bg-primary text-white rounded-md px-3 py-1.5 text-xs font-semibold ring-1 ring-sky transition">Conjunto</button>
+                            <button type="button" data-value="single" aria-pressed="false" class="dragmode-btn border border-line rounded-md px-3 py-1.5 text-xs font-semibold text-muted hover:bg-panel-2 transition">Placa</button>
+                        </div>
+                        <button id="btnResetLayout" class="ml-auto text-xs font-semibold text-muted hover:text-sky border border-line hover:border-sky rounded-md px-3 py-1.5 transition whitespace-nowrap flex items-center gap-1.5">
+                            <i class="fa-solid fa-arrows-rotate"></i> Redefinir
+                        </button>
+                    </div>
+                    <p class="text-xs text-muted mb-4">
+                        <i class="fa-solid fa-arrows-up-down-left-right text-sky"></i> <strong class="text-fg font-semibold">Conjunto</strong>: arraste o array inteiro pelo terreno. <strong class="text-fg font-semibold">Placa</strong>: reposicione um módulo. Tracejado = área útil; faixas claras = corredores anti-sombra (arranjo automático).
                     </p>
-                    <div class="bg-slate-900 rounded-lg p-3 flex items-center justify-center">
-                        <canvas id="layoutCanvas" width="650" height="420" role="img" aria-label="Desenho do arranjo dos módulos fotovoltaicos na área informada"></canvas>
+                    <div class="grid-bp bg-ink rounded-lg p-3 border border-line flex items-center justify-center">
+                        <canvas id="layoutCanvas" width="650" height="420" role="img" aria-label="Arranjo dos módulos fotovoltaicos na área informada — arraste para reposicionar" style="cursor:grab; touch-action:none;"></canvas>
                     </div>
                 </div>
 
-                <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r shadow-sm flex gap-3 text-xs text-yellow-800">
-                    <i class="fa-solid fa-triangle-exclamation text-yellow-600 mt-1 text-base"></i>
-                    <p id="disclaimerText"><strong>Isenção de responsabilidade:</strong> Estimativa educacional. A economia desconta o custo de disponibilidade, mas NÃO modela o Fio B (Lei 14.300/2022), simultaneidade de consumo nem sombreamentos locais. Dimensionamento definitivo exige projeto com análise de irradiação, estrutura e rede da distribuidora.</p>
+                <div class="bg-panel border border-line border-l-4 border-l-alert p-4 rounded-r-md flex gap-3 text-xs text-muted">
+                    <i class="fa-solid fa-triangle-exclamation text-alert mt-0.5 text-base"></i>
+                    <p><strong class="text-fg font-semibold">Isenção de responsabilidade:</strong> Estimativa educacional. A economia desconta o custo de disponibilidade, mas NÃO modela o Fio B (Lei 14.300/2022), simultaneidade de consumo nem sombreamentos locais. Dimensionamento definitivo exige projeto com análise de irradiação, estrutura e rede da distribuidora.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ORÇAMENTO ITEMIZADO -->
+        <div id="orcamento" class="mt-14">
+            <div class="flex items-center gap-3 mb-6">
+                <span class="font-mono text-xs uppercase tracking-[0.25em] text-primary">// orçamento</span>
+                <div class="h-px flex-1 bg-line"></div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Tabela editável -->
+                <div class="lg:col-span-8 bg-panel border border-line rounded-xl p-6">
+                    <div class="flex items-start justify-between gap-3 mb-4">
+                        <div>
+                            <h3 class="font-display font-bold text-lg tracking-wide text-fg">COMPOSIÇÃO DE CUSTOS</h3>
+                            <p class="text-[11px] text-muted mt-1">Valores de referência (2026) — <span class="text-sky">ajuste com seus fornecedores</span>. O cálculo usa os seus números.</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3">
+                        <!-- Módulos -->
+                        <div class="border border-line/60 rounded-lg p-2.5">
+                            <div class="grid grid-cols-12 gap-2 items-center">
+                                <div class="col-span-6">
+                                    <p class="text-sm font-semibold text-fg">Módulos fotovoltaicos</p>
+                                    <p class="text-[10px] text-muted font-mono" id="ctxModulos">— un · — Wp</p>
+                                </div>
+                                <div class="col-span-6">
+                                    <label class="text-[9px] text-muted uppercase block mb-0.5">Classe de qualidade</label>
+                                    <select id="clsModulo" class="num-in" style="font-family:'IBM Plex Sans'">
+                                        <option value="tier1" selected>Tier 1 — bancável</option>
+                                        <option value="tier2">Tier 2 — intermediário</option>
+                                        <option value="tier3">Tier 3 — econômico</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <p id="clsModuloNote" class="text-[10px] text-sky mt-1.5 leading-snug">—</p>
+                            <div class="grid grid-cols-12 gap-2 items-center mt-2">
+                                <div class="col-span-6"></div>
+                                <div class="col-span-3">
+                                    <label class="text-[9px] text-muted uppercase block mb-0.5">R$/Wp</label>
+                                    <input type="number" id="prModuloWp" value="0.80" min="0" step="0.01" class="num-in">
+                                </div>
+                                <div class="col-span-3 text-right">
+                                    <label class="text-[9px] text-muted uppercase block mb-0.5">Subtotal</label>
+                                    <p class="font-mono text-sm text-fg" id="stModulos">R$ 0,00</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Inversor -->
+                        <div class="border border-line/60 rounded-lg p-2.5">
+                            <div class="grid grid-cols-12 gap-2 items-center">
+                                <div class="col-span-6">
+                                    <p class="text-sm font-semibold text-fg">Inversor</p>
+                                    <p class="text-[10px] text-muted font-mono" id="ctxInversor">— kW</p>
+                                </div>
+                                <div class="col-span-6">
+                                    <label class="text-[9px] text-muted uppercase block mb-0.5">Classe de qualidade</label>
+                                    <select id="clsInversor" class="num-in" style="font-family:'IBM Plex Sans'">
+                                        <option value="linhaA" selected>Linha A — suporte BR</option>
+                                        <option value="linhaB">Linha B — suporte parcial</option>
+                                        <option value="linhaC">Linha C — sem suporte local</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <p id="clsInversorNote" class="text-[10px] text-sky mt-1.5 leading-snug">—</p>
+                            <div class="grid grid-cols-12 gap-2 items-center mt-2">
+                                <div class="col-span-6"></div>
+                                <div class="col-span-3">
+                                    <label class="text-[9px] text-muted uppercase block mb-0.5">R$/kW</label>
+                                    <input type="number" id="prInversorKW" value="700" min="0" step="10" class="num-in">
+                                </div>
+                                <div class="col-span-3 text-right">
+                                    <label class="text-[9px] text-muted uppercase block mb-0.5">Subtotal</label>
+                                    <p class="font-mono text-sm text-fg" id="stInversor">R$ 0,00</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Cabos -->
+                        <div class="grid grid-cols-12 gap-2 items-center">
+                            <div class="col-span-6">
+                                <p class="text-sm font-semibold text-fg">Cabos (CC + CA)</p>
+                                <div class="flex items-center gap-1.5 mt-0.5">
+                                    <input type="number" id="prCaboLen" value="60" min="0" step="1" class="num-in !w-16 !py-1" aria-label="Metros de cabo">
+                                    <span class="text-[10px] text-muted font-mono">m</span>
+                                </div>
+                            </div>
+                            <div class="col-span-3">
+                                <label class="text-[9px] text-muted uppercase block mb-0.5">R$/m</label>
+                                <input type="number" id="prCaboM" value="14" min="0" step="0.5" class="num-in">
+                            </div>
+                            <div class="col-span-3 text-right">
+                                <label class="text-[9px] text-muted uppercase block mb-0.5">Subtotal</label>
+                                <p class="font-mono text-sm text-fg" id="stCabo">R$ 0,00</p>
+                            </div>
+                        </div>
+                        <!-- Estrutura -->
+                        <div class="grid grid-cols-12 gap-2 items-center">
+                            <div class="col-span-6">
+                                <p class="text-sm font-semibold text-fg">Estrutura de fixação</p>
+                                <p class="text-[10px] text-muted font-mono" id="ctxEstrutura">— un</p>
+                            </div>
+                            <div class="col-span-3">
+                                <label class="text-[9px] text-muted uppercase block mb-0.5">R$/placa</label>
+                                <input type="number" id="prEstruturaUn" value="130" min="0" step="5" class="num-in">
+                            </div>
+                            <div class="col-span-3 text-right">
+                                <label class="text-[9px] text-muted uppercase block mb-0.5">Subtotal</label>
+                                <p class="font-mono text-sm text-fg" id="stEstrutura">R$ 0,00</p>
+                            </div>
+                        </div>
+                        <!-- Proteção -->
+                        <div class="grid grid-cols-12 gap-2 items-center">
+                            <div class="col-span-6">
+                                <p class="text-sm font-semibold text-fg">Proteção CC/CA (string box, DPS)</p>
+                                <p class="text-[10px] text-muted font-mono">valor total</p>
+                            </div>
+                            <div class="col-span-3">
+                                <label class="text-[9px] text-muted uppercase block mb-0.5">R$</label>
+                                <input type="number" id="prProtecao" value="900" min="0" step="50" class="num-in">
+                            </div>
+                            <div class="col-span-3 text-right">
+                                <label class="text-[9px] text-muted uppercase block mb-0.5">Subtotal</label>
+                                <p class="font-mono text-sm text-fg" id="stProtecao">R$ 0,00</p>
+                            </div>
+                        </div>
+                        <!-- Mão de obra -->
+                        <div class="grid grid-cols-12 gap-2 items-center">
+                            <div class="col-span-6">
+                                <p class="text-sm font-semibold text-fg">Mão de obra / instalação</p>
+                                <p class="text-[10px] text-muted font-mono" id="ctxMaoObra">— kWp</p>
+                            </div>
+                            <div class="col-span-3">
+                                <label class="text-[9px] text-muted uppercase block mb-0.5">R$/kWp</label>
+                                <input type="number" id="prMaoObraKWp" value="450" min="0" step="10" class="num-in">
+                            </div>
+                            <div class="col-span-3 text-right">
+                                <label class="text-[9px] text-muted uppercase block mb-0.5">Subtotal</label>
+                                <p class="font-mono text-sm text-fg" id="stMaoObra">R$ 0,00</p>
+                            </div>
+                        </div>
+
+                        <div class="border-t border-line pt-3 flex justify-between items-center">
+                            <span class="text-sm font-semibold text-muted uppercase tracking-wider">Custo total</span>
+                            <span class="font-mono text-lg text-fg font-bold" id="stCusto">R$ 0,00</span>
+                        </div>
+
+                        <div class="grid grid-cols-12 gap-2 items-center">
+                            <div class="col-span-6">
+                                <p class="text-sm font-semibold text-fg">Margem / lucro do projeto</p>
+                                <p class="text-[10px] text-muted font-mono">aplicada sobre o custo total</p>
+                            </div>
+                            <div class="col-span-3">
+                                <label class="text-[9px] text-muted uppercase block mb-0.5">%</label>
+                                <input type="number" id="prMargem" value="25" min="0" step="1" class="num-in">
+                            </div>
+                            <div class="col-span-3 text-right">
+                                <label class="text-[9px] text-muted uppercase block mb-0.5">Valor</label>
+                                <p class="font-mono text-sm text-signal" id="stMargem">R$ 0,00</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Preço sugerido + proposta -->
+                <div class="lg:col-span-4 space-y-4">
+                    <div class="bg-panel border border-primary rounded-xl p-6" style="background:linear-gradient(160deg,#0E2841,#123a63)">
+                        <p class="text-[10px] font-semibold text-sky uppercase tracking-widest mb-2">Preço sugerido ao cliente</p>
+                        <div class="font-mono text-4xl font-bold text-fg" id="stPreco">R$ 0,00</div>
+                        <p class="text-[11px] text-muted mt-2 font-mono"><span id="stPrecoKwp">R$ 0</span>/kWp instalado</p>
+                    </div>
+
+                    <div class="bg-panel border border-line rounded-xl p-5 space-y-3">
+                        <p class="font-display font-bold text-sm tracking-wide text-fg mb-1">DADOS DA PROPOSTA</p>
+                        <div>
+                            <label for="clientName" class="text-[10px] text-muted uppercase block mb-1">Cliente</label>
+                            <input type="text" id="clientName" placeholder="Nome do cliente" class="num-in" style="font-family:'IBM Plex Sans'">
+                        </div>
+                        <div>
+                            <label for="clientCity" class="text-[10px] text-muted uppercase block mb-1">Cidade / UF</label>
+                            <input type="text" id="clientCity" placeholder="Ex: Mineiros / GO" class="num-in" style="font-family:'IBM Plex Sans'">
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label for="propNum" class="text-[10px] text-muted uppercase block mb-1">Proposta Nº</label>
+                                <input type="text" id="propNum" placeholder="auto" class="num-in">
+                            </div>
+                            <div>
+                                <label for="propValid" class="text-[10px] text-muted uppercase block mb-1">Validade (dias)</label>
+                                <input type="number" id="propValid" value="15" min="1" step="1" class="num-in">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="propNotes" class="text-[10px] text-muted uppercase block mb-1">Observações</label>
+                            <textarea id="propNotes" rows="3" placeholder="Condições de pagamento, prazo de execução, garantias..." class="num-in" style="font-family:'IBM Plex Sans';resize:vertical"></textarea>
+                        </div>
+                        <button id="btnPdf" class="w-full bg-primary hover:bg-primary-700 text-white font-semibold px-4 py-3 rounded-md transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-file-pdf"></i> Gerar proposta (PDF)
+                        </button>
+                        <p class="text-[10px] text-muted text-center">Abre a impressão do navegador — escolha "Salvar como PDF".</p>
+                    </div>
                 </div>
             </div>
         </div>
     </main>
 
-    <footer class="border-t border-slate-800 bg-slate-900/80 relative z-10">
-        <div class="container mx-auto px-4 py-6 text-center text-xs text-slate-500 space-y-1">
-            <p>© 2026 Gusttavo Gutierry — ElektroSys</p>
-            <p>Ferramenta educacional. Os resultados não substituem projeto elétrico — valide com a NBR 5410.</p>
+    <!-- CTA / SERVIÇOS -->
+    <section class="border-y border-line grid-bp relative z-10">
+        <div class="container mx-auto px-4 py-14 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            <div class="max-w-2xl">
+                <p class="font-mono text-xs uppercase tracking-[0.25em] text-primary mb-3">// engenharia sob demanda</p>
+                <h2 class="font-display text-3xl md:text-4xl text-fg font-bold leading-tight">Quer um projeto fotovoltaico dimensionado?</h2>
+                <p class="text-muted mt-3 leading-relaxed">Do estudo de viabilidade à homologação na distribuidora — projeto, ART e acompanhamento. Fale direto com o engenheiro responsável.</p>
+            </div>
+            <a href="https://wa.me/5564984395286" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 bg-primary hover:bg-primary-700 text-white font-semibold px-7 py-3.5 rounded-md whitespace-nowrap transition shrink-0">
+                <i class="fa-brands fa-whatsapp text-lg"></i> Solicitar orçamento
+            </a>
+        </div>
+    </section>
+
+    <footer class="bg-ink/60 relative z-10">
+        <div class="container mx-auto px-4 py-10">
+            <div class="flex flex-col md:flex-row justify-between gap-8">
+                <div class="max-w-sm">
+                    <div class="flex items-center gap-2.5 mb-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                        <span class="text-fg font-display font-bold text-lg tracking-wide">ELEKTRO<span class="text-primary">SYS</span></span>
+                    </div>
+                    <p class="text-sm text-muted leading-relaxed">Ferramentas e serviços de engenharia elétrica. Estimativas educacionais — não substituem projeto assinado.</p>
+                </div>
+                <div class="flex gap-14">
+                    <div>
+                        <p class="font-mono text-[11px] uppercase tracking-wider text-muted mb-3">Ferramentas</p>
+                        <ul class="space-y-2 text-sm">
+                            <li><a href="index.html" class="text-fg hover:text-sky transition">Motores</a></li>
+                            <li><a href="solar.html" class="text-fg hover:text-sky transition">Solar</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <p class="font-mono text-[11px] uppercase tracking-wider text-muted mb-3">Contato</p>
+                        <ul class="space-y-2 text-sm">
+                            <li><a href="https://wa.me/5564984395286" target="_blank" rel="noopener noreferrer" class="text-fg hover:text-signal transition flex items-center gap-2"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a></li>
+                            <li><a href="https://www.linkedin.com/in/gusttavo-gutierry-ferreira-moraes-bb71841a4/" target="_blank" rel="noopener noreferrer" class="text-fg hover:text-sky transition flex items-center gap-2"><i class="fa-brands fa-linkedin-in"></i> LinkedIn</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-line mt-8 pt-6 text-center text-xs text-muted font-mono">
+                © 2026 Gusttavo Gutierry · ElektroSys — Estimativa educacional. Valide com projeto e a distribuidora.
+            </div>
         </div>
     </footer>
 
+    <!-- ===== DOCUMENTO DE PROPOSTA (impresso / PDF) ===== -->
+    <div id="printArea">
+        <div class="doc">
+            <div class="doc-head">
+                <div>
+                    <div class="doc-brand">ELEKTRO<span>SYS</span></div>
+                    <div class="doc-sub">Engenharia Elétrica · Sistemas Fotovoltaicos</div>
+                </div>
+                <div class="doc-meta">
+                    <div>Proposta Nº <strong id="pNum">—</strong></div>
+                    <div>Data: <span id="pDate">—</span></div>
+                    <div>Validade: <span id="pValid">—</span></div>
+                </div>
+            </div>
+
+            <h1 class="doc-title">Proposta — Sistema Fotovoltaico</h1>
+            <div class="doc-client">
+                <div><strong>Cliente:</strong> <span id="pClient">—</span></div>
+                <div><strong>Local:</strong> <span id="pCity">—</span></div>
+            </div>
+
+            <h2>Resumo do sistema</h2>
+            <table class="doc-table">
+                <tbody>
+                    <tr><td>Potência de pico</td><td class="r" id="pPower">—</td><td>Módulos</td><td class="r" id="pModules">—</td></tr>
+                    <tr><td>Inversor sugerido</td><td class="r" id="pInverter">—</td><td>Geração estimada</td><td class="r" id="pGen">—</td></tr>
+                    <tr><td>Economia estimada</td><td class="r" id="pSavings">—</td><td>Área utilizada</td><td class="r" id="pArea">—</td></tr>
+                </tbody>
+            </table>
+
+            <h2>Composição do orçamento</h2>
+            <table class="doc-table">
+                <thead><tr><th>Item</th><th>Detalhe</th><th class="r">Valor</th></tr></thead>
+                <tbody>
+                    <tr><td>Módulos fotovoltaicos</td><td id="pdModulos">—</td><td class="r" id="pvModulos">—</td></tr>
+                    <tr><td>Inversor</td><td id="pdInversor">—</td><td class="r" id="pvInversor">—</td></tr>
+                    <tr><td>Cabos (CC + CA)</td><td id="pdCabo">—</td><td class="r" id="pvCabo">—</td></tr>
+                    <tr><td>Estrutura de fixação</td><td id="pdEstrutura">—</td><td class="r" id="pvEstrutura">—</td></tr>
+                    <tr><td>Proteção CC/CA</td><td>String box, DPS, disjuntores</td><td class="r" id="pvProtecao">—</td></tr>
+                    <tr><td>Mão de obra / instalação</td><td id="pdMaoObra">—</td><td class="r" id="pvMaoObra">—</td></tr>
+                    <tr><td><strong>Custo total</strong></td><td></td><td class="r" id="pvCusto"><strong>—</strong></td></tr>
+                    <tr><td>Margem do projeto</td><td id="pdMargem">—</td><td class="r" id="pvMargem">—</td></tr>
+                </tbody>
+            </table>
+
+            <div class="doc-total">
+                <span class="lbl">Investimento total</span>
+                <span class="val" id="pvPreco">—</span>
+            </div>
+
+            <h2>Observações</h2>
+            <div class="doc-notes" id="pNotes">—</div>
+
+            <div class="doc-foot">
+                Gusttavo Gutierry · Engenharia Elétrica · WhatsApp +55 64 98439-5286 · elektrosys.eng.br<br>
+                Estimativa comercial. Valores de equipamentos sujeitos a confirmação de cotação junto ao fornecedor. Geração e economia são estimativas e não modelam o Fio B (Lei 14.300/2022), simultaneidade nem sombreamentos. Não substitui projeto executivo assinado com ART.
+            </div>
+        </div>
+    </div>
+
     <script>
     // =========================================================================
-    // ElektroSys Solar v1.0 — mesmo padrão de módulos do index.html
+    // ElektroSys Solar v2.0 — dimensionamento por área/consumo + orçamento + PDF
     // =========================================================================
 
     const SOLAR = {
-        DAYS_PER_MONTH: 30.42,     // 365/12
-        INVERTER_RATIO: 1.25,      // sobredimensionamento DC/AC típico (1,1–1,5)
-        MIN_DIM: 3, MAX_DIM: 100,  // m — limites da área
+        DAYS_PER_MONTH: 30.42,
+        INVERTER_RATIO: 1.25,
+        MIN_DIM: 3, MAX_DIM: 100,
+    };
+
+    // Estado corrente do sistema (compartilhado entre cálculo e orçamento)
+    const STATE = { placed: 0, capacity: 0, cols: 0, rows: 0, kWp: 0, inverterKW: 0,
+                    pPower: 550, monthlyGen: 0, monthlySavings: 0, areaTotal: 0, areaUtil: 0, budget: {} };
+
+    // === CLASSIFICAÇÃO DE QUALIDADE ===
+    // Módulos: Tier 1/2/3 (bancabilidade, classificação BloombergNEF — referência de mercado, não fonte oficial embutida).
+    // Inversores: Linha A/B/C — corte por rede de assistência técnica no Brasil (não é padrão oficial, é prática de mercado).
+    // Faixas (R$, 2026) são referência para começar a preencher — SEMPRE ajuste com sua cotação real.
+    const EQUIPMENT_TIERS = {
+        modulo: {
+            tier1: { label: 'Tier 1 — bancável', min: 0.75, max: 0.95, ref: 0.80,
+                      desc: 'Fabricante verticalizado, consta na lista BloombergNEF, financiável por bancos.' },
+            tier2: { label: 'Tier 2 — intermediário', min: 0.65, max: 0.80, ref: 0.72,
+                      desc: 'Fabricante de porte médio, verticalização parcial, histórico mais curto.' },
+            tier3: { label: 'Tier 3 — econômico', min: 0.50, max: 0.65, ref: 0.58,
+                      desc: 'Montadora pequena, menor garantia de continuidade em 25 anos.' },
+        },
+        inversor: {
+            linhaA: { label: 'Linha A — suporte BR', min: 600, max: 800, ref: 700,
+                      desc: 'Assistência técnica consolidada no Brasil (Growatt, Fronius, SMA, Sungrow, Huawei...).' },
+            linhaB: { label: 'Linha B — suporte parcial', min: 450, max: 600, ref: 520,
+                      desc: 'Rede de assistência menor ou regionalizada.' },
+            linhaC: { label: 'Linha C — sem suporte local', min: 300, max: 450, ref: 370,
+                      desc: 'Importado sem rede de assistência no Brasil — risco maior de garantia.' },
+        }
     };
 
     function fmtBR(value, decimals) { return Number(value).toFixed(decimals).replace('.', ','); }
+    function brl(v) { return Number(v || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); }
     function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
-    function sanitize(v, fallback) {
-        const n = Number(v);
-        return Number.isFinite(n) ? n : fallback;
-    }
+    function sanitize(v, fallback) { const n = Number(v); return Number.isFinite(n) ? n : fallback; }
+    function num(id, fb) { const v = parseFloat(document.getElementById(id).value); return Number.isFinite(v) ? v : fb; }
 
-    // === MODAL (idêntico ao index) ===
+    // === MODAL ===
     (function initModal() {
         const modal = document.getElementById('aboutModal');
         const btnOpen = document.getElementById('btnOpenAbout');
@@ -323,9 +748,9 @@
         document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !modal.classList.contains('hidden')) closeModal(); });
     })();
 
-    // === GRUPOS DE BOTÕES (tiles) — acessíveis via teclado, padrão volt-btn ===
-    const TILE_ON  = "tile-btn bg-blue-600 text-white rounded py-2 text-xs font-bold shadow-md ring-2 ring-blue-200";
-    const TILE_OFF = "tile-btn border border-gray-200 rounded py-2 text-xs font-bold text-gray-500 hover:bg-gray-50";
+    // === GRUPOS DE BOTÕES (tiles) ===
+    const TILE_ON  = "tile-btn bg-primary text-white rounded-md py-2 text-xs font-semibold ring-1 ring-sky transition";
+    const TILE_OFF = "tile-btn border border-line rounded-md py-2 text-xs font-semibold text-muted hover:bg-panel-2 transition";
 
     function setupTiles(groupId, onChange) {
         const btns = document.querySelectorAll(`#${groupId} button[data-value]`);
@@ -341,7 +766,6 @@
         return active ? active.dataset.value : '';
     }
 
-    // === CÁLCULO PRINCIPAL ===
     const el = {
         width:    document.getElementById('widthSlider'),
         length:   document.getElementById('lengthSlider'),
@@ -352,10 +776,11 @@
         rate:     document.getElementById('rateInput'),
         phase:    document.getElementById('phaseSelect'),
         corridor: document.getElementById('corridorInput'),
+        target:   document.getElementById('targetKwh'),
     };
 
+    // === CÁLCULO PRINCIPAL ===
     function calculate() {
-        // 1. Inputs sanitizados
         const wTerreno = clamp(sanitize(el.width.value, 11.5), SOLAR.MIN_DIM, SOLAR.MAX_DIM);
         const lTerreno = clamp(sanitize(el.length.value, 25), SOLAR.MIN_DIM, SOLAR.MAX_DIM);
         const margin   = clamp(sanitize(el.margin.value, 0.5), 0, 3);
@@ -365,6 +790,7 @@
         const corridor = clamp(sanitize(el.corridor.value, 1.4), 0, 5);
         const availabilityKWh = sanitize(el.phase.value, 100);
 
+        const mode = tileValue('modeGroup') || 'area';
         const structure   = tileValue('structureGroup') || 'roof';
         const orientation = tileValue('orientationGroup') || 'portrait';
 
@@ -373,132 +799,467 @@
         const pW_raw = sanitize(opt.dataset.w, 1.1);
         const pL_raw = sanitize(opt.dataset.l, 2.2);
 
-        // 2. Dimensões do módulo conforme orientação (pW = ao longo da largura; pL = profundidade)
         const pW = (orientation === 'portrait') ? pW_raw : pL_raw;
         const pL = (orientation === 'portrait') ? pL_raw : pW_raw;
 
-        // 3. Área útil após recuo
         const wUtil = Math.max(0, wTerreno - 2 * margin);
         const lUtil = Math.max(0, lTerreno - 2 * margin);
 
-        // 4. Arranjo: colunas × fileiras
+        // Capacidade máxima que cabe na área
         let cols = 0, rows = 0;
         if (wUtil >= pW && lUtil >= pL) {
             cols = Math.floor(wUtil / pW);
-            if (structure === 'roof') {
-                // Coplanar ao telhado: sem auto-sombreamento, módulos encostados
-                rows = Math.floor(lUtil / pL);
-            } else {
-                // Laje/solo: fileiras com corredor anti-sombra entre elas
-                // rows·pL + (rows−1)·corridor ≤ lUtil  →  rows ≤ (lUtil+corridor)/(pL+corridor)
-                rows = Math.floor((lUtil + corridor) / (pL + corridor));
-            }
+            rows = (structure === 'roof')
+                ? Math.floor(lUtil / pL)
+                : Math.floor((lUtil + corridor) / (pL + corridor));
         }
-        const totalPanels = cols * rows;
-        const kWp = (totalPanels * pPower) / 1000;
+        const capacity = cols * rows;
 
-        // 5. Energia e economia
+        // Definir quantas placas efetivamente entram no arranjo
+        let placed = capacity;
+        const warnEl = document.getElementById('metaWarn');
+        const warnTx = document.getElementById('metaWarnText');
+        const metaInfo = document.getElementById('metaInfo');
+
+        if (mode === 'consumo') {
+            const target = clamp(sanitize(el.target.value, 500), 1, 1e6);
+            const requiredKWp = target / (hsp * pr * SOLAR.DAYS_PER_MONTH);
+            const requiredPanels = Math.max(0, Math.ceil((requiredKWp * 1000) / pPower));
+            placed = Math.min(requiredPanels, capacity);
+
+            if (metaInfo) metaInfo.textContent = `Meta: ${requiredPanels} placa(s) ≈ ${fmtBR(requiredKWp, 2)} kWp para ${Math.round(target).toLocaleString('pt-BR')} kWh/mês.`;
+
+            if (requiredPanels > capacity) {
+                warnEl.classList.remove('hidden');
+                warnTx.textContent = `A área comporta ${capacity} placa(s), mas a meta exige ${requiredPanels}. Aumente a área ou reduza a meta — usando ${capacity}.`;
+            } else {
+                warnEl.classList.add('hidden');
+            }
+        } else {
+            warnEl.classList.add('hidden');
+            if (metaInfo) metaInfo.textContent = 'Informe seu consumo médio; o sistema calcula as placas necessárias.';
+        }
+
+        const totalPanels = placed;
+        const kWp = (totalPanels * pPower) / 1000;
         const monthlyGen = kWp * hsp * pr * SOLAR.DAYS_PER_MONTH;
-        // Economia honesta: desconta o custo de disponibilidade (kWh mínimo faturado)
         const compensable = Math.max(0, monthlyGen - availabilityKWh);
         const monthlySavings = totalPanels > 0 ? compensable * rate : 0;
-
-        // 6. Inversor sugerido (ratio DC/AC típico de 1,25)
         const inverterKW = kWp / SOLAR.INVERTER_RATIO;
 
-        // 7. Atualizar UI (textContent — imune a XSS)
+        // Atualizar métricas
         document.getElementById('displayWidth').textContent = fmtBR(wTerreno, 1);
         document.getElementById('displayLength').textContent = fmtBR(lTerreno, 1);
         document.getElementById('displayMargin').textContent = fmtBR(margin, 1);
         document.getElementById('resAreaTotal').textContent = fmtBR(wTerreno * lTerreno, 1);
         document.getElementById('resAreaUtil').textContent = fmtBR(wUtil * lUtil, 1);
         document.getElementById('resCount').textContent = totalPanels;
-        document.getElementById('resArrangement').textContent = `${cols} × ${rows}`;
+        document.getElementById('resArrangement').textContent = arrangementLabel(cols, rows, placed, capacity);
         document.getElementById('resPower').textContent = fmtBR(kWp, 2);
         document.getElementById('resInverter').textContent = totalPanels > 0 ? fmtBR(inverterKW, 1) : '–';
         document.getElementById('resGen').textContent = Math.round(monthlyGen).toLocaleString('pt-BR');
-        document.getElementById('resSavings').textContent =
-            monthlySavings.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        document.getElementById('resSavings').textContent = brl(monthlySavings);
 
         document.getElementById('structureNote').textContent = (structure === 'roof')
             ? 'Módulos coplanares ao telhado, sem corredor entre fileiras.'
             : `Fileiras com corredor anti-sombra de ${fmtBR(corridor, 1)} m (ajuste nos parâmetros avançados).`;
 
-        drawLayout(wTerreno, lTerreno, margin, cols, rows, pW, pL, structure, corridor);
+        // Guardar estado
+        STATE.placed = placed; STATE.capacity = capacity; STATE.cols = cols; STATE.rows = rows;
+        STATE.kWp = kWp; STATE.inverterKW = inverterKW; STATE.pPower = pPower;
+        STATE.monthlyGen = monthlyGen; STATE.monthlySavings = monthlySavings;
+        STATE.areaTotal = wTerreno * lTerreno; STATE.areaUtil = wUtil * lUtil;
+
+        // Layout: regenera as posições só quando a geometria/quantidade muda
+        // (preserva o arraste manual em mudanças de tarifa, fase etc.)
+        L = { wTerreno, lTerreno, margin, cols, rows, pW, pL, structure, corridor, placed };
+        const sig = [wTerreno, lTerreno, margin, structure, corridor, pW, pL, placed].join('|');
+        if (sig !== lastSig || panels.length !== placed) {
+            panels = genAutoPositions({ cols, rows, pW, pL, structure, corridor, margin, wTerreno, lTerreno, count: placed });
+            lastSig = sig;
+            manual = false;
+        }
+        renderCanvas();
+        updateBudget();
     }
 
-    // === DESENHO DO ARRANJO ===
-    function drawLayout(wTerreno, lTerreno, margin, cols, rows, pW, pL, structure, corridor) {
+    function arrangementLabel(cols, rows, placed, capacity) {
+        if (placed >= capacity) return `${cols} × ${rows}`;
+        // arranjo parcial: fileiras cheias + resto
+        const full = Math.floor(placed / cols);
+        const rest = placed % cols;
+        return rest === 0 ? `${cols} × ${full}` : `${cols} × ${full} + ${rest}`;
+    }
+
+    // === LAYOUT DO ARRANJO (posições arrastáveis) ===
+    let panels = [];      // posições {x,y} em metros (canto sup-esq), no sistema do terreno
+    let manual = false;   // usuário arrastou manualmente (some corredores-guia)
+    let lastSig = '';     // assinatura da geometria — regenera só quando muda
+    let view = null;      // transform corrente do canvas (p/ hit-test do arraste)
+    let L = null;         // parâmetros de layout correntes
+    let dragIndex = -1;   // placa destacada (modo 'placa')
+    let dragMode = 'group'; // 'group' = mover conjunto | 'single' = mover uma placa
+    let drag = null;      // estado do arraste em andamento
+
+    // Gera as posições automáticas (grade centralizada, fileira a fileira)
+    function genAutoPositions(p) {
+        const { cols, rows, pW, pL, structure, corridor, margin, wTerreno, lTerreno, count } = p;
+        const wUtil = wTerreno - 2 * margin, lUtil = lTerreno - 2 * margin;
+        const usedW = cols * pW;
+        const usedL = (structure === 'roof') ? rows * pL : rows * pL + Math.max(0, rows - 1) * corridor;
+        const sx = margin + Math.max(0, wUtil - usedW) / 2;
+        const sy = margin + Math.max(0, lUtil - usedL) / 2;
+        const pitch = (structure === 'ground') ? (pL + corridor) : pL;
+        const arr = [];
+        let n = 0;
+        for (let r = 0; r < rows && n < count; r++)
+            for (let c = 0; c < cols && n < count; c++, n++)
+                arr.push({ x: sx + c * pW, y: sy + r * pitch });
+        return arr;
+    }
+
+    // Desenha o terreno, a área útil, os corredores-guia (só no automático) e as placas
+    function renderCanvas() {
         const canvas = document.getElementById('layoutCanvas');
         const ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        if (wTerreno <= 0 || lTerreno <= 0) return;
+        if (!L || L.wTerreno <= 0 || L.lTerreno <= 0) return;
 
         const padding = 24;
-        const maxW = canvas.width - 2 * padding;
-        const maxH = canvas.height - 2 * padding;
-        const scale = Math.min(maxW / wTerreno, maxH / lTerreno);
-        const offsetX = padding + (maxW - wTerreno * scale) / 2;
-        const offsetY = padding + (maxH - lTerreno * scale) / 2;
+        const maxW = canvas.width - 2 * padding, maxH = canvas.height - 2 * padding;
+        const scale = Math.min(maxW / L.wTerreno, maxH / L.lTerreno);
+        const offsetX = padding + (maxW - L.wTerreno * scale) / 2;
+        const offsetY = padding + (maxH - L.lTerreno * scale) / 2;
+        view = { scale, offsetX, offsetY, pW: L.pW, pL: L.pL, wTerreno: L.wTerreno, lTerreno: L.lTerreno };
 
-        // 1. Terreno
-        ctx.fillStyle = '#1e293b';
-        ctx.fillRect(offsetX, offsetY, wTerreno * scale, lTerreno * scale);
-        ctx.strokeStyle = '#475569';
+        // Terreno
+        ctx.fillStyle = '#0A1B2E';
+        ctx.fillRect(offsetX, offsetY, L.wTerreno * scale, L.lTerreno * scale);
+        ctx.strokeStyle = '#21425F';
         ctx.lineWidth = 2;
-        ctx.strokeRect(offsetX, offsetY, wTerreno * scale, lTerreno * scale);
+        ctx.strokeRect(offsetX, offsetY, L.wTerreno * scale, L.lTerreno * scale);
 
-        // 2. Área útil (tracejado)
-        if (margin > 0 && wTerreno > 2 * margin && lTerreno > 2 * margin) {
-            ctx.strokeStyle = '#64748b';
+        // Área útil (tracejado)
+        if (L.margin > 0 && L.wTerreno > 2 * L.margin && L.lTerreno > 2 * L.margin) {
+            ctx.strokeStyle = '#8CA3BC';
             ctx.lineWidth = 1;
             ctx.setLineDash([4, 4]);
-            ctx.strokeRect(offsetX + margin * scale, offsetY + margin * scale,
-                (wTerreno - 2 * margin) * scale, (lTerreno - 2 * margin) * scale);
+            ctx.strokeRect(offsetX + L.margin * scale, offsetY + L.margin * scale,
+                (L.wTerreno - 2 * L.margin) * scale, (L.lTerreno - 2 * L.margin) * scale);
             ctx.setLineDash([]);
         }
 
-        // 3. Módulos centralizados na área útil
-        const wUtil = wTerreno - 2 * margin;
-        const usedW = cols * pW;
-        const usedL = (structure === 'roof') ? rows * pL : rows * pL + Math.max(0, rows - 1) * corridor;
-        const lUtil = lTerreno - 2 * margin;
-        const startX = offsetX + margin * scale + Math.max(0, (wUtil - usedW)) * scale / 2;
-        const startY = offsetY + margin * scale + Math.max(0, (lUtil - usedL)) * scale / 2;
-
-        for (let r = 0; r < rows; r++) {
-            const pitch = (structure === 'ground') ? (pL + corridor) : pL;
-            const currentY = startY + r * pitch * scale;
-
-            // Corredor anti-sombra (faixa âmbar)
-            if (structure === 'ground' && r > 0) {
-                ctx.fillStyle = 'rgba(245, 158, 11, 0.12)';
-                ctx.fillRect(startX, currentY - corridor * scale, usedW * scale, corridor * scale);
+        // Corredores-guia (apenas no arranjo automático)
+        if (!manual && L.structure === 'ground' && L.rows > 1) {
+            const wUtil = L.wTerreno - 2 * L.margin, lUtil = L.lTerreno - 2 * L.margin;
+            const usedW = L.cols * L.pW, usedL = L.rows * L.pL + Math.max(0, L.rows - 1) * L.corridor;
+            const sxm = L.margin + Math.max(0, wUtil - usedW) / 2, sym = L.margin + Math.max(0, lUtil - usedL) / 2;
+            const pitch = L.pL + L.corridor;
+            ctx.fillStyle = 'rgba(90, 169, 240, 0.12)';
+            for (let r = 1; r < L.rows; r++) {
+                const yTop = sym + r * pitch - L.corridor;
+                ctx.fillRect(offsetX + sxm * scale, offsetY + yTop * scale, usedW * scale, L.corridor * scale);
             }
+        }
 
-            for (let c = 0; c < cols; c++) {
-                const currentX = startX + c * pW * scale;
-                ctx.fillStyle = '#2563eb';
-                ctx.fillRect(currentX, currentY, pW * scale, pL * scale);
-                ctx.strokeStyle = '#93c5fd';
-                ctx.lineWidth = 0.5;
-                ctx.strokeRect(currentX + 0.5, currentY + 0.5, pW * scale - 1, pL * scale - 1);
-                // Reflexo sutil na metade superior do módulo
-                ctx.fillStyle = 'rgba(255,255,255,0.06)';
-                ctx.fillRect(currentX + 1, currentY + 1, pW * scale - 2, pL * scale / 2 - 1);
-            }
+        // Placas
+        for (let i = 0; i < panels.length; i++) {
+            const p = panels[i];
+            const x = offsetX + p.x * scale, y = offsetY + p.y * scale, w = L.pW * scale, h = L.pL * scale;
+            ctx.fillStyle = '#2C7BE5';
+            ctx.fillRect(x, y, w, h);
+            ctx.strokeStyle = (i === dragIndex) ? '#E8F0F8' : '#0A1B2E';
+            ctx.lineWidth = (i === dragIndex) ? 1.5 : 0.5;
+            ctx.strokeRect(x + 0.5, y + 0.5, w - 1, h - 1);
+            ctx.fillStyle = 'rgba(255,255,255,0.14)';
+            ctx.fillRect(x + 1, y + 1, w - 2, h / 2 - 1);
         }
     }
 
+    // === ORÇAMENTO ITEMIZADO ===
+    function updateBudget() {
+        const s = STATE;
+        const moduloWp   = clamp(num('prModuloWp', 0.80), 0, 50);
+        const inversorKW = clamp(num('prInversorKW', 700), 0, 1e6);
+        const caboLen    = clamp(num('prCaboLen', 60), 0, 1e6);
+        const caboM      = clamp(num('prCaboM', 14), 0, 1e6);
+        const estruturaUn= clamp(num('prEstruturaUn', 130), 0, 1e6);
+        const protecao   = clamp(num('prProtecao', 900), 0, 1e8);
+        const maoObraKWp = clamp(num('prMaoObraKWp', 450), 0, 1e6);
+        const margem     = clamp(num('prMargem', 25), 0, 1000);
+
+        const cModulos   = s.placed * s.pPower * moduloWp;
+        const cInversor  = s.inverterKW * inversorKW;
+        const cCabo      = caboLen * caboM;
+        const cEstrutura = s.placed * estruturaUn;
+        const cProtecao  = protecao;
+        const cMaoObra   = s.kWp * maoObraKWp;
+        const custo      = cModulos + cInversor + cCabo + cEstrutura + cProtecao + cMaoObra;
+        const vMargem    = custo * (margem / 100);
+        const preco      = custo + vMargem;
+
+        // Contexto (quantidades)
+        document.getElementById('ctxModulos').textContent   = `${s.placed} un · ${s.pPower} Wp`;
+        document.getElementById('ctxInversor').textContent  = `${fmtBR(s.inverterKW, 1)} kW`;
+        document.getElementById('ctxEstrutura').textContent = `${s.placed} un`;
+        document.getElementById('ctxMaoObra').textContent   = `${fmtBR(s.kWp, 2)} kWp`;
+
+        // Subtotais
+        document.getElementById('stModulos').textContent   = brl(cModulos);
+        document.getElementById('stInversor').textContent  = brl(cInversor);
+        document.getElementById('stCabo').textContent      = brl(cCabo);
+        document.getElementById('stEstrutura').textContent = brl(cEstrutura);
+        document.getElementById('stProtecao').textContent  = brl(cProtecao);
+        document.getElementById('stMaoObra').textContent   = brl(cMaoObra);
+        document.getElementById('stCusto').textContent     = brl(custo);
+        document.getElementById('stMargem').textContent    = brl(vMargem);
+        document.getElementById('stPreco').textContent     = brl(preco);
+        document.getElementById('stPrecoKwp').textContent  = s.kWp > 0 ? brl(preco / s.kWp) : brl(0);
+
+        STATE.budget = { moduloWp, inversorKW, caboLen, caboM, estruturaUn, protecao, maoObraKWp, margem,
+                         cModulos, cInversor, cCabo, cEstrutura, cProtecao, cMaoObra, custo, vMargem, preco };
+    }
+
+    // === Preços ao vivo (prices.json, gerado semanalmente pelo robô — Fase 2) ===
+    let LIVE_PRICES = null;
+    let lastAutoModuloValue = null;
+    let lastAutoInversorValue = null;
+
+    function pricesAreFresh() {
+        if (!LIVE_PRICES || !LIVE_PRICES.generatedAt) return false;
+        const ageMs = Date.now() - new Date(LIVE_PRICES.generatedAt).getTime();
+        return ageMs >= 0 && ageMs <= 35 * 24 * 60 * 60 * 1000; // ~5 semanas de tolerância (cron é semanal)
+    }
+    function liveTier(category, key) {
+        if (!pricesAreFresh()) return null;
+        const t = LIVE_PRICES[category] && LIVE_PRICES[category][key];
+        if (!t || t.stale || (t.n || 0) < 3 || t.median == null) return null;
+        return t;
+    }
+    function fmtDate(iso) {
+        try { return new Date(iso).toLocaleDateString('pt-BR'); } catch (e) { return '—'; }
+    }
+
+    // === CLASSE DE QUALIDADE → pré-preenche o preço de referência (editável depois) ===
+    // preserveManualEdit=true: só atualiza a nota, mantém o valor que o usuário digitou.
+    function applyModuloClass(preserveManualEdit) {
+        const key = document.getElementById('clsModulo').value;
+        const t = EQUIPMENT_TIERS.modulo[key];
+        const live = liveTier('modulo', key);
+        const ref = live ? live.median : t.ref;
+        const note = live
+            ? `Preço de mercado ao vivo: R$ ${fmtBR(live.p10, 2)} a R$ ${fmtBR(live.p90, 2)}/Wp (mediana R$ ${fmtBR(live.median, 2)}, ${live.n} anúncios, atualizado ${fmtDate(LIVE_PRICES.generatedAt)}).${preserveManualEdit ? ' Seu valor editado foi mantido.' : ''} ${t.desc}`
+            : `Referência estática: R$ ${fmtBR(t.min, 2)} a R$ ${fmtBR(t.max, 2)}/Wp (mediana R$ ${fmtBR(t.ref, 2)}) — robô de preços ainda sem dados suficientes para esta classe. ${t.desc}`;
+        document.getElementById('clsModuloNote').textContent = note;
+        if (!preserveManualEdit) {
+            document.getElementById('prModuloWp').value = ref;
+            lastAutoModuloValue = String(ref);
+            updateBudget();
+        }
+    }
+    function applyInversorClass(preserveManualEdit) {
+        const key = document.getElementById('clsInversor').value;
+        const t = EQUIPMENT_TIERS.inversor[key];
+        const live = liveTier('inversor', key);
+        const ref = live ? live.median : t.ref;
+        const note = live
+            ? `Preço de mercado ao vivo: R$ ${Math.round(live.p10)} a R$ ${Math.round(live.p90)}/kW (mediana R$ ${Math.round(live.median)}, ${live.n} anúncios, atualizado ${fmtDate(LIVE_PRICES.generatedAt)}).${preserveManualEdit ? ' Seu valor editado foi mantido.' : ''} ${t.desc}`
+            : `Referência estática: R$ ${Math.round(t.min)} a R$ ${Math.round(t.max)}/kW (mediana R$ ${Math.round(t.ref)}) — robô de preços ainda sem dados suficientes para esta classe. ${t.desc}`;
+        document.getElementById('clsInversorNote').textContent = note;
+        if (!preserveManualEdit) {
+            document.getElementById('prInversorKW').value = ref;
+            lastAutoInversorValue = String(ref);
+            updateBudget();
+        }
+    }
+
+    // Chamado quando prices.json chega (depois do primeiro render — não bloqueia nada).
+    // Se o usuário já editou o campo manualmente, só a nota é atualizada.
+    function onLivePricesLoaded(data) {
+        LIVE_PRICES = data;
+        const modEdited = document.getElementById('prModuloWp').value !== lastAutoModuloValue;
+        const invEdited = document.getElementById('prInversorKW').value !== lastAutoInversorValue;
+        applyModuloClass(modEdited);
+        applyInversorClass(invEdited);
+    }
+
+    // === PROPOSTA / PDF ===
+    function fillProposal() {
+        const s = STATE, b = STATE.budget;
+        const t = (id, v) => { document.getElementById(id).textContent = v; };
+
+        const now = new Date();
+        const auto = `${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}`;
+        const propNum = (document.getElementById('propNum').value || '').trim() || auto;
+        const validDias = clamp(num('propValid', 15), 1, 3650);
+
+        t('pNum', propNum);
+        t('pDate', now.toLocaleDateString('pt-BR'));
+        t('pValid', `${validDias} dias`);
+        t('pClient', (document.getElementById('clientName').value || '').trim() || '—');
+        t('pCity', (document.getElementById('clientCity').value || '').trim() || '—');
+
+        t('pPower', `${fmtBR(s.kWp, 2)} kWp`);
+        t('pModules', `${s.placed} × ${s.pPower} Wp`);
+        t('pInverter', `${fmtBR(s.inverterKW, 1)} kW`);
+        t('pGen', `${Math.round(s.monthlyGen).toLocaleString('pt-BR')} kWh/mês`);
+        t('pSavings', `${brl(s.monthlySavings)} /mês`);
+        t('pArea', `${fmtBR(s.areaUtil, 1)} m²`);
+
+        const modKey = document.getElementById('clsModulo').value;
+        const invKey = document.getElementById('clsInversor').value;
+        const clsMod = EQUIPMENT_TIERS.modulo[modKey].label + (liveTier('modulo', modKey) ? ' · preço de mercado ao vivo' : ' · referência estática');
+        const clsInv = EQUIPMENT_TIERS.inversor[invKey].label + (liveTier('inversor', invKey) ? ' · preço de mercado ao vivo' : ' · referência estática');
+        t('pdModulos', `${s.placed} un × ${s.pPower} Wp × ${fmtBR(b.moduloWp, 2)} R$/Wp — ${clsMod}`);
+        t('pvModulos', brl(b.cModulos));
+        t('pdInversor', `${fmtBR(s.inverterKW, 1)} kW × ${brl(b.inversorKW)}/kW — ${clsInv}`);
+        t('pvInversor', brl(b.cInversor));
+        t('pdCabo', `${fmtBR(b.caboLen, 0)} m × ${brl(b.caboM)}/m`);
+        t('pvCabo', brl(b.cCabo));
+        t('pdEstrutura', `${s.placed} un × ${brl(b.estruturaUn)}/placa`);
+        t('pvEstrutura', brl(b.cEstrutura));
+        t('pvProtecao', brl(b.cProtecao));
+        t('pdMaoObra', `${fmtBR(s.kWp, 2)} kWp × ${brl(b.maoObraKWp)}/kWp`);
+        t('pvMaoObra', brl(b.cMaoObra));
+        t('pvCusto', brl(b.custo));
+        t('pdMargem', `${fmtBR(b.margem, 0)}%`);
+        t('pvMargem', brl(b.vMargem));
+        t('pvPreco', brl(b.preco));
+
+        const notes = (document.getElementById('propNotes').value || '').trim();
+        t('pNotes', notes || 'Condições a combinar.');
+    }
+
     // === EVENTOS ===
+    setupTiles('modeGroup', () => {
+        const consumo = tileValue('modeGroup') === 'consumo';
+        document.getElementById('consumoBox').classList.toggle('hidden', !consumo);
+        calculate();
+    });
     setupTiles('structureGroup', calculate);
     setupTiles('orientationGroup', calculate);
-    [el.width, el.length, el.margin, el.hsp, el.pr, el.rate, el.corridor].forEach(
+
+    [el.width, el.length, el.margin, el.hsp, el.pr, el.rate, el.corridor, el.target].forEach(
         input => input.addEventListener('input', calculate)
     );
     [el.panel, el.phase].forEach(sel => sel.addEventListener('change', calculate));
 
+    // Preços recalculam só o orçamento (não mexem no sistema)
+    ['prModuloWp','prInversorKW','prCaboLen','prCaboM','prEstruturaUn','prProtecao','prMaoObraKWp','prMargem']
+        .forEach(id => document.getElementById(id).addEventListener('input', updateBudget));
+
+    // Classe de qualidade: troca a classe pré-preenche o preço (continua editável depois)
+    // Nota: chamada em arrow function para NÃO repassar o objeto Event do 'change'
+    // como argumento — applyModuloClass(event) seria truthy e travaria em "preservar".
+    document.getElementById('clsModulo').addEventListener('change', () => applyModuloClass());
+    document.getElementById('clsInversor').addEventListener('change', () => applyInversorClass());
+    applyModuloClass();
+    applyInversorClass();
+
+    document.getElementById('btnPdf').addEventListener('click', () => {
+        fillProposal();
+        window.print();
+    });
+
+    // === ARRASTAR PLACAS (mouse + toque) ===
+    (function initDrag() {
+        const canvas = document.getElementById('layoutCanvas');
+
+        function toMeters(cx, cy) {
+            if (!view) return null;
+            const rect = canvas.getBoundingClientRect();
+            const rw = rect.width || canvas.width;   // fallback se o layout reportar 0
+            const rh = rect.height || canvas.height;
+            const px = (cx - rect.left) * canvas.width / rw;
+            const py = (cy - rect.top) * canvas.height / rh;
+            return { xm: (px - view.offsetX) / view.scale, ym: (py - view.offsetY) / view.scale };
+        }
+        function hit(xm, ym) {
+            for (let i = panels.length - 1; i >= 0; i--) {
+                const p = panels[i];
+                if (xm >= p.x && xm <= p.x + view.pW && ym >= p.y && ym <= p.y + view.pL) return i;
+            }
+            return -1;
+        }
+        // Caixa envolvente do conjunto (metros), já incluindo largura/altura da placa
+        function groupBox(arr) {
+            let minX = Infinity, minY = Infinity, maxXr = -Infinity, maxYb = -Infinity;
+            for (const p of arr) {
+                minX = Math.min(minX, p.x); minY = Math.min(minY, p.y);
+                maxXr = Math.max(maxXr, p.x + view.pW); maxYb = Math.max(maxYb, p.y + view.pL);
+            }
+            return { minX, minY, maxXr, maxYb };
+        }
+        function start(cx, cy) {
+            const m = toMeters(cx, cy); if (!m) return false;
+            const i = hit(m.xm, m.ym);
+            if (i < 0) return false;
+            manual = true; // some corredores-guia ao reposicionar manualmente
+            if (dragMode === 'group') {
+                const orig = panels.map(p => ({ x: p.x, y: p.y }));
+                drag = { mode: 'group', orig, box: groupBox(orig), x0: m.xm, y0: m.ym };
+            } else {
+                dragIndex = i;
+                drag = { mode: 'single', index: i, grabDX: m.xm - panels[i].x, grabDY: m.ym - panels[i].y };
+            }
+            canvas.style.cursor = 'grabbing'; renderCanvas(); return true;
+        }
+        function move(cx, cy) {
+            const m = toMeters(cx, cy); if (!m) return;
+            if (drag && drag.mode === 'group') {
+                // desloca todas as placas pelo mesmo delta, preso ao terreno
+                let dx = clamp(m.xm - drag.x0, -drag.box.minX, view.wTerreno - drag.box.maxXr);
+                let dy = clamp(m.ym - drag.y0, -drag.box.minY, view.lTerreno - drag.box.maxYb);
+                for (let i = 0; i < panels.length; i++)
+                    panels[i] = { x: drag.orig[i].x + dx, y: drag.orig[i].y + dy };
+                renderCanvas();
+            } else if (drag && drag.mode === 'single') {
+                panels[drag.index] = {
+                    x: clamp(m.xm - drag.grabDX, 0, view.wTerreno - view.pW),
+                    y: clamp(m.ym - drag.grabDY, 0, view.lTerreno - view.pL)
+                };
+                renderCanvas();
+            } else {
+                canvas.style.cursor = hit(m.xm, m.ym) >= 0 ? 'grab' : 'default';
+            }
+        }
+        function end() { if (drag) { drag = null; dragIndex = -1; canvas.style.cursor = 'grab'; renderCanvas(); } }
+
+        canvas.addEventListener('mousedown', (e) => { if (start(e.clientX, e.clientY)) e.preventDefault(); });
+        window.addEventListener('mousemove', (e) => move(e.clientX, e.clientY));
+        window.addEventListener('mouseup', end);
+        canvas.addEventListener('touchstart', (e) => { const t = e.touches[0]; if (start(t.clientX, t.clientY)) e.preventDefault(); }, { passive: false });
+        canvas.addEventListener('touchmove', (e) => { if (dragIndex >= 0) { const t = e.touches[0]; move(t.clientX, t.clientY); e.preventDefault(); } }, { passive: false });
+        canvas.addEventListener('touchend', end);
+        canvas.addEventListener('touchcancel', end);
+    })();
+
+    // Seletor Conjunto / Placa
+    (function initDragMode() {
+        const btns = document.querySelectorAll('#dragModeGroup button[data-value]');
+        const ON  = "dragmode-btn bg-primary text-white rounded-md px-3 py-1.5 text-xs font-semibold ring-1 ring-sky transition";
+        const OFF = "dragmode-btn border border-line rounded-md px-3 py-1.5 text-xs font-semibold text-muted hover:bg-panel-2 transition";
+        btns.forEach(b => b.addEventListener('click', () => {
+            btns.forEach(x => { x.className = OFF; x.setAttribute('aria-pressed', 'false'); });
+            b.className = ON; b.setAttribute('aria-pressed', 'true');
+            dragMode = b.dataset.value;
+        }));
+    })();
+
+    // Redefinir para o arranjo automático
+    document.getElementById('btnResetLayout').addEventListener('click', () => {
+        manual = false; lastSig = ''; calculate();
+    });
+
     calculate();
+
+    // Preços ao vivo (Fase 2) — carrega em paralelo, não bloqueia o primeiro render.
+    // Se falhar (offline, GitHub Pages ainda propagando, robô nunca rodou etc.) a
+    // página segue perfeitamente com a referência estática já aplicada acima.
+    fetch('prices.json', { cache: 'no-store' })
+        .then(r => r.ok ? r.json() : Promise.reject(new Error('prices.json indisponível')))
+        .then(onLivePricesLoaded)
+        .catch(err => console.warn('[ElektroSys] prices.json não carregado — usando referência estática.', err));
     </script>
 </body>
 </html>

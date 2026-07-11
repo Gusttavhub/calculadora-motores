@@ -1,0 +1,62 @@
+name: Atualizar preços de referência (Solar)
+
+# Roda semanalmente e busca preços reais de módulos/inversores no Mercado
+# Livre para alimentar prices.json, consumido pelo simulador solar.
+#
+# Se as credenciais MELI_* ainda não estiverem configuradas nos Secrets do
+# repositório, o job termina com sucesso sem fazer nada (ver
+# scripts/update_prices.py) — não gera notificação de falha por e-mail.
+on:
+  schedule:
+    - cron: '0 12 * * 1'   # toda segunda-feira, 12:00 UTC (~09:00 em Goiás)
+  workflow_dispatch: {}     # permite rodar manualmente pela aba Actions
+
+permissions:
+  contents: write
+
+jobs:
+  update-prices:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Consultar Mercado Livre e atualizar prices.json
+        id: fetch
+        env:
+          MELI_CLIENT_ID: ${{ secrets.MELI_CLIENT_ID }}
+          MELI_CLIENT_SECRET: ${{ secrets.MELI_CLIENT_SECRET }}
+          MELI_REFRESH_TOKEN: ${{ secrets.MELI_REFRESH_TOKEN }}
+        run: python scripts/update_prices.py
+
+      - name: Rotacionar o refresh_token do Mercado Livre (uso único)
+        if: steps.fetch.outputs.new_refresh_token != ''
+        env:
+          GH_PAT: ${{ secrets.GH_PAT }}
+          NEW_REFRESH_TOKEN: ${{ steps.fetch.outputs.new_refresh_token }}
+          REPO: ${{ github.repository }}
+        run: |
+          if [ -z "$GH_PAT" ]; then
+            echo "GH_PAT não configurado — não é possível rotacionar o MELI_REFRESH_TOKEN."
+            echo "A próxima execução vai falhar ao renovar o token do Mercado Livre até isso ser resolvido."
+            exit 0
+          fi
+          pip install pynacl --quiet
+          python scripts/rotate_secret.py
+
+      - name: Commit e push (somente se prices.json mudou)
+        run: |
+          git config user.name "elektrosys-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add prices.json
+          if git diff --cached --quiet; then
+            echo "Sem mudanças em prices.json nesta rodada."
+          else
+            git commit -m "chore(prices): atualiza referência de preços (automático)"
+            git push
+          fi
