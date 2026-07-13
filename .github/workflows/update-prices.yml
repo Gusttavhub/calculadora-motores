@@ -49,14 +49,14 @@ jobs:
           pip install pynacl --quiet
           python scripts/rotate_secret.py
 
-      - name: Commit e push (somente se prices.json mudou)
+      - name: Commit e push (prices.json e/ou robot-status.json)
         run: |
           git config user.name "elektrosys-bot"
           git config user.email "actions@users.noreply.github.com"
-          git add prices.json
+          git add prices.json robot-status.json
           if git diff --cached --quiet; then
-            echo "Sem mudanças em prices.json nesta rodada."
+            echo "Sem mudanças nesta rodada."
           else
-            git commit -m "chore(prices): atualiza referência de preços (automático)"
+            git commit -m "chore(prices): atualiza referência/status (automático)"
             git push
           fi

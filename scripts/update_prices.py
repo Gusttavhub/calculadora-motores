@@ -31,6 +31,7 @@ import urllib.parse
 import urllib.request
 
 PRICES_PATH = os.path.join(os.path.dirname(__file__), "..", "prices.json")
+STATUS_PATH = os.path.join(os.path.dirname(__file__), "..", "robot-status.json")
 API_BASE = "https://api.mercadolibre.com"
 MIN_SAMPLES = 3          # abaixo disso, não confiamos no dado — mantém o anterior
 REQUEST_DELAY_S = 0.35   # educado com a API pública
@@ -59,6 +60,32 @@ KW_RE = re.compile(r"(\d+(?:[.,]\d+)?)\s?kw\b", re.IGNORECASE)
 
 def log(msg):
     print(f"[update_prices] {msg}", flush=True)
+
+
+def describe_error(e):
+    """Extrai a mensagem útil de um erro — incluindo o corpo da resposta HTTP do ML."""
+    if isinstance(e, urllib.error.HTTPError):
+        try:
+            body = e.read().decode("utf-8", "replace")
+        except Exception:
+            body = ""
+        return f"HTTP {e.code}: {body[:500]}"
+    return f"{type(e).__name__}: {e}"
+
+
+def write_status(state, detail):
+    """Grava robot-status.json (commitado) para diagnóstico sem depender dos logs do Actions.
+    Nunca contém segredo: só estado e a mensagem de erro pública do Mercado Livre."""
+    try:
+        with open(STATUS_PATH, "w", encoding="utf-8") as f:
+            json.dump({
+                "checkedAt": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                "state": state,
+                "detail": detail,
+            }, f, ensure_ascii=False, indent=2)
+            f.write("\n")
+    except Exception:
+        pass
 
 
 def http_json(url, data=None, headers=None):
@@ -208,16 +235,20 @@ def main():
     refresh_token = os.environ.get("MELI_REFRESH_TOKEN", "").strip()
 
     if not (client_id and client_secret and refresh_token):
-        log("credenciais MELI_CLIENT_ID/MELI_CLIENT_SECRET/MELI_REFRESH_TOKEN não configuradas — "
-            "nada a fazer ainda (isso é esperado até a configuração inicial ser concluída).")
+        which = [n for n, v in [("MELI_CLIENT_ID", client_id), ("MELI_CLIENT_SECRET", client_secret),
+                                 ("MELI_REFRESH_TOKEN", refresh_token)] if not v]
+        log(f"credenciais ausentes/vazias: {', '.join(which)} — nada a fazer ainda.")
+        write_status("sem_credenciais", f"secrets ausentes ou vazios: {', '.join(which)}")
         sys.exit(0)
 
     try:
         access_token, new_refresh_token = refresh_access_token(client_id, client_secret, refresh_token)
     except Exception as e:
-        log(f"erro ao renovar o token do Mercado Livre: {e}")
+        detail = describe_error(e)
+        log(f"erro ao renovar o token do Mercado Livre: {detail}")
         log("prices.json NÃO foi alterado. Verifique se o refresh_token ainda é válido "
             "(ele é de uso único — se algo o consumiu fora deste robô, é preciso gerar um novo).")
+        write_status("erro_token", detail)
         sys.exit(0)
 
     # Publica o refresh_token novo via GitHub Actions output — o workflow o grava
@@ -253,6 +284,10 @@ def main():
         json.dump(out, f, ensure_ascii=False, indent=2)
         f.write("\n")
     log(f"prices.json atualizado: {PRICES_PATH}")
+
+    counts = {**{f"modulo.{k}": v.get("n", 0) for k, v in modulo.items()},
+              **{f"inversor.{k}": v.get("n", 0) for k, v in inversor.items()}}
+    write_status("ok", {"amostras": counts})
 
 
 if __name__ == "__main__":
