@@ -1,14 +1,50 @@
 {
-  "generatedAt": "2026-07-11T00:00:00Z",
-  "source": "seed",
+  "generatedAt": "2026-07-13T00:34:15Z",
+  "source": "mercadolivre_api",
   "modulo": {
-    "tier1": { "p10": 0.75, "median": 0.80, "p90": 0.95, "n": 0, "stale": false },
-    "tier2": { "p10": 0.65, "median": 0.72, "p90": 0.80, "n": 0, "stale": false },
-    "tier3": { "p10": 0.50, "median": 0.58, "p90": 0.65, "n": 0, "stale": false }
+    "tier1": {
+      "p10": 0.75,
+      "median": 0.8,
+      "p90": 0.95,
+      "n": 0,
+      "stale": true
+    },
+    "tier2": {
+      "p10": 0.65,
+      "median": 0.72,
+      "p90": 0.8,
+      "n": 0,
+      "stale": true
+    },
+    "tier3": {
+      "p10": 0.5,
+      "median": 0.58,
+      "p90": 0.65,
+      "n": 0,
+      "stale": true
+    }
   },
   "inversor": {
-    "linhaA": { "p10": 600, "median": 700, "p90": 800, "n": 0, "stale": false },
-    "linhaB": { "p10": 450, "median": 520, "p90": 600, "n": 0, "stale": false },
-    "linhaC": { "p10": 300, "median": 370, "p90": 450, "n": 0, "stale": false }
+    "linhaA": {
+      "p10": 600,
+      "median": 700,
+      "p90": 800,
+      "n": 0,
+      "stale": true
+    },
+    "linhaB": {
+      "p10": 450,
+      "median": 520,
+      "p90": 600,
+      "n": 0,
+      "stale": true
+    },
+    "linhaC": {
+      "p10": 300,
+      "median": 370,
+      "p90": 450,
+      "n": 0,
+      "stale": true
+    }
   }
 }

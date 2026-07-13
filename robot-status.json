@@ -1,5 +1,14 @@
 {
-  "checkedAt": "2026-07-13T00:28:37Z",
-  "state": "erro_token",
-  "detail": "HTTP 400: {\"message\":\"invalid client_id or client_secret\",\"error\":\"invalid_client\",\"status\":400,\"cause\":[]}"
+  "checkedAt": "2026-07-13T00:34:15Z",
+  "state": "ok",
+  "detail": {
+    "amostras": {
+      "modulo.tier1": 0,
+      "modulo.tier2": 0,
+      "modulo.tier3": 0,
+      "inversor.linhaA": 0,
+      "inversor.linhaB": 0,
+      "inversor.linhaC": 0
+    }
+  }
 }
