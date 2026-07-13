@@ -114,16 +114,28 @@ def refresh_access_token(client_id, client_secret, refresh_token):
     return resp["access_token"], resp["refresh_token"]
 
 
+# Diagnóstico agregado da coleta (vai para robot-status.json)
+DIAG = {"queries": 0, "raw_results": 0, "http_errors": {}, "sample_titles": []}
+
+
 def search(query, access_token):
     params = urllib.parse.urlencode({"q": query, "limit": RESULTS_PER_QUERY})
     url = f"{API_BASE}/sites/MLB/search?{params}"
     headers = {"Authorization": f"Bearer {access_token}"}
+    DIAG["queries"] += 1
     try:
-        return http_json(url, headers=headers).get("results", [])
+        results = http_json(url, headers=headers).get("results", [])
+        DIAG["raw_results"] += len(results)
+        for it in results[:2]:
+            if len(DIAG["sample_titles"]) < 6:
+                DIAG["sample_titles"].append(it.get("title", "")[:60])
+        return results
     except urllib.error.HTTPError as e:
+        DIAG["http_errors"][str(e.code)] = DIAG["http_errors"].get(str(e.code), 0) + 1
         log(f"  aviso: busca '{query}' falhou ({e.code}) — pulando")
         return []
     except Exception as e:
+        DIAG["http_errors"]["outro"] = DIAG["http_errors"].get("outro", 0) + 1
         log(f"  aviso: busca '{query}' falhou ({e}) — pulando")
         return []
 
@@ -287,7 +299,15 @@ def main():
 
     counts = {**{f"modulo.{k}": v.get("n", 0) for k, v in modulo.items()},
               **{f"inversor.{k}": v.get("n", 0) for k, v in inversor.items()}}
-    write_status("ok", {"amostras": counts})
+    write_status("ok", {
+        "amostras": counts,
+        "diagnostico_coleta": {
+            "buscas_feitas": DIAG["queries"],
+            "anuncios_brutos_recebidos": DIAG["raw_results"],
+            "erros_http": DIAG["http_errors"],
+            "titulos_exemplo": DIAG["sample_titles"],
+        }
+    })
 
 
 if __name__ == "__main__":
