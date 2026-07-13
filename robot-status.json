@@ -1,5 +1,5 @@
 {
-  "checkedAt": "2026-07-13T00:34:15Z",
+  "checkedAt": "2026-07-13T14:34:44Z",
   "state": "ok",
   "detail": {
     "amostras": {
@@ -9,6 +9,14 @@
       "inversor.linhaA": 0,
       "inversor.linhaB": 0,
       "inversor.linhaC": 0
+    },
+    "diagnostico_coleta": {
+      "buscas_feitas": 26,
+      "anuncios_brutos_recebidos": 0,
+      "erros_http": {
+        "403": 26
+      },
+      "titulos_exemplo": []
     }
   }
 }
