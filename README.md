@@ -53,6 +53,17 @@ module.exports = {
 3. `input.css` com as três diretivas `@tailwind base; @tailwind components; @tailwind utilities;`
 4. Rode: `tailwindcss.exe -c tailwind.config.js -i input.css -o styles.css --minify`
 
+## Equipamento real via IA (Gemini)
+
+O `solar.html` tem o card "Equipamento real (IA)": digitando o modelo do
+módulo/inversor, o Gemini (`gemini-flash-latest`) devolve os dados de
+catálogo (Wp, dimensões, eficiência, kW, classe de qualidade) e aplica no
+simulador. Funciona no modelo **traga sua chave**: o usuário salva a própria
+chave (grátis em aistudio.google.com/apikey) e ela fica **só no localStorage
+do navegador** — nunca no repositório. Dados de IA são sugestão: a interface
+manda conferir o datasheet. O orçamento aceita cobrar módulos/inversores por
+potência (R$/Wp, R$/kW) ou **por unidade** (R$/un).
+
 ## Robô de preços — como funciona
 
 Toda segunda-feira o GitHub Actions roda `scripts/update_prices.py`, que:

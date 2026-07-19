@@ -12,7 +12,7 @@
         style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com;
         font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com data:;
         img-src 'self' data:;
-        connect-src 'self';
+        connect-src 'self' https://generativelanguage.googleapis.com;
         frame-ancestors 'none';
         base-uri 'self';
         form-action 'self';
@@ -318,6 +318,40 @@
                         </details>
                     </div>
                 </div>
+
+                <div class="bg-panel border border-line rounded-xl p-6 text-fg">
+                    <div class="flex items-center gap-2 mb-2 border-b border-line pb-3">
+                        <i class="fa-solid fa-wand-magic-sparkles text-primary"></i>
+                        <h2 class="font-display font-bold text-lg tracking-wide">EQUIPAMENTO REAL (IA)</h2>
+                    </div>
+                    <p class="text-[11px] text-muted mb-4">Digite o modelo e a IA (Gemini) preenche os dados de catálogo. <span class="text-alert font-semibold">Confira com o datasheet</span> — IA pode errar especificação.</p>
+                    <div class="space-y-4">
+                        <div>
+                            <label for="iaModeloModulo" class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Módulo (modelo)</label>
+                            <div class="flex gap-2">
+                                <input type="text" id="iaModeloModulo" placeholder="Ex: Canadian Solar CS7L-600MS" class="num-in" style="font-family:'IBM Plex Sans'">
+                                <button id="btnIaModulo" class="bg-primary hover:bg-primary-700 text-white text-xs font-semibold px-3 rounded-md transition whitespace-nowrap">Buscar</button>
+                            </div>
+                            <p id="iaModNote" class="text-[10px] text-sky mt-1.5 leading-snug"></p>
+                        </div>
+                        <div>
+                            <label for="iaModeloInversor" class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Inversor (modelo)</label>
+                            <div class="flex gap-2">
+                                <input type="text" id="iaModeloInversor" placeholder="Ex: Growatt MIN 5000TL-X" class="num-in" style="font-family:'IBM Plex Sans'">
+                                <button id="btnIaInversor" class="bg-primary hover:bg-primary-700 text-white text-xs font-semibold px-3 rounded-md transition whitespace-nowrap">Buscar</button>
+                            </div>
+                            <p id="iaInvNote" class="text-[10px] text-sky mt-1.5 leading-snug"></p>
+                        </div>
+                        <div class="border-t border-line pt-3">
+                            <label for="iaKey" class="block text-[10px] font-semibold text-muted uppercase tracking-wider mb-1.5">Chave da API Gemini (fica só neste navegador)</label>
+                            <div class="flex gap-2">
+                                <input type="password" id="iaKey" placeholder="AIza..." class="num-in" autocomplete="off">
+                                <button id="btnIaKey" class="border border-line hover:border-sky text-muted hover:text-sky text-xs font-semibold px-3 rounded-md transition whitespace-nowrap">Salvar</button>
+                            </div>
+                            <p class="text-[10px] text-muted mt-1.5">Gratuita em <span class="font-mono text-sky">aistudio.google.com/apikey</span>. <span id="iaKeyStatus"></span></p>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="lg:col-span-8 space-y-6">
@@ -417,9 +451,15 @@
                             </div>
                             <p id="clsModuloNote" class="text-[10px] text-sky mt-1.5 leading-snug">—</p>
                             <div class="grid grid-cols-12 gap-2 items-center mt-2">
-                                <div class="col-span-6"></div>
+                                <div class="col-span-6">
+                                    <label class="text-[9px] text-muted uppercase block mb-0.5">Cobrar por</label>
+                                    <select id="modoPrModulo" class="num-in" style="font-family:'IBM Plex Sans'">
+                                        <option value="wp" selected>R$/Wp (potência)</option>
+                                        <option value="un">R$/unidade (placa)</option>
+                                    </select>
+                                </div>
                                 <div class="col-span-3">
-                                    <label class="text-[9px] text-muted uppercase block mb-0.5">R$/Wp</label>
+                                    <label class="text-[9px] text-muted uppercase block mb-0.5"><span id="lblPrModulo">R$/Wp</span></label>
                                     <input type="number" id="prModuloWp" value="0.80" min="0" step="0.01" class="num-in">
                                 </div>
                                 <div class="col-span-3 text-right">
@@ -446,9 +486,15 @@
                             </div>
                             <p id="clsInversorNote" class="text-[10px] text-sky mt-1.5 leading-snug">—</p>
                             <div class="grid grid-cols-12 gap-2 items-center mt-2">
-                                <div class="col-span-6"></div>
+                                <div class="col-span-6">
+                                    <label class="text-[9px] text-muted uppercase block mb-0.5">Cobrar por</label>
+                                    <select id="modoPrInversor" class="num-in" style="font-family:'IBM Plex Sans'">
+                                        <option value="kw" selected>R$/kW (potência)</option>
+                                        <option value="un">R$/unidade (inversor)</option>
+                                    </select>
+                                </div>
                                 <div class="col-span-3">
-                                    <label class="text-[9px] text-muted uppercase block mb-0.5">R$/kW</label>
+                                    <label class="text-[9px] text-muted uppercase block mb-0.5"><span id="lblPrInversor">R$/kW</span></label>
                                     <input type="number" id="prInversorKW" value="700" min="0" step="10" class="num-in">
                                 </div>
                                 <div class="col-span-3 text-right">
@@ -795,6 +841,7 @@
         const orientation = tileValue('orientationGroup') || 'portrait';
 
         const opt = el.panel.options[el.panel.selectedIndex];
+        STATE.customPanelActive = !!(opt && opt.id === 'optCustomPanel');
         const pPower = sanitize(opt.value, 550);
         const pW_raw = sanitize(opt.dataset.w, 1.1);
         const pL_raw = sanitize(opt.dataset.l, 2.2);
@@ -856,7 +903,15 @@
         document.getElementById('resCount').textContent = totalPanels;
         document.getElementById('resArrangement').textContent = arrangementLabel(cols, rows, placed, capacity);
         document.getElementById('resPower').textContent = fmtBR(kWp, 2);
-        document.getElementById('resInverter').textContent = totalPanels > 0 ? fmtBR(inverterKW, 1) : '–';
+        if (CUSTOM_INV && CUSTOM_INV.kw > 0) {
+            // Inversor real informado: sugere quantas unidades cobrem a potência requerida
+            STATE.invUnits = Math.max(1, Math.ceil(inverterKW / CUSTOM_INV.kw));
+            document.getElementById('resInverter').textContent = totalPanels > 0
+                ? `${STATE.invUnits} × ${fmtBR(CUSTOM_INV.kw, 1)}` : '–';
+        } else {
+            STATE.invUnits = 1;
+            document.getElementById('resInverter').textContent = totalPanels > 0 ? fmtBR(inverterKW, 1) : '–';
+        }
         document.getElementById('resGen').textContent = Math.round(monthlyGen).toLocaleString('pt-BR');
         document.getElementById('resSavings').textContent = brl(monthlySavings);
 
@@ -979,8 +1034,10 @@
     // === ORÇAMENTO ITEMIZADO ===
     function updateBudget() {
         const s = STATE;
-        const moduloWp   = clamp(num('prModuloWp', 0.80), 0, 50);
-        const inversorKW = clamp(num('prInversorKW', 700), 0, 1e6);
+        const modoMod = document.getElementById('modoPrModulo').value;    // 'wp' | 'un'
+        const modoInv = document.getElementById('modoPrInversor').value;  // 'kw' | 'un'
+        const moduloWp   = clamp(num('prModuloWp', 0.80), 0, modoMod === 'un' ? 1e7 : 50);
+        const inversorKW = clamp(num('prInversorKW', 700), 0, 1e7);
         const caboLen    = clamp(num('prCaboLen', 60), 0, 1e6);
         const caboM      = clamp(num('prCaboM', 14), 0, 1e6);
         const estruturaUn= clamp(num('prEstruturaUn', 130), 0, 1e6);
@@ -988,8 +1045,9 @@
         const maoObraKWp = clamp(num('prMaoObraKWp', 450), 0, 1e6);
         const margem     = clamp(num('prMargem', 25), 0, 1000);
 
-        const cModulos   = s.placed * s.pPower * moduloWp;
-        const cInversor  = s.inverterKW * inversorKW;
+        const invUnits   = s.invUnits || 1;
+        const cModulos   = (modoMod === 'un') ? s.placed * moduloWp : s.placed * s.pPower * moduloWp;
+        const cInversor  = (modoInv === 'un') ? invUnits * inversorKW : s.inverterKW * inversorKW;
         const cCabo      = caboLen * caboM;
         const cEstrutura = s.placed * estruturaUn;
         const cProtecao  = protecao;
@@ -998,9 +1056,14 @@
         const vMargem    = custo * (margem / 100);
         const preco      = custo + vMargem;
 
-        // Contexto (quantidades)
-        document.getElementById('ctxModulos').textContent   = `${s.placed} un · ${s.pPower} Wp`;
-        document.getElementById('ctxInversor').textContent  = `${fmtBR(s.inverterKW, 1)} kW`;
+        // Contexto (quantidades) + rótulo do campo de preço conforme o modo
+        document.getElementById('lblPrModulo').textContent   = (modoMod === 'un') ? 'R$/un' : 'R$/Wp';
+        document.getElementById('lblPrInversor').textContent = (modoInv === 'un') ? 'R$/un' : 'R$/kW';
+        document.getElementById('ctxModulos').textContent   = `${s.placed} un · ${s.pPower} Wp` +
+            ((s.customPanelActive && CUSTOM_PANEL) ? ` · ${CUSTOM_PANEL.marca}` : '');
+        document.getElementById('ctxInversor').textContent  = CUSTOM_INV
+            ? `${invUnits} un × ${fmtBR(CUSTOM_INV.kw, 1)} kW (${CUSTOM_INV.marca})`
+            : ((modoInv === 'un') ? `${invUnits} un · ${fmtBR(s.inverterKW, 1)} kW` : `${fmtBR(s.inverterKW, 1)} kW`);
         document.getElementById('ctxEstrutura').textContent = `${s.placed} un`;
         document.getElementById('ctxMaoObra').textContent   = `${fmtBR(s.kWp, 2)} kWp`;
 
@@ -1017,7 +1080,8 @@
         document.getElementById('stPrecoKwp').textContent  = s.kWp > 0 ? brl(preco / s.kWp) : brl(0);
 
         STATE.budget = { moduloWp, inversorKW, caboLen, caboM, estruturaUn, protecao, maoObraKWp, margem,
-                         cModulos, cInversor, cCabo, cEstrutura, cProtecao, cMaoObra, custo, vMargem, preco };
+                         cModulos, cInversor, cCabo, cEstrutura, cProtecao, cMaoObra, custo, vMargem, preco,
+                         modoMod, modoInv, invUnits };
     }
 
     // === Preços ao vivo (prices.json, gerado semanalmente pelo robô — Fase 2) ===
@@ -1043,6 +1107,8 @@
     // === CLASSE DE QUALIDADE → pré-preenche o preço de referência (editável depois) ===
     // preserveManualEdit=true: só atualiza a nota, mantém o valor que o usuário digitou.
     function applyModuloClass(preserveManualEdit) {
+        // No modo R$/unidade o preço é sempre manual (a referência da classe é por Wp)
+        if (document.getElementById('modoPrModulo').value === 'un') preserveManualEdit = true;
         const key = document.getElementById('clsModulo').value;
         const t = EQUIPMENT_TIERS.modulo[key];
         const live = liveTier('modulo', key);
@@ -1058,6 +1124,8 @@
         }
     }
     function applyInversorClass(preserveManualEdit) {
+        // No modo R$/unidade o preço é sempre manual (a referência da classe é por kW)
+        if (document.getElementById('modoPrInversor').value === 'un') preserveManualEdit = true;
         const key = document.getElementById('clsInversor').value;
         const t = EQUIPMENT_TIERS.inversor[key];
         const live = liveTier('inversor', key);
@@ -1081,6 +1149,116 @@
         const invEdited = document.getElementById('prInversorKW').value !== lastAutoInversorValue;
         applyModuloClass(modEdited);
         applyInversorClass(invEdited);
+    }
+
+    // === EQUIPAMENTO REAL VIA IA (Gemini, chave do próprio usuário) ===
+    // A chave fica APENAS no localStorage deste navegador — nunca no repositório.
+    // Dados de IA são sugestão de catálogo: a interface manda conferir o datasheet.
+    const GEMINI_MODEL = 'gemini-flash-latest';
+    let CUSTOM_PANEL = null;   // {marca, modelo, wp, w, l, ef}
+    let CUSTOM_INV = null;     // {marca, modelo, kw, ef}
+
+    function geminiKey() { return (localStorage.getItem('ek_gemini_key') || '').trim(); }
+
+    async function geminiJson(prompt, schema) {
+        const key = geminiKey();
+        if (!key) throw new Error('Salve sua chave da API Gemini no campo abaixo (grátis em aistudio.google.com/apikey).');
+        const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${encodeURIComponent(key)}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: prompt }] }],
+                generationConfig: { responseMimeType: 'application/json', responseSchema: schema, temperature: 0 }
+            })
+        });
+        if (!r.ok) {
+            if (r.status === 400 || r.status === 403) throw new Error('Chave da API inválida ou sem permissão.');
+            if (r.status === 429) throw new Error('Cota gratuita esgotada — tente novamente mais tarde.');
+            throw new Error(`Falha na API do Gemini (HTTP ${r.status}).`);
+        }
+        const data = await r.json();
+        const txt = data.candidates && data.candidates[0] && data.candidates[0].content
+            && data.candidates[0].content.parts && data.candidates[0].content.parts[0].text;
+        if (!txt) throw new Error('Resposta vazia da IA.');
+        return JSON.parse(txt);
+    }
+
+    const SCHEMA_MODULO = { type: 'OBJECT', properties: {
+        encontrado: { type: 'BOOLEAN' }, marca: { type: 'STRING' },
+        potencia_wp: { type: 'NUMBER' }, largura_m: { type: 'NUMBER' },
+        comprimento_m: { type: 'NUMBER' }, eficiencia_pct: { type: 'NUMBER' },
+        tier: { type: 'STRING', enum: ['tier1', 'tier2', 'tier3'] },
+        observacao: { type: 'STRING' }
+    }, required: ['encontrado'] };
+
+    const SCHEMA_INVERSOR = { type: 'OBJECT', properties: {
+        encontrado: { type: 'BOOLEAN' }, marca: { type: 'STRING' },
+        potencia_kw: { type: 'NUMBER' }, eficiencia_pct: { type: 'NUMBER' },
+        linha: { type: 'STRING', enum: ['linhaA', 'linhaB', 'linhaC'] },
+        observacao: { type: 'STRING' }
+    }, required: ['encontrado'] };
+
+    async function buscarModulo() {
+        const modelo = document.getElementById('iaModeloModulo').value.trim();
+        const note = document.getElementById('iaModNote');
+        if (!modelo) {
+            CUSTOM_PANEL = null;
+            const optOld = document.getElementById('optCustomPanel');
+            if (optOld) optOld.remove();
+            note.textContent = 'Campo vazio — voltando aos módulos padrão.';
+            calculate(); return;
+        }
+        note.textContent = 'Consultando a IA...';
+        try {
+            const d = await geminiJson(
+                `Você é um engenheiro fotovoltaico. Retorne os dados de DATASHEET do módulo fotovoltaico "${modelo}". ` +
+                `potencia_wp = potência nominal STC em Wp; largura_m e comprimento_m = dimensões físicas em metros; ` +
+                `eficiencia_pct = eficiência do módulo em %; tier = bancabilidade do fabricante ` +
+                `(tier1 = lista BloombergNEF; tier2 = intermediário; tier3 = montadora pequena/desconhecida). ` +
+                `Se você NÃO conhecer este modelo com segurança, retorne encontrado=false — NÃO invente números.`,
+                SCHEMA_MODULO);
+            if (!d.encontrado) { note.textContent = 'A IA não conhece esse modelo com segurança. Confira a grafia ou use os módulos padrão.'; return; }
+            const wp = sanitize(d.potencia_wp, 0), w = sanitize(d.largura_m, 0), l = sanitize(d.comprimento_m, 0);
+            if (!(wp >= 100 && wp <= 800 && w >= 0.5 && w <= 3 && l >= 0.5 && l <= 3)) {
+                note.textContent = `Dados fora do plausível (${wp} Wp, ${w}×${l} m) — descartados. Confira o modelo.`; return;
+            }
+            CUSTOM_PANEL = { marca: d.marca || '', modelo, wp, w, l, ef: sanitize(d.eficiencia_pct, 0) };
+            let opt2 = document.getElementById('optCustomPanel');
+            if (!opt2) { opt2 = document.createElement('option'); opt2.id = 'optCustomPanel'; el.panel.appendChild(opt2); }
+            opt2.value = wp; opt2.dataset.w = w; opt2.dataset.l = l;
+            opt2.textContent = `${wp} Wp — ${d.marca || modelo} (IA)`;
+            opt2.selected = true;
+            if (d.tier && EQUIPMENT_TIERS.modulo[d.tier]) { document.getElementById('clsModulo').value = d.tier; applyModuloClass(); }
+            note.textContent = `IA: ${d.marca} — ${wp} Wp, ${fmtBR(w, 2)}×${fmtBR(l, 2)} m, eficiência ${fmtBR(CUSTOM_PANEL.ef, 1)}%. ${d.observacao || ''} Confira no datasheet antes de propor.`;
+            calculate();
+        } catch (e) { note.textContent = `Erro: ${e.message}`; }
+    }
+
+    async function buscarInversor() {
+        const modelo = document.getElementById('iaModeloInversor').value.trim();
+        const note = document.getElementById('iaInvNote');
+        if (!modelo) {
+            CUSTOM_INV = null;
+            note.textContent = 'Campo vazio — voltando ao dimensionamento automático do inversor.';
+            calculate(); return;
+        }
+        note.textContent = 'Consultando a IA...';
+        try {
+            const d = await geminiJson(
+                `Você é um engenheiro fotovoltaico. Retorne os dados de DATASHEET do inversor solar grid-tie "${modelo}". ` +
+                `potencia_kw = potência nominal CA de saída em kW; eficiencia_pct = eficiência máxima em %; ` +
+                `linha = rede de assistência técnica no Brasil (linhaA = consolidada, ex.: Growatt, Fronius, SMA, Sungrow, Huawei, Solis, Deye, Goodwe; ` +
+                `linhaB = parcial; linhaC = sem suporte local). ` +
+                `Se você NÃO conhecer este modelo com segurança, retorne encontrado=false — NÃO invente números.`,
+                SCHEMA_INVERSOR);
+            if (!d.encontrado) { note.textContent = 'A IA não conhece esse modelo com segurança. Confira a grafia ou deixe o dimensionamento automático.'; return; }
+            const kw = sanitize(d.potencia_kw, 0);
+            if (!(kw >= 0.3 && kw <= 500)) { note.textContent = `Potência fora do plausível (${kw} kW) — descartada.`; return; }
+            CUSTOM_INV = { marca: d.marca || '', modelo, kw, ef: sanitize(d.eficiencia_pct, 0) };
+            if (d.linha && EQUIPMENT_TIERS.inversor[d.linha]) { document.getElementById('clsInversor').value = d.linha; applyInversorClass(); }
+            note.textContent = `IA: ${d.marca} — ${fmtBR(kw, 1)} kW CA, eficiência ${fmtBR(CUSTOM_INV.ef, 1)}%. ${d.observacao || ''} Confira no datasheet antes de propor.`;
+            calculate();
+        } catch (e) { note.textContent = `Erro: ${e.message}`; }
     }
 
     // === PROPOSTA / PDF ===
@@ -1110,9 +1288,16 @@
         const invKey = document.getElementById('clsInversor').value;
         const clsMod = EQUIPMENT_TIERS.modulo[modKey].label + (liveTier('modulo', modKey) ? ' · preço de mercado ao vivo' : ' · referência estática');
         const clsInv = EQUIPMENT_TIERS.inversor[invKey].label + (liveTier('inversor', invKey) ? ' · preço de mercado ao vivo' : ' · referência estática');
-        t('pdModulos', `${s.placed} un × ${s.pPower} Wp × ${fmtBR(b.moduloWp, 2)} R$/Wp — ${clsMod}`);
+        // Usa o modelo digitado (já costuma incluir a marca; evita "Marca Marca Modelo")
+        const modName = (s.customPanelActive && CUSTOM_PANEL) ? `${CUSTOM_PANEL.modelo} — ` : '';
+        const invName = CUSTOM_INV ? `${CUSTOM_INV.modelo} — ` : '';
+        t('pdModulos', (b.modoMod === 'un')
+            ? `${modName}${s.placed} un × ${brl(b.moduloWp)}/un — ${clsMod}`
+            : `${modName}${s.placed} un × ${s.pPower} Wp × ${fmtBR(b.moduloWp, 2)} R$/Wp — ${clsMod}`);
         t('pvModulos', brl(b.cModulos));
-        t('pdInversor', `${fmtBR(s.inverterKW, 1)} kW × ${brl(b.inversorKW)}/kW — ${clsInv}`);
+        t('pdInversor', (b.modoInv === 'un')
+            ? `${invName}${b.invUnits} un × ${brl(b.inversorKW)}/un — ${clsInv}`
+            : `${invName}${fmtBR(s.inverterKW, 1)} kW × ${brl(b.inversorKW)}/kW — ${clsInv}`);
         t('pvInversor', brl(b.cInversor));
         t('pdCabo', `${fmtBR(b.caboLen, 0)} m × ${brl(b.caboM)}/m`);
         t('pvCabo', brl(b.cCabo));
@@ -1155,6 +1340,18 @@
     document.getElementById('clsInversor').addEventListener('change', () => applyInversorClass());
     applyModuloClass();
     applyInversorClass();
+
+    // Modo de cobrança (R$/Wp↔un, R$/kW↔un) e equipamento real via IA
+    document.getElementById('modoPrModulo').addEventListener('change', updateBudget);
+    document.getElementById('modoPrInversor').addEventListener('change', updateBudget);
+    document.getElementById('btnIaModulo').addEventListener('click', buscarModulo);
+    document.getElementById('btnIaInversor').addEventListener('click', buscarInversor);
+    document.getElementById('btnIaKey').addEventListener('click', () => {
+        const v = document.getElementById('iaKey').value.trim();
+        if (v) { localStorage.setItem('ek_gemini_key', v); document.getElementById('iaKey').value = ''; }
+        document.getElementById('iaKeyStatus').textContent = geminiKey() ? '✓ Chave salva neste navegador.' : 'Nenhuma chave salva.';
+    });
+    document.getElementById('iaKeyStatus').textContent = geminiKey() ? '✓ Chave salva neste navegador.' : '';
 
     document.getElementById('btnPdf').addEventListener('click', () => {
         fillProposal();
