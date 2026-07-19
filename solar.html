@@ -282,6 +282,23 @@
                             </div>
                         </div>
 
+                        <div>
+                            <label class="block text-xs font-semibold text-muted uppercase tracking-wider mb-2">Conversão (Inversor)</label>
+                            <div class="grid grid-cols-2 gap-2" id="invTypeGroup">
+                                <button type="button" data-value="string" aria-pressed="true" class="tile-btn bg-primary text-white rounded-md py-2 text-xs font-semibold ring-1 ring-sky transition">Inversor String</button>
+                                <button type="button" data-value="micro" aria-pressed="false" class="tile-btn border border-line rounded-md py-2 text-xs font-semibold text-muted hover:bg-panel-2 transition">Microinversor</button>
+                            </div>
+                            <div id="ppmBox" class="hidden mt-2">
+                                <label for="ppmInput" class="block text-[10px] font-semibold text-muted uppercase mb-1">Placas por microinversor</label>
+                                <select id="ppmInput" class="num-in" style="font-family:'IBM Plex Sans'">
+                                    <option value="1">1 placa por micro</option>
+                                    <option value="2" selected>2 placas por micro</option>
+                                    <option value="4">4 placas por micro</option>
+                                </select>
+                                <p class="text-[10px] text-muted mt-1">Quantidade = ⌈nº de placas ÷ placas por micro⌉.</p>
+                            </div>
+                        </div>
+
                         <details class="adv border border-line rounded-lg overflow-hidden">
                             <summary class="px-3 py-2.5 text-xs font-semibold text-muted uppercase tracking-wider bg-ink flex justify-between items-center">
                                 Parâmetros Avançados <span class="chev text-muted">▼</span>
@@ -299,6 +316,11 @@
                                 <div>
                                     <label for="rateInput" class="block text-xs font-semibold text-muted mb-1">Tarifa de Energia (R$/kWh)</label>
                                     <input type="number" id="rateInput" min="0" max="5" step="0.01" value="0.95" class="w-full bg-ink border border-line rounded-md px-3 py-1.5 text-sm font-mono font-semibold text-fg focus:outline-none focus:border-primary">
+                                </div>
+                                <div>
+                                    <label for="adjInput" class="block text-xs font-semibold text-muted mb-1">Reajuste anual da tarifa (%)</label>
+                                    <input type="number" id="adjInput" min="0" max="30" step="0.5" value="8" class="w-full bg-ink border border-line rounded-md px-3 py-1.5 text-sm font-mono font-semibold text-fg focus:outline-none focus:border-primary">
+                                    <p class="text-[10px] text-muted mt-1">Usado no gráfico de retorno do investimento.</p>
                                 </div>
                                 <div>
                                     <label for="phaseSelect" class="block text-xs font-semibold text-muted mb-1">Padrão de Entrada</label>
@@ -333,6 +355,24 @@
                                 <button id="btnIaModulo" class="bg-primary hover:bg-primary-700 text-white text-xs font-semibold px-3 rounded-md transition whitespace-nowrap">Buscar</button>
                             </div>
                             <p id="iaModNote" class="text-[10px] text-sky mt-1.5 leading-snug"></p>
+                            <div class="mt-2">
+                                <label for="iaLinkModulo" class="block text-[10px] font-semibold text-muted uppercase mb-1">Link do anúncio (puxa o preço unitário)</label>
+                                <div class="flex gap-2">
+                                    <input type="url" id="iaLinkModulo" placeholder="https://loja.com/placa-550w" class="num-in" style="font-family:'IBM Plex Sans'">
+                                    <button id="btnIaLink" class="bg-primary hover:bg-primary-700 text-white text-xs font-semibold px-3 rounded-md transition whitespace-nowrap">Preço</button>
+                                </div>
+                                <p id="iaLinkNote" class="text-[10px] text-sky mt-1.5 leading-snug"></p>
+                            </div>
+                            <div class="border-t border-line pt-3 mt-3">
+                                <label class="block text-[10px] font-semibold text-muted uppercase mb-1">Ou informe os dados da placa manualmente</label>
+                                <div class="grid grid-cols-3 gap-2">
+                                    <input type="number" id="manWp" min="100" max="800" step="5" placeholder="Wp" class="num-in" aria-label="Potência em Wp">
+                                    <input type="number" id="manW" min="0.5" max="3" step="0.01" placeholder="Larg. m" class="num-in" aria-label="Largura em metros">
+                                    <input type="number" id="manL" min="0.5" max="3" step="0.01" placeholder="Compr. m" class="num-in" aria-label="Comprimento em metros">
+                                </div>
+                                <button id="btnManApply" class="mt-2 w-full border border-line hover:border-sky text-muted hover:text-sky text-xs font-semibold py-2 rounded-md transition">Aplicar dados manuais</button>
+                                <p id="manNote" class="text-[10px] text-sky mt-1.5 leading-snug"></p>
+                            </div>
                         </div>
                         <div>
                             <label for="iaModeloInversor" class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Inversor (modelo)</label>
@@ -595,6 +635,7 @@
                         <p class="text-[10px] font-semibold text-sky uppercase tracking-widest mb-2">Preço sugerido ao cliente</p>
                         <div class="font-mono text-4xl font-bold text-fg" id="stPreco">R$ 0,00</div>
                         <p class="text-[11px] text-muted mt-2 font-mono"><span id="stPrecoKwp">R$ 0</span>/kWp instalado</p>
+                        <p class="text-[11px] text-muted mt-1 font-mono">Payback simples: <span id="stPayback" class="text-signal">–</span></p>
                     </div>
 
                     <div class="bg-panel border border-line rounded-xl p-5 space-y-3">
@@ -661,6 +702,7 @@
                         <ul class="space-y-2 text-sm">
                             <li><a href="index.html" class="text-fg hover:text-sky transition">Motores</a></li>
                             <li><a href="solar.html" class="text-fg hover:text-sky transition">Solar</a></li>
+                            <li><a href="memorial.html" class="text-fg hover:text-sky transition">Memorial de cálculo</a></li>
                         </ul>
                     </div>
                     <div>
@@ -677,6 +719,9 @@
             </div>
         </div>
     </footer>
+
+    <!-- Canvas oculto: gráfico de payback renderizado só na geração do PDF -->
+    <canvas id="paybackCanvas" width="660" height="300" style="display:none"></canvas>
 
     <!-- ===== DOCUMENTO DE PROPOSTA (impresso / PDF) ===== -->
     <div id="printArea">
@@ -707,6 +752,13 @@
                     <tr><td>Economia estimada</td><td class="r" id="pSavings">—</td><td>Área utilizada</td><td class="r" id="pArea">—</td></tr>
                 </tbody>
             </table>
+
+            <h2>Disposição dos módulos na área</h2>
+            <img id="pLayoutImg" alt="Disposição dos módulos" style="width:100%;max-width:640px;border:1px solid #d1d5db;border-radius:6px;">
+
+            <h2>Retorno do investimento</h2>
+            <p class="doc-notes" id="pPaybackTxt" style="margin-bottom:8px;">—</p>
+            <img id="pChartImg" alt="Gráfico do retorno do investimento" style="width:100%;max-width:640px;border:1px solid #e5e7eb;border-radius:6px;">
 
             <h2>Composição do orçamento</h2>
             <table class="doc-table">
@@ -903,7 +955,15 @@
         document.getElementById('resCount').textContent = totalPanels;
         document.getElementById('resArrangement').textContent = arrangementLabel(cols, rows, placed, capacity);
         document.getElementById('resPower').textContent = fmtBR(kWp, 2);
-        if (CUSTOM_INV && CUSTOM_INV.kw > 0) {
+        // Tipo de conversão: inversor string (kW) ou microinversor (por placa)
+        const invType = tileValue('invTypeGroup') || 'string';
+        const ppm = clamp(sanitize(document.getElementById('ppmInput').value, 2), 1, 4);
+        STATE.invType = invType; STATE.ppm = ppm;
+        if (invType === 'micro') {
+            // Quantidade exata de micros: ⌈placas ÷ placas por micro⌉
+            STATE.invUnits = totalPanels > 0 ? Math.ceil(totalPanels / ppm) : 0;
+            document.getElementById('resInverter').textContent = totalPanels > 0 ? `${STATE.invUnits} micro` : '–';
+        } else if (CUSTOM_INV && CUSTOM_INV.kw > 0) {
             // Inversor real informado: sugere quantas unidades cobrem a potência requerida
             STATE.invUnits = Math.max(1, Math.ceil(inverterKW / CUSTOM_INV.kw));
             document.getElementById('resInverter').textContent = totalPanels > 0
@@ -924,6 +984,8 @@
         STATE.kWp = kWp; STATE.inverterKW = inverterKW; STATE.pPower = pPower;
         STATE.monthlyGen = monthlyGen; STATE.monthlySavings = monthlySavings;
         STATE.areaTotal = wTerreno * lTerreno; STATE.areaUtil = wUtil * lUtil;
+        STATE.avail = availabilityKWh; STATE.rate = rate;
+        STATE.adj = clamp(sanitize(document.getElementById('adjInput').value, 8), 0, 30);
 
         // Layout: regenera as posições só quando a geometria/quantidade muda
         // (preserva o arraste manual em mudanças de tarifa, fase etc.)
@@ -1035,7 +1097,13 @@
     function updateBudget() {
         const s = STATE;
         const modoMod = document.getElementById('modoPrModulo').value;    // 'wp' | 'un'
-        const modoInv = document.getElementById('modoPrInversor').value;  // 'kw' | 'un'
+        let modoInv = document.getElementById('modoPrInversor').value;    // 'kw' | 'un'
+        // Microinversor é sempre precificado por unidade
+        const micro = s.invType === 'micro';
+        const selInvModo = document.getElementById('modoPrInversor');
+        if (micro && selInvModo.value !== 'un') selInvModo.value = 'un';
+        selInvModo.disabled = micro;
+        if (micro) modoInv = 'un';
         const moduloWp   = clamp(num('prModuloWp', 0.80), 0, modoMod === 'un' ? 1e7 : 50);
         const inversorKW = clamp(num('prInversorKW', 700), 0, 1e7);
         const caboLen    = clamp(num('prCaboLen', 60), 0, 1e6);
@@ -1061,9 +1129,11 @@
         document.getElementById('lblPrInversor').textContent = (modoInv === 'un') ? 'R$/un' : 'R$/kW';
         document.getElementById('ctxModulos').textContent   = `${s.placed} un · ${s.pPower} Wp` +
             ((s.customPanelActive && CUSTOM_PANEL) ? ` · ${CUSTOM_PANEL.marca}` : '');
-        document.getElementById('ctxInversor').textContent  = CUSTOM_INV
-            ? `${invUnits} un × ${fmtBR(CUSTOM_INV.kw, 1)} kW (${CUSTOM_INV.marca})`
-            : ((modoInv === 'un') ? `${invUnits} un · ${fmtBR(s.inverterKW, 1)} kW` : `${fmtBR(s.inverterKW, 1)} kW`);
+        document.getElementById('ctxInversor').textContent  = micro
+            ? `${invUnits} micros (${s.ppm} placa${s.ppm > 1 ? 's' : ''}/micro)` + (CUSTOM_INV ? ` · ${CUSTOM_INV.marca}` : '')
+            : CUSTOM_INV
+                ? `${invUnits} un × ${fmtBR(CUSTOM_INV.kw, 1)} kW (${CUSTOM_INV.marca})`
+                : ((modoInv === 'un') ? `${invUnits} un · ${fmtBR(s.inverterKW, 1)} kW` : `${fmtBR(s.inverterKW, 1)} kW`);
         document.getElementById('ctxEstrutura').textContent = `${s.placed} un`;
         document.getElementById('ctxMaoObra').textContent   = `${fmtBR(s.kWp, 2)} kWp`;
 
@@ -1079,9 +1149,13 @@
         document.getElementById('stPreco').textContent     = brl(preco);
         document.getElementById('stPrecoKwp').textContent  = s.kWp > 0 ? brl(preco / s.kWp) : brl(0);
 
+        // Payback simples (sem reajuste/degradação — o gráfico do PDF usa o modelo completo)
+        const pbSimples = (preco > 0 && s.monthlySavings > 0) ? preco / (s.monthlySavings * 12) : null;
+        document.getElementById('stPayback').textContent = pbSimples ? `≈ ${fmtBR(pbSimples, 1)} anos` : '–';
+
         STATE.budget = { moduloWp, inversorKW, caboLen, caboM, estruturaUn, protecao, maoObraKWp, margem,
                          cModulos, cInversor, cCabo, cEstrutura, cProtecao, cMaoObra, custo, vMargem, preco,
-                         modoMod, modoInv, invUnits };
+                         modoMod, modoInv, micro, invUnits };
     }
 
     // === Preços ao vivo (prices.json, gerado semanalmente pelo robô — Fase 2) ===
@@ -1261,6 +1335,141 @@
         } catch (e) { note.textContent = `Erro: ${e.message}`; }
     }
 
+    // === DADOS MANUAIS DA PLACA ===
+    function aplicarManual() {
+        const note = document.getElementById('manNote');
+        const wp = sanitize(document.getElementById('manWp').value, 0);
+        const w = sanitize(document.getElementById('manW').value, 0);
+        const l = sanitize(document.getElementById('manL').value, 0);
+        if (!(wp >= 100 && wp <= 800 && w >= 0.5 && w <= 3 && l >= 0.5 && l <= 3)) {
+            note.textContent = 'Preencha Wp (100–800) e dimensões em metros (0,5–3).'; return;
+        }
+        CUSTOM_PANEL = { marca: '', modelo: `Módulo ${wp} Wp (dados do cliente)`, wp, w, l, ef: 0 };
+        let o = document.getElementById('optCustomPanel');
+        if (!o) { o = document.createElement('option'); o.id = 'optCustomPanel'; el.panel.appendChild(o); }
+        o.value = wp; o.dataset.w = w; o.dataset.l = l;
+        o.textContent = `${wp} Wp — manual`;
+        o.selected = true;
+        note.textContent = `Aplicado: ${wp} Wp, ${fmtBR(w, 2)}×${fmtBR(l, 2)} m — o kWp do sistema já reflete estes dados.`;
+        calculate();
+    }
+
+    // === PREÇO UNITÁRIO VIA LINK (Gemini com leitura de URL) ===
+    async function geminiUrl(prompt) {
+        const key = geminiKey();
+        if (!key) throw new Error('Salve sua chave da API Gemini no campo abaixo.');
+        const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${encodeURIComponent(key)}`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [{ parts: [{ text: prompt }] }],
+                tools: [{ url_context: {} }],
+                generationConfig: { temperature: 0 }
+            })
+        });
+        if (!r.ok) {
+            if (r.status === 400 || r.status === 403) throw new Error('Chave da API inválida ou sem permissão.');
+            if (r.status === 429) throw new Error('Cota gratuita esgotada — tente mais tarde.');
+            throw new Error(`Falha na API do Gemini (HTTP ${r.status}).`);
+        }
+        const data = await r.json();
+        const parts = data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts;
+        const txt = parts ? parts.map(p => p.text || '').join('') : '';
+        if (!txt) throw new Error('Resposta vazia da IA.');
+        return txt;
+    }
+
+    async function buscarPrecoLink() {
+        const url = document.getElementById('iaLinkModulo').value.trim();
+        const note = document.getElementById('iaLinkNote');
+        if (!/^https?:\/\//i.test(url)) { note.textContent = 'Cole um link http(s) válido do anúncio.'; return; }
+        note.textContent = 'Lendo o anúncio via IA...';
+        try {
+            const txt = await geminiUrl(
+                `Acesse ${url} e extraia o preço à vista do produto anunciado, em reais (BRL). ` +
+                `Responda APENAS com JSON puro, sem markdown: {"encontrado":true ou false,"preco_brl":numero,"titulo":"nome curto do produto"}. ` +
+                `Se a página não abrir ou o preço não estiver claro, encontrado=false.`);
+            const m = txt.match(/\{[\s\S]*\}/);
+            const d = JSON.parse(m ? m[0] : txt);
+            const preco = sanitize(d.preco_brl, 0);
+            if (!d.encontrado || !(preco > 10 && preco < 100000)) {
+                note.textContent = 'Não extraí um preço confiável desse link (o site pode bloquear robôs). Digite o valor manualmente.'; return;
+            }
+            document.getElementById('modoPrModulo').value = 'un';
+            document.getElementById('prModuloWp').value = preco;
+            updateBudget();
+            note.textContent = `${(d.titulo || 'Anúncio')}: ${brl(preco)}/un aplicado no orçamento (modo R$/unidade). Confira no site antes de propor.`;
+        } catch (e) { note.textContent = `Erro: ${e.message}`; }
+    }
+
+    // === RETORNO DO INVESTIMENTO (payback do PDF) ===
+    // Modelo ano a ano, 25 anos: degradação dos módulos 0,6%/ano (geométrica),
+    // tarifa reajustada pelo % configurado, disponibilidade descontada todo ano.
+    // Payback interpolado dentro do ano em que o acumulado cruza o investimento.
+    // Metodologia detalhada em memorial.html.
+    const PAYBACK_YEARS = 25, DEGRADACAO_ANUAL = 0.006;
+
+    function computePayback(invest, genMonthly, availKWh, tarifa, adjPct) {
+        let acc = 0, payback = null;
+        const serie = [0];
+        for (let t = 1; t <= PAYBACK_YEARS; t++) {
+            const genAno = genMonthly * 12 * Math.pow(1 - DEGRADACAO_ANUAL, t - 1);
+            const tarAno = tarifa * Math.pow(1 + (adjPct || 0) / 100, t - 1);
+            const econAno = Math.max(0, genAno - availKWh * 12) * tarAno;
+            const prev = acc;
+            acc += econAno;
+            serie.push(acc);
+            if (payback === null && econAno > 0 && acc >= invest) payback = (t - 1) + (invest - prev) / econAno;
+        }
+        return { serie, payback };
+    }
+
+    function drawPaybackChart(invest, serie, payback) {
+        const cv = document.getElementById('paybackCanvas'), ctx = cv.getContext('2d');
+        const W = cv.width, H = cv.height, mL = 64, mR = 16, mT = 20, mB = 36;
+        ctx.clearRect(0, 0, W, H);
+        ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, W, H);
+        const years = serie.length - 1;
+        const maxY = Math.max(invest, serie[years]) * 1.08 || 1;
+        const X = t => mL + (W - mL - mR) * t / years;
+        const Y = v => H - mB - (H - mT - mB) * v / maxY;
+        // Grade e eixos
+        ctx.strokeStyle = '#e5e7eb'; ctx.fillStyle = '#6b7280'; ctx.font = '11px Arial';
+        ctx.textAlign = 'center';
+        for (let t = 0; t <= years; t += 5) {
+            ctx.beginPath(); ctx.moveTo(X(t), mT); ctx.lineTo(X(t), H - mB); ctx.stroke();
+            ctx.fillText(t + ' anos', X(t), H - mB + 16);
+        }
+        ctx.textAlign = 'right';
+        for (let i = 0; i <= 4; i++) {
+            const v = maxY * i / 4;
+            ctx.beginPath(); ctx.moveTo(mL, Y(v)); ctx.lineTo(W - mR, Y(v)); ctx.stroke();
+            ctx.fillText('R$ ' + Math.round(v / 1000).toLocaleString('pt-BR') + ' mil', mL - 6, Y(v) + 4);
+        }
+        // Linha do investimento
+        ctx.strokeStyle = '#E4694F'; ctx.setLineDash([6, 4]);
+        ctx.beginPath(); ctx.moveTo(mL, Y(invest)); ctx.lineTo(W - mR, Y(invest)); ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = '#E4694F'; ctx.textAlign = 'left';
+        ctx.fillText('Investimento', mL + 4, Y(invest) - 6);
+        // Curva de economia acumulada
+        ctx.strokeStyle = '#2C7BE5'; ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        serie.forEach((v, t) => t === 0 ? ctx.moveTo(X(0), Y(v)) : ctx.lineTo(X(t), Y(v)));
+        ctx.stroke(); ctx.lineWidth = 1;
+        ctx.fillStyle = '#2C7BE5';
+        ctx.fillText('Economia acumulada', mL + 4, mT + 10);
+        // Ponto de retorno
+        if (payback != null) {
+            ctx.strokeStyle = '#2FB39A'; ctx.setLineDash([4, 3]);
+            ctx.beginPath(); ctx.moveTo(X(payback), Y(invest)); ctx.lineTo(X(payback), H - mB); ctx.stroke();
+            ctx.setLineDash([]);
+            ctx.fillStyle = '#2FB39A';
+            ctx.beginPath(); ctx.arc(X(payback), Y(invest), 4, 0, 7); ctx.fill();
+            ctx.textAlign = 'center';
+            ctx.fillText(fmtBR(payback, 1).replace(',0', '') + ' anos', X(payback), H - mB - 8);
+        }
+    }
+
     // === PROPOSTA / PDF ===
     function fillProposal() {
         const s = STATE, b = STATE.budget;
@@ -1279,7 +1488,9 @@
 
         t('pPower', `${fmtBR(s.kWp, 2)} kWp`);
         t('pModules', `${s.placed} × ${s.pPower} Wp`);
-        t('pInverter', `${fmtBR(s.inverterKW, 1)} kW`);
+        t('pInverter', s.invType === 'micro'
+            ? `${b.invUnits} microinversor(es) · ${s.ppm} placa(s)/micro`
+            : (CUSTOM_INV ? `${b.invUnits} × ${fmtBR(CUSTOM_INV.kw, 1)} kW` : `${fmtBR(s.inverterKW, 1)} kW`));
         t('pGen', `${Math.round(s.monthlyGen).toLocaleString('pt-BR')} kWh/mês`);
         t('pSavings', `${brl(s.monthlySavings)} /mês`);
         t('pArea', `${fmtBR(s.areaUtil, 1)} m²`);
@@ -1290,7 +1501,7 @@
         const clsInv = EQUIPMENT_TIERS.inversor[invKey].label + (liveTier('inversor', invKey) ? ' · preço de mercado ao vivo' : ' · referência estática');
         // Usa o modelo digitado (já costuma incluir a marca; evita "Marca Marca Modelo")
         const modName = (s.customPanelActive && CUSTOM_PANEL) ? `${CUSTOM_PANEL.modelo} — ` : '';
-        const invName = CUSTOM_INV ? `${CUSTOM_INV.modelo} — ` : '';
+        const invName = (b.micro ? 'Microinversor · ' : '') + (CUSTOM_INV ? `${CUSTOM_INV.modelo} — ` : '');
         t('pdModulos', (b.modoMod === 'un')
             ? `${modName}${s.placed} un × ${brl(b.moduloWp)}/un — ${clsMod}`
             : `${modName}${s.placed} un × ${s.pPower} Wp × ${fmtBR(b.moduloWp, 2)} R$/Wp — ${clsMod}`);
@@ -1310,6 +1521,23 @@
         t('pdMargem', `${fmtBR(b.margem, 0)}%`);
         t('pvMargem', brl(b.vMargem));
         t('pvPreco', brl(b.preco));
+
+        // Disposição das placas (imagem do canvas ao vivo) — vai para o relatório
+        try {
+            document.getElementById('pLayoutImg').src = document.getElementById('layoutCanvas').toDataURL('image/png');
+        } catch (e) { /* canvas indisponível: imagem fica vazia, o resto do PDF sai normal */ }
+
+        // Gráfico de retorno do investimento (após a disposição, conforme o layout do documento)
+        const pb = computePayback(b.preco, s.monthlyGen, s.avail, s.rate, s.adj);
+        drawPaybackChart(b.preco, pb.serie, pb.payback);
+        try {
+            document.getElementById('pChartImg').src = document.getElementById('paybackCanvas').toDataURL('image/png');
+        } catch (e) { }
+        t('pPaybackTxt', pb.payback != null
+            ? `Investimento de ${brl(b.preco)} com economia inicial de ${brl(s.monthlySavings)}/mês. Retorno projetado em ` +
+              `${fmtBR(pb.payback, 1)} anos, considerando reajuste tarifário de ${fmtBR(s.adj, 1)}% ao ano e degradação dos módulos ` +
+              `de 0,6% ao ano. Metodologia completa: elektrosys.eng.br/memorial.html`
+            : 'Com os parâmetros atuais, o retorno não ocorre em 25 anos — revise preço, tarifa ou dimensionamento.');
 
         const notes = (document.getElementById('propNotes').value || '').trim();
         t('pNotes', notes || 'Condições a combinar.');
@@ -1352,6 +1580,16 @@
         document.getElementById('iaKeyStatus').textContent = geminiKey() ? '✓ Chave salva neste navegador.' : 'Nenhuma chave salva.';
     });
     document.getElementById('iaKeyStatus').textContent = geminiKey() ? '✓ Chave salva neste navegador.' : '';
+
+    // Microinversor, dados manuais, preço via link e reajuste de tarifa
+    setupTiles('invTypeGroup', () => {
+        document.getElementById('ppmBox').classList.toggle('hidden', tileValue('invTypeGroup') !== 'micro');
+        calculate();
+    });
+    document.getElementById('ppmInput').addEventListener('change', calculate);
+    document.getElementById('adjInput').addEventListener('input', calculate);
+    document.getElementById('btnManApply').addEventListener('click', aplicarManual);
+    document.getElementById('btnIaLink').addEventListener('click', buscarPrecoLink);
 
     document.getElementById('btnPdf').addEventListener('click', () => {
         fillProposal();

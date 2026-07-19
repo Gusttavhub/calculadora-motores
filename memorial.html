@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ElektroSys - Memorial de Cálculo | Simulador Fotovoltaico</title>
+
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'self';
+        script-src 'self' 'unsafe-inline';
+        style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com;
+        font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com data:;
+        img-src 'self' data:;
+        connect-src 'self';
+        frame-ancestors 'none';
+        base-uri 'self';
+        form-action 'self';
+    ">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%232C7BE5'%3E%3Cpath d='M13 2L3 14h9l-1 8 10-12h-9l1-8z'/%3E%3C/svg%3E">
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <meta name="description" content="Memorial de cálculo do simulador fotovoltaico ElektroSys: todas as fórmulas de arranjo, geração, economia, inversor, orçamento e retorno do investimento, com premissas explícitas.">
+    <meta name="robots" content="index, follow">
+    <meta name="author" content="Gusttavo Gutierry">
+    <link rel="canonical" href="https://elektrosys.eng.br/memorial.html">
+    <meta name="theme-color" content="#0A1B2E">
+
+    <style>
+        .grid-bp {
+            background-image:
+                linear-gradient(rgba(44,123,229,0.06) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(44,123,229,0.06) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+        .formula { background:#06121E; border:1px solid #21425F; border-radius:8px; padding:12px 16px;
+                   font-family:'IBM Plex Mono',monospace; font-size:14px; color:#E8F0F8; margin:10px 0;
+                   overflow-x:auto; }
+        .memo h2 { font-family:'Barlow Semi Condensed',sans-serif; font-weight:700; font-size:1.35rem;
+                   letter-spacing:.02em; color:#E8F0F8; border-bottom:1px solid #21425F;
+                   padding-bottom:8px; margin:40px 0 14px; }
+        .memo h2 span { color:#5AA9F0; font-family:'IBM Plex Mono',monospace; font-size:.9rem; margin-right:10px; }
+        .memo p, .memo li { color:#8CA3BC; line-height:1.7; font-size:.95rem; }
+        .memo strong { color:#E8F0F8; font-weight:600; }
+        .memo ul { list-style:disc; padding-left:22px; margin:8px 0; }
+        .memo .var { color:#5AA9F0; font-family:'IBM Plex Mono',monospace; font-size:.9em; }
+        @media print {
+            html, body { background:#fff !important; }
+            .memo p, .memo li { color:#374151; }
+            .memo h2, .memo strong { color:#111827; }
+            .formula { background:#f3f4f6; border-color:#d1d5db; color:#111827; }
+            nav, footer { display:none !important; }
+        }
+    </style>
+</head>
+
+<body class="bg-navy grid-bp text-muted font-sans antialiased">
+
+    <nav class="border-b border-line bg-navy/85 backdrop-blur-md sticky top-0 z-40">
+        <div class="container mx-auto px-4 h-16 flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-2.5">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-primary" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                <span class="text-fg font-display font-bold text-xl tracking-wide">ELEKTRO<span class="text-primary">SYS</span></span>
+            </a>
+            <div class="hidden md:flex items-center gap-7 text-sm font-medium text-muted">
+                <a href="index.html" class="hover:text-fg transition">Motores</a>
+                <a href="solar.html" class="hover:text-fg transition">Solar</a>
+                <a href="memorial.html" class="text-fg" aria-current="page">Memorial</a>
+                <a href="https://wa.me/5564984395286" target="_blank" rel="noopener noreferrer" class="bg-primary hover:bg-primary-700 text-white font-semibold px-4 py-2 rounded-md transition">Solicitar projeto</a>
+            </div>
+        </div>
+    </nav>
+
+    <header class="relative z-10 border-b border-line">
+        <div class="container mx-auto px-4 py-12 md:py-16 max-w-4xl">
+            <p class="font-mono text-xs uppercase tracking-[0.25em] text-primary mb-4">Documentação técnica</p>
+            <h1 class="font-display text-4xl md:text-5xl font-bold text-fg leading-tight mb-4">Memorial de cálculo<br><span class="text-sky">do simulador fotovoltaico</span></h1>
+            <p class="text-muted max-w-2xl leading-relaxed">Todas as fórmulas usadas pelo simulador, exatamente como implementadas, com premissas e limitações explícitas. Este documento acompanha as propostas geradas pela ferramenta.</p>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-10 max-w-4xl relative z-10 memo">
+
+        <h2><span>01</span>Área útil e arranjo dos módulos</h2>
+        <p>Da área informada (largura <span class="var">W</span> × comprimento <span class="var">L</span>, em metros) desconta-se o recuo perimetral <span class="var">r</span> nos quatro lados:</p>
+        <div class="formula">W_útil = W − 2r &nbsp;&nbsp;·&nbsp;&nbsp; L_útil = L − 2r</div>
+        <p>Cada módulo ocupa <span class="var">p_w × p_l</span> (dimensões reais do módulo, trocadas conforme a orientação retrato/paisagem). O arranjo automático em <strong>telhado inclinado</strong> considera módulos coplanares encostados (sem auto-sombreamento):</p>
+        <div class="formula">colunas = ⌊W_útil / p_w⌋ &nbsp;&nbsp;·&nbsp;&nbsp; fileiras = ⌊L_útil / p_l⌋</div>
+        <p>Em <strong>laje/solo</strong>, cada fileira exige um corredor anti-sombra <span class="var">c</span> (padrão 1,4 m, ajustável — o valor correto depende da latitude e da altura da fileira inclinada):</p>
+        <div class="formula">fileiras = ⌊(L_útil + c) / (p_l + c)⌋</div>
+        <p>O total de módulos que cabem é <span class="var">colunas × fileiras</span>. O arraste manual no desenho apenas reposiciona — não altera quantidades nem cálculos.</p>
+
+        <h2><span>02</span>Dimensionamento por consumo</h2>
+        <p>No modo "Consumo (kWh)", o número de placas vem da meta mensal <span class="var">E_alvo</span>:</p>
+        <div class="formula">kWp_nec = E_alvo / (HSP · PR · 30,42)
+N_placas = ⌈ kWp_nec · 1000 / W_módulo ⌉</div>
+        <p>O arredondamento é sempre <strong>para cima</strong> (⌈·⌉): a meta é atendida, nunca subatendida. Se a área não comportar <span class="var">N_placas</span>, o simulador avisa e usa o máximo que cabe.</p>
+
+        <h2><span>03</span>Potência de pico do sistema</h2>
+        <div class="formula">P_pico [kWp] = N_placas × W_módulo [Wp] / 1000</div>
+        <p><span class="var">W_módulo</span> vem do módulo selecionado, dos <strong>dados informados manualmente</strong> (Wp, largura, comprimento) ou dos dados de catálogo retornados pela IA — nos dois últimos casos o kWp reflete exatamente a placa real do projeto.</p>
+
+        <h2><span>04</span>Geração mensal estimada</h2>
+        <div class="formula">E [kWh/mês] = P_pico · HSP · PR · 30,42</div>
+        <ul>
+            <li><strong>HSP</strong> — Horas de Sol Pleno (kWh/m²·dia) do local. Fonte recomendada: banco de dados do CRESESB para a cidade do projeto. Padrão da ferramenta: 4,8.</li>
+            <li><strong>PR</strong> — Performance Ratio (taxa de desempenho global do sistema: temperatura, sujeira, cabeamento, conversão). Padrão: 80%, faixa usual 75–85%.</li>
+            <li><strong>30,42</strong> — dias médios por mês (365 ÷ 12), em vez do mês comercial de 30 dias.</li>
+        </ul>
+
+        <h2><span>05</span>Economia mensal estimada</h2>
+        <div class="formula">Economia [R$/mês] = max(0, E − disponibilidade) × tarifa</div>
+        <p>A <strong>disponibilidade</strong> é o consumo mínimo faturado pela distribuidora mesmo com injeção: 30 kWh (monofásico), 50 kWh (bifásico) ou 100 kWh (trifásico) — descontada da energia compensável. A tarifa é a cheia informada (R$/kWh).</p>
+        <p><strong>Limitação declarada:</strong> o modelo NÃO desconta o Fio B (Lei 14.300/2022) nem considera simultaneidade de consumo — a economia real tende a ser um pouco menor que a estimada. Ver seção 10.</p>
+
+        <h2><span>06</span>Inversor — string ou microinversor</h2>
+        <p><strong>Inversor string:</strong> potência CA recomendada com sobredimensionamento DC/AC de 1,25 (prática usual entre 1,1 e 1,5):</p>
+        <div class="formula">P_inversor [kW] = P_pico / 1,25</div>
+        <p>Quando um inversor real é informado (potência unitária <span class="var">P_un</span>), a quantidade sugerida é <span class="var">⌈P_inversor / P_un⌉</span>.</p>
+        <p><strong>Microinversor:</strong> a quantidade é exata pela razão de placas por micro (1, 2 ou 4, conforme o modelo):</p>
+        <div class="formula">N_micros = ⌈ N_placas / placas_por_micro ⌉</div>
+        <p>No orçamento, microinversores são sempre precificados <strong>por unidade</strong>.</p>
+
+        <h2><span>07</span>Composição do orçamento</h2>
+        <ul>
+            <li><strong>Módulos:</strong> <span class="var">N × Wp × preço[R$/Wp]</span> ou <span class="var">N × preço[R$/un]</span> (modo por unidade — usado também quando o preço vem de link de anúncio).</li>
+            <li><strong>Inversor:</strong> <span class="var">P_inversor × preço[R$/kW]</span> ou <span class="var">N_unidades × preço[R$/un]</span>.</li>
+            <li><strong>Cabos (CC+CA):</strong> <span class="var">metros × preço[R$/m]</span>.</li>
+            <li><strong>Estrutura:</strong> <span class="var">N_placas × preço[R$/placa]</span>.</li>
+            <li><strong>Proteção CC/CA:</strong> valor global informado (string box, DPS, disjuntores).</li>
+            <li><strong>Mão de obra:</strong> <span class="var">P_pico × preço[R$/kWp]</span>.</li>
+        </ul>
+        <p>Os preços de referência por classe (módulos Tier 1/2/3 — bancabilidade BloombergNEF; inversores Linha A/B/C — rede de assistência no Brasil) são <strong>pré-preenchimento editável</strong>: o valor que vale é sempre o digitado pelo responsável pela proposta.</p>
+
+        <h2><span>08</span>Preço sugerido ao cliente</h2>
+        <div class="formula">Custo = Σ itens &nbsp;·&nbsp; Margem = Custo × m% &nbsp;·&nbsp; Preço = Custo + Margem</div>
+        <p>O indicador <span class="var">R$/kWp</span> (Preço ÷ P_pico) permite comparar a proposta com o mercado.</p>
+
+        <h2><span>09</span>Retorno do investimento (payback)</h2>
+        <p><strong>Payback simples</strong> (mostrado no cartão de preço):</p>
+        <div class="formula">Payback_simples [anos] = Preço / (Economia_mensal × 12)</div>
+        <p><strong>Modelo completo</strong> (gráfico do relatório) — projeção ano a ano por 25 anos:</p>
+        <div class="formula">E_t = E×12 × (1 − 0,006)^(t−1)
+tarifa_t = tarifa × (1 + reajuste)^(t−1)
+Econ_t = max(0, E_t − disp×12) × tarifa_t
+Acum_t = Σ Econ_1..t</div>
+        <ul>
+            <li><strong>Degradação dos módulos:</strong> 0,6% ao ano (geométrica) — compatível com garantias típicas de potência (≈84–87% após 25 anos).</li>
+            <li><strong>Reajuste tarifário:</strong> percentual anual configurável (padrão 8% a.a.) aplicado sobre a tarifa.</li>
+            <li><strong>Disponibilidade:</strong> continua descontada todos os anos.</li>
+        </ul>
+        <p>O payback é o ponto em que <span class="var">Acum_t</span> cruza o investimento, <strong>interpolado linearmente dentro do ano</strong>:</p>
+        <div class="formula">Payback = (t−1) + (Preço − Acum_(t−1)) / Econ_t</div>
+        <p>O gráfico do relatório mostra a economia acumulada, a linha do investimento e o ponto de cruzamento.</p>
+
+        <h2><span>10</span>Premissas e limitações (leia antes de propor)</h2>
+        <ul>
+            <li>Estimativa <strong>educacional/comercial</strong> — não substitui projeto executivo assinado com ART.</li>
+            <li><strong>Fio B (Lei 14.300/2022):</strong> a compensação paga progressivamente a TUSD Fio B; o modelo não a desconta porque o valor depende da tarifa desagregada de cada distribuidora. Efeito: economia real menor que a estimada, tipicamente na casa de poucos % a ~15% conforme distribuidora e ano.</li>
+            <li><strong>Simultaneidade:</strong> energia consumida no instante da geração não passa pela compensação — o modelo trata toda a geração como compensada.</li>
+            <li><strong>Sombreamentos locais</strong> (árvores, platibandas, antenas) não são modelados; o corredor anti-sombra trata apenas do sombreamento entre fileiras.</li>
+            <li>Dados de equipamento vindos de IA são sugestão de catálogo e <strong>devem ser conferidos no datasheet</strong>.</li>
+            <li>Preços obtidos de links de anúncio devem ser conferidos no próprio site antes da proposta.</li>
+        </ul>
+
+        <div class="mt-12 bg-panel border border-line rounded-xl p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <p class="text-sm text-muted">Dúvidas sobre a metodologia ou projeto sob medida?</p>
+            <a href="https://wa.me/5564984395286" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 bg-primary hover:bg-primary-700 text-white font-semibold px-5 py-2.5 rounded-md transition whitespace-nowrap">Falar com o engenheiro</a>
+        </div>
+    </main>
+
+    <footer class="bg-ink/60 relative z-10 mt-10">
+        <div class="container mx-auto px-4 py-8 text-center text-xs text-muted font-mono">
+            © 2026 Gusttavo Gutierry · ElektroSys — <a href="solar.html" class="text-sky hover:text-fg transition">voltar ao simulador</a>
+        </div>
+    </footer>
+</body>
+</html>
