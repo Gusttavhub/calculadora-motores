@@ -1,0 +1,11 @@
+name = "elektrosys-api"
+main = "src/index.js"
+compatibility_date = "2024-09-01"
+
+# CORS no Worker está travado para elektrosys.eng.br (ver src/index.js).
+# Se testar localmente antes do domínio, ajuste CORS_ORIGIN abaixo temporariamente.
+
+[[d1_databases]]
+binding = "DB"
+database_name = "elektrosys"
+database_id = "REPLACE_AFTER_WRANGLER_D1_CREATE"

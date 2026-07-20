@@ -697,11 +697,42 @@
                             </div>
                             <p id="propsNote" class="text-[10px] text-muted mt-1.5">Tudo que você preenche também é salvo automaticamente.</p>
                         </div>
+
+                        <div class="border-t border-line pt-3">
+                            <p class="text-[10px] font-semibold text-muted uppercase tracking-wider mb-1">Sincronizar com a nuvem</p>
+                            <p id="apiStatusNote" class="text-[10px] text-muted mb-2">Sem servidor configurado — propostas ficam só neste navegador.</p>
+                            <div id="apiConnectBox" class="space-y-2">
+                                <input type="url" id="apiBaseInput" placeholder="URL da API (ex: https://elektrosys-api.SEU.workers.dev)" class="num-in" style="font-family:'IBM Plex Sans'">
+                                <input type="password" id="apiPassInput" placeholder="Senha de acesso" class="num-in" autocomplete="off">
+                                <button id="btnApiConnect" class="w-full border border-line hover:border-sky text-muted hover:text-sky text-xs font-semibold py-2 rounded-md transition">Conectar</button>
+                            </div>
+                            <button id="btnApiDisconnect" class="hidden w-full border border-line hover:border-alert text-muted hover:text-alert text-xs font-semibold py-2 rounded-md transition">Desconectar deste navegador</button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </main>
+
+    <!-- CAPTAÇÃO DE LEAD (opcional, visitante do simulador) -->
+    <section id="leadSection" class="hidden border-y border-line relative z-10">
+        <div class="container mx-auto px-4 py-10 max-w-3xl">
+            <div class="bg-panel border border-line rounded-xl p-6">
+                <div class="flex items-center gap-2 mb-2">
+                    <i class="fa-solid fa-user-check text-primary"></i>
+                    <h3 class="font-display font-bold text-lg tracking-wide text-fg">QUER QUE UM ENGENHEIRO ANALISE ESSA SIMULAÇÃO?</h3>
+                </div>
+                <p class="text-xs text-muted mb-4">Opcional — deixe seu contato e eu retorno com uma avaliação real do seu caso. Nenhum dado é compartilhado com terceiros.</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+                    <input type="text" id="leadNome" placeholder="Seu nome" class="num-in" style="font-family:'IBM Plex Sans'">
+                    <input type="text" id="leadContato" placeholder="WhatsApp ou e-mail" class="num-in" style="font-family:'IBM Plex Sans'">
+                    <input type="text" id="leadCidade" placeholder="Cidade" class="num-in" style="font-family:'IBM Plex Sans'">
+                </div>
+                <button id="btnLeadEnviar" class="mt-3 bg-primary hover:bg-primary-700 text-white font-semibold px-5 py-2.5 rounded-md transition text-sm">Enviar contato</button>
+                <p id="leadNote" class="text-[10px] text-sky mt-2"></p>
+            </div>
+        </div>
+    </section>
 
     <!-- CTA / SERVIÇOS -->
     <section class="border-y border-line grid-bp relative z-10">
@@ -1296,6 +1327,38 @@
         applyInversorClass(invEdited);
     }
 
+    // === BACKEND OPCIONAL (Cloudflare Worker) ===
+    // Preencha após o deploy (ver README) para ativar a captação de lead
+    // para visitantes anônimos, sem precisar de configuração no navegador deles.
+    const API_BASE_DEFAULT = '';
+
+    function apiConf() {
+        const base = (API_BASE_DEFAULT || localStorage.getItem('ek_api_base') || '').replace(/\/$/, '');
+        const pass = localStorage.getItem('ek_api_pass') || '';
+        return { base, pass, connected: !!(base && pass) };
+    }
+    async function apiFetch(path, opts) {
+        const c = apiConf();
+        if (!c.connected) throw new Error('Backend não conectado.');
+        const r = await fetch(c.base + path, {
+            ...opts,
+            headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${c.pass}`, ...(opts && opts.headers) }
+        });
+        const data = await r.json().catch(() => ({}));
+        if (!r.ok) throw new Error(data.error || `Erro do servidor (HTTP ${r.status})`);
+        return data;
+    }
+    function refreshApiStatusUI() {
+        const c = apiConf();
+        const note = document.getElementById('apiStatusNote');
+        document.getElementById('apiConnectBox').classList.toggle('hidden', c.connected);
+        document.getElementById('btnApiDisconnect').classList.toggle('hidden', !c.connected);
+        note.textContent = c.connected
+            ? '✓ Conectado — propostas salvam na nuvem, acessíveis de qualquer aparelho.'
+            : 'Sem servidor configurado — propostas ficam só neste navegador.';
+        document.getElementById('leadSection').classList.toggle('hidden', !(API_BASE_DEFAULT));
+    }
+
     // === EQUIPAMENTO REAL VIA IA (Gemini, chave do próprio usuário) ===
     // A chave fica APENAS no localStorage deste navegador — nunca no repositório.
     // Dados de IA são sugestão de catálogo: a interface manda conferir o datasheet.
@@ -1306,8 +1369,14 @@
     function geminiKey() { return (localStorage.getItem('ek_gemini_key') || '').trim(); }
 
     async function geminiJson(prompt, schema) {
+        // Prioridade: backend (chave escondida no servidor) → chave própria (BYOK) no navegador
+        if (apiConf().connected) {
+            const data = await apiFetch('/api/gemini/generate', { method: 'POST', body: JSON.stringify({ prompt, schema }) });
+            if (!data.text) throw new Error('Resposta vazia da IA (via servidor).');
+            return JSON.parse(data.text);
+        }
         const key = geminiKey();
-        if (!key) throw new Error('Salve sua chave da API Gemini no campo abaixo (grátis em aistudio.google.com/apikey).');
+        if (!key) throw new Error('Salve sua chave da API Gemini no campo abaixo (grátis em aistudio.google.com/apikey), ou conecte o backend.');
         const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${encodeURIComponent(key)}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -1427,8 +1496,13 @@
 
     // === PREÇO UNITÁRIO VIA LINK (Gemini com leitura de URL) ===
     async function geminiUrl(prompt) {
+        if (apiConf().connected) {
+            const data = await apiFetch('/api/gemini/url', { method: 'POST', body: JSON.stringify({ prompt }) });
+            if (!data.text) throw new Error('Resposta vazia da IA (via servidor).');
+            return data.text;
+        }
         const key = geminiKey();
-        if (!key) throw new Error('Salve sua chave da API Gemini no campo abaixo.');
+        if (!key) throw new Error('Salve sua chave da API Gemini no campo abaixo, ou conecte o backend.');
         const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${encodeURIComponent(key)}`, {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -1676,15 +1750,25 @@
         try { const raw = localStorage.getItem(PERSIST_KEY); if (raw) applySnapshot(JSON.parse(raw)); } catch (e) { }
     }
 
-    // === PROPOSTAS SALVAS (por cliente, neste navegador) ===
+    // === PROPOSTAS SALVAS ===
+    // Sem backend: lista local (localStorage). Com backend conectado: lista vem
+    // da nuvem (acessível de qualquer aparelho) — mesma interface nos dois modos.
     function loadProps() { try { return JSON.parse(localStorage.getItem(PROPS_KEY) || '[]'); } catch (e) { return []; } }
     function saveProps(a) { try { localStorage.setItem(PROPS_KEY, JSON.stringify(a)); } catch (e) { } }
-    function refreshSavedList() {
+
+    async function refreshSavedList() {
         const sel = document.getElementById('savedProps');
         sel.textContent = '';
         const o0 = document.createElement('option'); o0.value = ''; o0.textContent = 'Propostas salvas…';
         sel.appendChild(o0);
-        loadProps().forEach(p => {
+        let items = [];
+        if (apiConf().connected) {
+            try { items = (await apiFetch('/api/proposals')).map(p => ({ id: p.id, nome: p.nome, savedAt: p.savedAt })); }
+            catch (e) { propsMsg(`Erro ao listar propostas da nuvem: ${e.message}`); items = []; }
+        } else {
+            items = loadProps();
+        }
+        items.forEach(p => {
             const o = document.createElement('option');
             o.value = p.id;
             o.textContent = `${p.nome} · ${new Date(p.savedAt).toLocaleDateString('pt-BR')}`;
@@ -1758,34 +1842,98 @@
         }
     });
 
-    // Propostas salvas
-    document.getElementById('btnSaveProp').addEventListener('click', () => {
+    // Propostas salvas (nuvem quando conectado, senão local)
+    document.getElementById('btnSaveProp').addEventListener('click', async () => {
         const nome = (document.getElementById('clientName').value || '').trim()
             || `Proposta ${new Date().toLocaleDateString('pt-BR')}`;
-        const a = loadProps();
         const snap = snapshotState();
+        if (apiConf().connected) {
+            try {
+                await apiFetch('/api/proposals', { method: 'POST', body: JSON.stringify({ nome, snapshot: snap }) });
+                await refreshSavedList();
+                propsMsg(`"${nome}" salva na nuvem.`);
+            } catch (e) { propsMsg(`Erro ao salvar na nuvem: ${e.message}`); }
+            return;
+        }
+        const a = loadProps();
         const ex = a.find(p => p.nome === nome);
         if (ex) { ex.snap = snap; ex.savedAt = Date.now(); }
         else a.unshift({ id: String(Date.now()), nome, savedAt: Date.now(), snap });
         saveProps(a); refreshSavedList();
-        propsMsg(`"${nome}" salva${ex ? ' (atualizada)' : ''}.`);
+        propsMsg(`"${nome}" salva${ex ? ' (atualizada)' : ''} neste navegador.`);
     });
     document.getElementById('btnNewProp').addEventListener('click', () => {
         localStorage.removeItem(PERSIST_KEY);
         location.reload();
     });
-    document.getElementById('btnLoadProp').addEventListener('click', () => {
+    document.getElementById('btnLoadProp').addEventListener('click', async () => {
         const id = document.getElementById('savedProps').value;
+        if (!id) { propsMsg('Selecione uma proposta na lista.'); return; }
+        if (apiConf().connected) {
+            try {
+                const p = await apiFetch(`/api/proposals/${encodeURIComponent(id)}`);
+                applySnapshot(p.snapshot);
+                propsMsg(`"${p.nome}" aberta (da nuvem).`);
+            } catch (e) { propsMsg(`Erro ao abrir: ${e.message}`); }
+            return;
+        }
         const p = loadProps().find(x => x.id === id);
-        if (!p) { propsMsg('Selecione uma proposta na lista.'); return; }
+        if (!p) { propsMsg('Proposta não encontrada.'); return; }
         applySnapshot(p.snap);
         propsMsg(`"${p.nome}" aberta.`);
     });
-    document.getElementById('btnDelProp').addEventListener('click', () => {
+    document.getElementById('btnDelProp').addEventListener('click', async () => {
         const id = document.getElementById('savedProps').value;
         if (!id) { propsMsg('Selecione uma proposta na lista.'); return; }
+        if (apiConf().connected) {
+            try { await apiFetch(`/api/proposals/${encodeURIComponent(id)}`, { method: 'DELETE' }); await refreshSavedList(); propsMsg('Proposta excluída da nuvem.'); }
+            catch (e) { propsMsg(`Erro ao excluir: ${e.message}`); }
+            return;
+        }
         saveProps(loadProps().filter(x => x.id !== id));
         refreshSavedList(); propsMsg('Proposta excluída.');
+    });
+
+    // Conectar/desconectar backend
+    document.getElementById('btnApiConnect').addEventListener('click', async () => {
+        const base = (document.getElementById('apiBaseInput').value || '').trim().replace(/\/$/, '');
+        const pass = document.getElementById('apiPassInput').value || '';
+        if (!base || !pass) { propsMsg('Preencha a URL da API e a senha.'); return; }
+        try {
+            const r = await fetch(base + '/api/auth', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ passphrase: pass }) });
+            const d = await r.json().catch(() => ({}));
+            if (!r.ok || !d.ok) throw new Error(d.error || 'Senha incorreta ou URL inválida.');
+            localStorage.setItem('ek_api_base', base);
+            localStorage.setItem('ek_api_pass', pass);
+            document.getElementById('apiPassInput').value = '';
+            refreshApiStatusUI();
+            await refreshSavedList();
+            propsMsg('Conectado à nuvem com sucesso.');
+        } catch (e) { propsMsg(`Falha ao conectar: ${e.message}`); }
+    });
+    document.getElementById('btnApiDisconnect').addEventListener('click', async () => {
+        localStorage.removeItem('ek_api_base'); localStorage.removeItem('ek_api_pass');
+        refreshApiStatusUI(); await refreshSavedList();
+        propsMsg('Desconectado — voltando às propostas deste navegador.');
+    });
+
+    // Captação de lead (visitante anônimo do simulador)
+    document.getElementById('btnLeadEnviar').addEventListener('click', async () => {
+        const nome = (document.getElementById('leadNome').value || '').trim();
+        const contato = (document.getElementById('leadContato').value || '').trim();
+        const cidade = (document.getElementById('leadCidade').value || '').trim();
+        const note = document.getElementById('leadNote');
+        if (!nome || !contato) { note.textContent = 'Preencha nome e contato.'; note.className = 'text-[10px] text-alert mt-2'; return; }
+        try {
+            const base = API_BASE_DEFAULT;
+            const r = await fetch(base + '/api/leads', {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nome, contato, cidade, consumo: `${STATE.kWp ? fmtBR(STATE.kWp, 2) + ' kWp' : ''}`, tipo: 'solar' })
+            });
+            if (!r.ok) throw new Error('Falha ao enviar.');
+            note.textContent = 'Contato enviado — obrigado! Retornamos em breve.'; note.className = 'text-[10px] text-signal mt-2';
+            document.getElementById('leadNome').value = ''; document.getElementById('leadContato').value = ''; document.getElementById('leadCidade').value = '';
+        } catch (e) { note.textContent = 'Não foi possível enviar agora — tente novamente.'; note.className = 'text-[10px] text-alert mt-2'; }
     });
 
     // Auto-salvar em qualquer campo (inclui cliente/observações, fora do recálculo)
@@ -1901,6 +2049,7 @@
 
     // Restaura o último estado (preços, cliente, tudo) e a lista de propostas
     restoreState();
+    refreshApiStatusUI();
     refreshSavedList();
     </script>
 </body>

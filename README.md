@@ -75,6 +75,49 @@ pelo responsável — ver memorial.html). O PDF traz destaques de economia/
 payback/geração, disposição das placas, gráfico de retorno, próximos
 passos e campos de assinatura.
 
+## Backend opcional (Cloudflare Worker + D1)
+
+O site funciona 100% sem isso (propostas ficam no navegador, IA usa sua
+própria chave). O backend é um upgrade opcional que resolve três coisas:
+acessar propostas de qualquer aparelho, esconder a chave do Gemini, e
+captar contato de visitantes anônimos do simulador.
+
+Arquitetura: `backend/src/index.js` é um Cloudflare Worker sem dependências
+(roteamento manual) com um banco D1 (SQLite) para `proposals` e `leads`.
+Autenticação é uma **senha única** (sem cadastro de usuário) enviada como
+`Authorization: Bearer <senha>`. O deploy é automático via
+`.github/workflows/deploy-backend.yml` a cada push que toque `backend/`.
+
+### Configuração (uma vez só — bem mais simples que a do robô de preços: sem OAuth, sem token que expira)
+
+1. Crie uma conta grátis em [dash.cloudflare.com](https://dash.cloudflare.com) (só e-mail/senha, sem cartão).
+2. Instale o `wrangler` (CLI da Cloudflare) e autentique — ou use o dashboard web. Via CLI (precisa de Node instalado):
+   ```
+   npx wrangler login
+   cd backend
+   npx wrangler d1 create elektrosys
+   ```
+   O comando devolve um `database_id` — cole em `backend/wrangler.toml`, no lugar de `REPLACE_AFTER_WRANGLER_D1_CREATE`, e commit/push essa mudança.
+3. Defina os 2 segredos do Worker (ficam só na Cloudflare, nunca no repositório):
+   ```
+   npx wrangler secret put ACCESS_PASSPHRASE
+   npx wrangler secret put GEMINI_API_KEY
+   ```
+   (cole a senha que você quiser usar, e sua chave do Gemini de aistudio.google.com/apikey)
+4. Pegue um **API Token** da Cloudflare (dash → My Profile → API Tokens → *Create Token* → template "Edit Cloudflare Workers") e seu **Account ID** (aparece na barra lateral do dashboard).
+5. Cadastre 2 secrets no GitHub ([Settings → Secrets → Actions](https://github.com/Gusttavhub/calculadora-motores/settings/secrets/actions)):
+
+   | Secret | Valor |
+   |---|---|
+   | `CLOUDFLARE_API_TOKEN` | o token do passo 4 |
+   | `CLOUDFLARE_ACCOUNT_ID` | o Account ID do passo 4 |
+
+6. Dê push (ou rode manualmente em Actions → "Deploy backend (Cloudflare Worker)" → Run workflow). O Worker fica disponível em `https://elektrosys-api.<seu-subdomínio>.workers.dev`.
+7. No site (`solar.html` → "Minhas propostas" → "Sincronizar com a nuvem"), cole essa URL + a senha do passo 3 → Conectar.
+8. **Para ativar a captação de lead** (visitantes anônimos, sem precisar configurar nada no navegador deles): edite `const API_BASE_DEFAULT = '';` no `<script>` de `solar.html` com a URL do passo 6, rebuild/commit/push.
+
+Depois disso, tudo é automático: cada push que altere `backend/` refaz o deploy sozinho.
+
 ## Robô de preços — como funciona
 
 Toda segunda-feira o GitHub Actions roda `scripts/update_prices.py`, que:
