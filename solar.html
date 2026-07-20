@@ -323,6 +323,11 @@
                                     <p class="text-[10px] text-muted mt-1">Usado no gráfico de retorno do investimento.</p>
                                 </div>
                                 <div>
+                                    <label for="fioBInput" class="block text-xs font-semibold text-muted mb-1">Fio B / perda de compensação (%)</label>
+                                    <input type="number" id="fioBInput" min="0" max="60" step="0.5" value="0" class="w-full bg-ink border border-line rounded-md px-3 py-1.5 text-sm font-mono font-semibold text-fg focus:outline-none focus:border-primary">
+                                    <p class="text-[10px] text-muted mt-1">Lei 14.300: reduz a economia da energia compensada. Consulte a tarifa da sua distribuidora; 0 = não aplicar.</p>
+                                </div>
+                                <div>
                                     <label for="phaseSelect" class="block text-xs font-semibold text-muted mb-1">Padrão de Entrada</label>
                                     <select id="phaseSelect" class="w-full bg-ink border border-line rounded-md px-3 py-1.5 text-sm font-semibold text-fg focus:outline-none focus:border-primary">
                                         <option value="30">Monofásico (disp. 30 kWh)</option>
@@ -659,6 +664,16 @@
                             </div>
                         </div>
                         <div>
+                            <label for="notesTpl" class="text-[10px] text-muted uppercase block mb-1">Modelo de condições</label>
+                            <select id="notesTpl" class="num-in" style="font-family:'IBM Plex Sans'">
+                                <option value="">Escolher modelo…</option>
+                                <option value="avista">À vista</option>
+                                <option value="cartao">Cartão em até 12x</option>
+                                <option value="fin">Financiamento bancário</option>
+                                <option value="5050">50% entrada / 50% entrega</option>
+                            </select>
+                        </div>
+                        <div>
                             <label for="propNotes" class="text-[10px] text-muted uppercase block mb-1">Observações</label>
                             <textarea id="propNotes" rows="3" placeholder="Condições de pagamento, prazo de execução, garantias..." class="num-in" style="font-family:'IBM Plex Sans';resize:vertical"></textarea>
                         </div>
@@ -666,6 +681,22 @@
                             <i class="fa-solid fa-file-pdf"></i> Gerar proposta (PDF)
                         </button>
                         <p class="text-[10px] text-muted text-center">Abre a impressão do navegador — escolha "Salvar como PDF".</p>
+
+                        <div class="border-t border-line pt-3">
+                            <p class="text-[10px] font-semibold text-muted uppercase tracking-wider mb-2">Minhas propostas (neste navegador)</p>
+                            <div class="flex gap-2">
+                                <button id="btnSaveProp" class="flex-1 border border-line hover:border-sky text-muted hover:text-sky text-xs font-semibold py-2 rounded-md transition">Salvar atual</button>
+                                <button id="btnNewProp" class="flex-1 border border-line hover:border-sky text-muted hover:text-sky text-xs font-semibold py-2 rounded-md transition">Nova proposta</button>
+                            </div>
+                            <select id="savedProps" class="num-in mt-2" style="font-family:'IBM Plex Sans'">
+                                <option value="">Propostas salvas…</option>
+                            </select>
+                            <div class="flex gap-2 mt-2">
+                                <button id="btnLoadProp" class="flex-1 bg-primary hover:bg-primary-700 text-white text-xs font-semibold py-2 rounded-md transition">Abrir</button>
+                                <button id="btnDelProp" class="flex-1 border border-line hover:border-alert text-muted hover:text-alert text-xs font-semibold py-2 rounded-md transition">Excluir</button>
+                            </div>
+                            <p id="propsNote" class="text-[10px] text-muted mt-1.5">Tudo que você preenche também é salvo automaticamente.</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -744,6 +775,24 @@
                 <div><strong>Local:</strong> <span id="pCity">—</span></div>
             </div>
 
+            <div style="display:flex;gap:10px;margin:4px 0 6px;">
+                <div style="flex:1;background:#eef4fd;border:1px solid #bfd7f5;border-radius:8px;padding:10px 12px;text-align:center;">
+                    <div style="font-size:10px;color:#374151;text-transform:uppercase;letter-spacing:.06em;">Economia estimada</div>
+                    <div id="hlEco" style="font-family:'Barlow Semi Condensed',Arial,sans-serif;font-size:20px;font-weight:700;color:#1E5FB8;">—</div>
+                    <div style="font-size:10px;color:#6b7280;">por mês, no 1º ano</div>
+                </div>
+                <div style="flex:1;background:#ecfdf5;border:1px solid #a7f3d0;border-radius:8px;padding:10px 12px;text-align:center;">
+                    <div style="font-size:10px;color:#374151;text-transform:uppercase;letter-spacing:.06em;">Retorno do investimento</div>
+                    <div id="hlPay" style="font-family:'Barlow Semi Condensed',Arial,sans-serif;font-size:20px;font-weight:700;color:#047857;">—</div>
+                    <div style="font-size:10px;color:#6b7280;">projeção em 25 anos</div>
+                </div>
+                <div style="flex:1;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:10px 12px;text-align:center;">
+                    <div style="font-size:10px;color:#374151;text-transform:uppercase;letter-spacing:.06em;">Geração estimada</div>
+                    <div id="hlGen" style="font-family:'Barlow Semi Condensed',Arial,sans-serif;font-size:20px;font-weight:700;color:#B45309;">—</div>
+                    <div style="font-size:10px;color:#6b7280;">kWh por mês</div>
+                </div>
+            </div>
+
             <h2>Resumo do sistema</h2>
             <table class="doc-table">
                 <tbody>
@@ -782,6 +831,24 @@
 
             <h2>Observações</h2>
             <div class="doc-notes" id="pNotes">—</div>
+
+            <h2>Próximos passos</h2>
+            <ol style="margin:0 0 4px 18px;padding:0;font-size:12px;color:#374151;line-height:1.7;">
+                <li>Aceite da proposta (assinatura abaixo ou confirmação por escrito).</li>
+                <li>Contrato e cronograma de execução.</li>
+                <li>Projeto executivo e homologação junto à distribuidora.</li>
+                <li>Instalação e comissionamento.</li>
+                <li>Ativação do sistema e orientações de monitoramento.</li>
+            </ol>
+
+            <div style="display:flex;gap:40px;margin-top:38px;">
+                <div style="flex:1;text-align:center;">
+                    <div id="sigCliente" style="border-top:1px solid #374151;padding-top:6px;font-size:11px;color:#374151;">Cliente</div>
+                </div>
+                <div style="flex:1;text-align:center;">
+                    <div style="border-top:1px solid #374151;padding-top:6px;font-size:11px;color:#374151;">Gusttavo Gutierry — Engenharia Elétrica</div>
+                </div>
+            </div>
 
             <div class="doc-foot">
                 Gusttavo Gutierry · Engenharia Elétrica · WhatsApp +55 64 98439-5286 · elektrosys.eng.br<br>
@@ -943,7 +1010,10 @@
         const kWp = (totalPanels * pPower) / 1000;
         const monthlyGen = kWp * hsp * pr * SOLAR.DAYS_PER_MONTH;
         const compensable = Math.max(0, monthlyGen - availabilityKWh);
-        const monthlySavings = totalPanels > 0 ? compensable * rate : 0;
+        // Fio B (Lei 14.300): % informado pelo usuário reduz a economia da energia compensada
+        const fioB = clamp(sanitize(document.getElementById('fioBInput').value, 0), 0, 60);
+        const monthlySavings = totalPanels > 0 ? compensable * rate * (1 - fioB / 100) : 0;
+        STATE.fioB = fioB;
         const inverterKW = kWp / SOLAR.INVERTER_RATIO;
 
         // Atualizar métricas
@@ -1156,6 +1226,7 @@
         STATE.budget = { moduloWp, inversorKW, caboLen, caboM, estruturaUn, protecao, maoObraKWp, margem,
                          cModulos, cInversor, cCabo, cEstrutura, cProtecao, cMaoObra, custo, vMargem, preco,
                          modoMod, modoInv, micro, invUnits };
+        schedulePersist();
     }
 
     // === Preços ao vivo (prices.json, gerado semanalmente pelo robô — Fase 2) ===
@@ -1408,13 +1479,13 @@
     // Metodologia detalhada em memorial.html.
     const PAYBACK_YEARS = 25, DEGRADACAO_ANUAL = 0.006;
 
-    function computePayback(invest, genMonthly, availKWh, tarifa, adjPct) {
+    function computePayback(invest, genMonthly, availKWh, tarifa, adjPct, fioBPct) {
         let acc = 0, payback = null;
         const serie = [0];
         for (let t = 1; t <= PAYBACK_YEARS; t++) {
             const genAno = genMonthly * 12 * Math.pow(1 - DEGRADACAO_ANUAL, t - 1);
             const tarAno = tarifa * Math.pow(1 + (adjPct || 0) / 100, t - 1);
-            const econAno = Math.max(0, genAno - availKWh * 12) * tarAno;
+            const econAno = Math.max(0, genAno - availKWh * 12) * tarAno * (1 - (fioBPct || 0) / 100);
             const prev = acc;
             acc += econAno;
             serie.push(acc);
@@ -1528,20 +1599,107 @@
         } catch (e) { /* canvas indisponível: imagem fica vazia, o resto do PDF sai normal */ }
 
         // Gráfico de retorno do investimento (após a disposição, conforme o layout do documento)
-        const pb = computePayback(b.preco, s.monthlyGen, s.avail, s.rate, s.adj);
+        const pb = computePayback(b.preco, s.monthlyGen, s.avail, s.rate, s.adj, s.fioB);
         drawPaybackChart(b.preco, pb.serie, pb.payback);
         try {
             document.getElementById('pChartImg').src = document.getElementById('paybackCanvas').toDataURL('image/png');
         } catch (e) { }
         t('pPaybackTxt', pb.payback != null
             ? `Investimento de ${brl(b.preco)} com economia inicial de ${brl(s.monthlySavings)}/mês. Retorno projetado em ` +
-              `${fmtBR(pb.payback, 1)} anos, considerando reajuste tarifário de ${fmtBR(s.adj, 1)}% ao ano e degradação dos módulos ` +
-              `de 0,6% ao ano. Metodologia completa: elektrosys.eng.br/memorial.html`
+              `${fmtBR(pb.payback, 1)} anos, considerando reajuste tarifário de ${fmtBR(s.adj, 1)}% ao ano, degradação dos módulos ` +
+              `de 0,6% ao ano${s.fioB > 0 ? ` e Fio B de ${fmtBR(s.fioB, 1)}%` : ''}. Metodologia completa: elektrosys.eng.br/memorial.html`
             : 'Com os parâmetros atuais, o retorno não ocorre em 25 anos — revise preço, tarifa ou dimensionamento.');
+
+        // Destaques para o cliente + linha de assinatura
+        t('hlEco', brl(s.monthlySavings));
+        t('hlPay', pb.payback != null ? `${fmtBR(pb.payback, 1)} anos` : '> 25 anos');
+        t('hlGen', Math.round(s.monthlyGen).toLocaleString('pt-BR'));
+        t('sigCliente', ((document.getElementById('clientName').value || '').trim() || 'Cliente'));
 
         const notes = (document.getElementById('propNotes').value || '').trim();
         t('pNotes', notes || 'Condições a combinar.');
     }
+
+    // === PERSISTÊNCIA (localStorage) — nada de redigitar preço entre propostas ===
+    const PERSIST_KEY = 'ek_solar_v1';
+    const PROPS_KEY = 'ek_proposals_v1';
+    let RESTORING = false, persistT = null;
+
+    const PERSIST_INPUTS = ['widthSlider','lengthSlider','marginSlider','targetKwh','ppmInput',
+        'hspInput','prInput','rateInput','adjInput','fioBInput','phaseSelect','corridorInput',
+        'clsModulo','clsInversor','modoPrModulo','modoPrInversor','prModuloWp','prInversorKW',
+        'prCaboLen','prCaboM','prEstruturaUn','prProtecao','prMaoObraKWp','prMargem',
+        'clientName','clientCity','propNum','propValid','propNotes','iaModeloModulo','iaModeloInversor'];
+    const PERSIST_TILES = ['modeGroup','structureGroup','orientationGroup','invTypeGroup'];
+
+    function snapshotState() {
+        const o = { v: 1, inputs: {}, tiles: {}, inv: CUSTOM_INV || null,
+                    panel: { custom: (STATE.customPanelActive && CUSTOM_PANEL) ? CUSTOM_PANEL : null, value: el.panel.value } };
+        PERSIST_INPUTS.forEach(id => { const e = document.getElementById(id); if (e) o.inputs[id] = e.value; });
+        PERSIST_TILES.forEach(g => o.tiles[g] = tileValue(g));
+        return o;
+    }
+    function persistNow() { try { localStorage.setItem(PERSIST_KEY, JSON.stringify(snapshotState())); } catch (e) { } }
+    function schedulePersist() { if (RESTORING) return; clearTimeout(persistT); persistT = setTimeout(persistNow, 400); }
+    function setTile(groupId, val) {
+        const b = document.querySelector(`#${groupId} button[data-value="${val}"]`);
+        if (b) b.click();
+    }
+    function applySnapshot(o) {
+        if (!o) return;
+        RESTORING = true;
+        try {
+            PERSIST_INPUTS.forEach(id => { const e = document.getElementById(id); if (e && o.inputs && o.inputs[id] != null) e.value = o.inputs[id]; });
+            CUSTOM_INV = o.inv || null;
+            if (o.panel && o.panel.custom) {
+                const d = o.panel.custom; CUSTOM_PANEL = d;
+                let op = document.getElementById('optCustomPanel');
+                if (!op) { op = document.createElement('option'); op.id = 'optCustomPanel'; el.panel.appendChild(op); }
+                op.value = d.wp; op.dataset.w = d.w; op.dataset.l = d.l;
+                op.textContent = `${d.wp} Wp — ${d.marca || 'manual'}`;
+            }
+            PERSIST_TILES.forEach(g => { if (o.tiles && o.tiles[g]) setTile(g, o.tiles[g]); });
+            if (o.panel) {
+                if (o.panel.custom && document.getElementById('optCustomPanel')) document.getElementById('optCustomPanel').selected = true;
+                else el.panel.value = o.panel.value;
+            }
+            // Reaplica campos que os cliques dos tiles podem ter alterado
+            ['modoPrModulo','modoPrInversor','prModuloWp','prInversorKW'].forEach(id => {
+                const e = document.getElementById(id);
+                if (e && o.inputs && o.inputs[id] != null && !e.disabled) e.value = o.inputs[id];
+            });
+            applyModuloClass(true); applyInversorClass(true);
+        } finally { RESTORING = false; }
+        calculate();
+    }
+    function restoreState() {
+        try { const raw = localStorage.getItem(PERSIST_KEY); if (raw) applySnapshot(JSON.parse(raw)); } catch (e) { }
+    }
+
+    // === PROPOSTAS SALVAS (por cliente, neste navegador) ===
+    function loadProps() { try { return JSON.parse(localStorage.getItem(PROPS_KEY) || '[]'); } catch (e) { return []; } }
+    function saveProps(a) { try { localStorage.setItem(PROPS_KEY, JSON.stringify(a)); } catch (e) { } }
+    function refreshSavedList() {
+        const sel = document.getElementById('savedProps');
+        sel.textContent = '';
+        const o0 = document.createElement('option'); o0.value = ''; o0.textContent = 'Propostas salvas…';
+        sel.appendChild(o0);
+        loadProps().forEach(p => {
+            const o = document.createElement('option');
+            o.value = p.id;
+            o.textContent = `${p.nome} · ${new Date(p.savedAt).toLocaleDateString('pt-BR')}`;
+            sel.appendChild(o);
+        });
+    }
+    function propsMsg(txt) { document.getElementById('propsNote').textContent = txt; }
+
+    // === MODELOS DE CONDIÇÕES (observações da proposta) ===
+    const NOTES_TPL = {
+        avista: 'Pagamento: à vista (PIX/transferência). Prazo de execução: até 30 dias após a homologação na distribuidora. Garantias: 12 meses de instalação; equipamentos conforme fabricante (módulos: 25 anos de potência; inversor: conforme datasheet).',
+        cartao: 'Pagamento: em até 12x no cartão de crédito (taxas da operadora repassadas). Prazo de execução: até 30 dias após a homologação. Garantias: 12 meses de instalação; equipamentos conforme fabricante.',
+        fin: 'Pagamento: financiamento bancário (sujeito a análise e aprovação de crédito). Entrada opcional. Prazo de execução: até 30 dias após liberação do crédito e homologação. Garantias: 12 meses de instalação; equipamentos conforme fabricante.',
+        '5050': 'Pagamento: 50% na assinatura do contrato e 50% na conclusão da instalação. Prazo de execução: até 30 dias após a homologação. Garantias: 12 meses de instalação; equipamentos conforme fabricante.'
+    };
 
     // === EVENTOS ===
     setupTiles('modeGroup', () => {
@@ -1588,8 +1746,53 @@
     });
     document.getElementById('ppmInput').addEventListener('change', calculate);
     document.getElementById('adjInput').addEventListener('input', calculate);
+    document.getElementById('fioBInput').addEventListener('input', calculate);
     document.getElementById('btnManApply').addEventListener('click', aplicarManual);
     document.getElementById('btnIaLink').addEventListener('click', buscarPrecoLink);
+
+    // Modelos de condições → preenche as observações
+    document.getElementById('notesTpl').addEventListener('change', (e) => {
+        if (NOTES_TPL[e.target.value]) {
+            document.getElementById('propNotes').value = NOTES_TPL[e.target.value];
+            schedulePersist();
+        }
+    });
+
+    // Propostas salvas
+    document.getElementById('btnSaveProp').addEventListener('click', () => {
+        const nome = (document.getElementById('clientName').value || '').trim()
+            || `Proposta ${new Date().toLocaleDateString('pt-BR')}`;
+        const a = loadProps();
+        const snap = snapshotState();
+        const ex = a.find(p => p.nome === nome);
+        if (ex) { ex.snap = snap; ex.savedAt = Date.now(); }
+        else a.unshift({ id: String(Date.now()), nome, savedAt: Date.now(), snap });
+        saveProps(a); refreshSavedList();
+        propsMsg(`"${nome}" salva${ex ? ' (atualizada)' : ''}.`);
+    });
+    document.getElementById('btnNewProp').addEventListener('click', () => {
+        localStorage.removeItem(PERSIST_KEY);
+        location.reload();
+    });
+    document.getElementById('btnLoadProp').addEventListener('click', () => {
+        const id = document.getElementById('savedProps').value;
+        const p = loadProps().find(x => x.id === id);
+        if (!p) { propsMsg('Selecione uma proposta na lista.'); return; }
+        applySnapshot(p.snap);
+        propsMsg(`"${p.nome}" aberta.`);
+    });
+    document.getElementById('btnDelProp').addEventListener('click', () => {
+        const id = document.getElementById('savedProps').value;
+        if (!id) { propsMsg('Selecione uma proposta na lista.'); return; }
+        saveProps(loadProps().filter(x => x.id !== id));
+        refreshSavedList(); propsMsg('Proposta excluída.');
+    });
+
+    // Auto-salvar em qualquer campo (inclui cliente/observações, fora do recálculo)
+    PERSIST_INPUTS.forEach(id => {
+        const e = document.getElementById(id);
+        if (e) { e.addEventListener('input', schedulePersist); e.addEventListener('change', schedulePersist); }
+    });
 
     document.getElementById('btnPdf').addEventListener('click', () => {
         fillProposal();
@@ -1695,6 +1898,10 @@
         .then(r => r.ok ? r.json() : Promise.reject(new Error('prices.json indisponível')))
         .then(onLivePricesLoaded)
         .catch(err => console.warn('[ElektroSys] prices.json não carregado — usando referência estática.', err));
+
+    // Restaura o último estado (preços, cliente, tudo) e a lista de propostas
+    restoreState();
+    refreshSavedList();
     </script>
 </body>
 </html>

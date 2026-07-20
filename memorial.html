@@ -111,9 +111,9 @@ N_placas = ⌈ kWp_nec · 1000 / W_módulo ⌉</div>
         </ul>
 
         <h2><span>05</span>Economia mensal estimada</h2>
-        <div class="formula">Economia [R$/mês] = max(0, E − disponibilidade) × tarifa</div>
+        <div class="formula">Economia [R$/mês] = max(0, E − disponibilidade) × tarifa × (1 − FioB)</div>
         <p>A <strong>disponibilidade</strong> é o consumo mínimo faturado pela distribuidora mesmo com injeção: 30 kWh (monofásico), 50 kWh (bifásico) ou 100 kWh (trifásico) — descontada da energia compensável. A tarifa é a cheia informada (R$/kWh).</p>
-        <p><strong>Limitação declarada:</strong> o modelo NÃO desconta o Fio B (Lei 14.300/2022) nem considera simultaneidade de consumo — a economia real tende a ser um pouco menor que a estimada. Ver seção 10.</p>
+        <p><strong>FioB</strong> é o campo opcional "Fio B / perda de compensação (%)" (padrão 0): representa a parcela da TUSD Fio B cobrada sobre a energia compensada (Lei 14.300/2022). O percentual correto depende da tarifa desagregada da distribuidora e do ano — por isso é informado pelo responsável, não estimado automaticamente. Com 0, a limitação permanece declarada na seção 10.</p>
 
         <h2><span>06</span>Inversor — string ou microinversor</h2>
         <p><strong>Inversor string:</strong> potência CA recomendada com sobredimensionamento DC/AC de 1,25 (prática usual entre 1,1 e 1,5):</p>
@@ -144,7 +144,7 @@ N_placas = ⌈ kWp_nec · 1000 / W_módulo ⌉</div>
         <p><strong>Modelo completo</strong> (gráfico do relatório) — projeção ano a ano por 25 anos:</p>
         <div class="formula">E_t = E×12 × (1 − 0,006)^(t−1)
 tarifa_t = tarifa × (1 + reajuste)^(t−1)
-Econ_t = max(0, E_t − disp×12) × tarifa_t
+Econ_t = max(0, E_t − disp×12) × tarifa_t × (1 − FioB)
 Acum_t = Σ Econ_1..t</div>
         <ul>
             <li><strong>Degradação dos módulos:</strong> 0,6% ao ano (geométrica) — compatível com garantias típicas de potência (≈84–87% após 25 anos).</li>
@@ -158,7 +158,7 @@ Acum_t = Σ Econ_1..t</div>
         <h2><span>10</span>Premissas e limitações (leia antes de propor)</h2>
         <ul>
             <li>Estimativa <strong>educacional/comercial</strong> — não substitui projeto executivo assinado com ART.</li>
-            <li><strong>Fio B (Lei 14.300/2022):</strong> a compensação paga progressivamente a TUSD Fio B; o modelo não a desconta porque o valor depende da tarifa desagregada de cada distribuidora. Efeito: economia real menor que a estimada, tipicamente na casa de poucos % a ~15% conforme distribuidora e ano.</li>
+            <li><strong>Fio B (Lei 14.300/2022):</strong> a compensação paga progressivamente a TUSD Fio B. A ferramenta oferece o campo manual "Fio B / perda de compensação (%)" para incluí-la no cálculo; se deixado em 0, a economia mostrada não desconta o Fio B e tende a ser um pouco otimista (tipicamente poucos % a ~15%, conforme distribuidora e ano).</li>
             <li><strong>Simultaneidade:</strong> energia consumida no instante da geração não passa pela compensação — o modelo trata toda a geração como compensada.</li>
             <li><strong>Sombreamentos locais</strong> (árvores, platibandas, antenas) não são modelados; o corredor anti-sombra trata apenas do sombreamento entre fileiras.</li>
             <li>Dados de equipamento vindos de IA são sugestão de catálogo e <strong>devem ser conferidos no datasheet</strong>.</li>

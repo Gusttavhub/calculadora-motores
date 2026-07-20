@@ -64,6 +64,17 @@ do navegador** — nunca no repositório. Dados de IA são sugestão: a interfac
 manda conferir o datasheet. O orçamento aceita cobrar módulos/inversores por
 potência (R$/Wp, R$/kW) ou **por unidade** (R$/un).
 
+## Proposta rápida (fluxo de ~10 min)
+
+Tudo que é digitado no simulador (preços pesquisados, parâmetros, cliente)
+é **salvo automaticamente no navegador** e restaurado ao reabrir. Propostas
+podem ser salvas por cliente ("Minhas propostas": salvar/abrir/excluir),
+há modelos prontos de condições de pagamento, e o campo "Fio B / perda de
+compensação (%)" permite incluir a Lei 14.300 no cálculo (valor informado
+pelo responsável — ver memorial.html). O PDF traz destaques de economia/
+payback/geração, disposição das placas, gráfico de retorno, próximos
+passos e campos de assinatura.
+
 ## Robô de preços — como funciona
 
 Toda segunda-feira o GitHub Actions roda `scripts/update_prices.py`, que:
