@@ -91,6 +91,9 @@
         <p>Em <strong>laje/solo</strong>, cada fileira exige um corredor anti-sombra <span class="var">c</span> (padrão 1,4 m, ajustável — o valor correto depende da latitude e da altura da fileira inclinada):</p>
         <div class="formula">fileiras = ⌊(L_útil + c) / (p_l + c)⌋</div>
         <p>O total de módulos que cabem é <span class="var">colunas × fileiras</span>. O arraste manual no desenho apenas reposiciona — não altera quantidades nem cálculos.</p>
+        <p><strong>Área ocupada × área disponível.</strong> São grandezas distintas e a proposta informa a <strong>ocupada pelos módulos</strong>:</p>
+        <div class="formula">Área_ocupada = N_módulos × p_w × p_l</div>
+        <p>A área do terreno e a área útil (após recuo) aparecem apenas como contexto no simulador. Confundir as duas superestima a ocupação do telhado em várias vezes.</p>
 
         <h2><span>02</span>Dimensionamento por consumo</h2>
         <p>No modo "Consumo (kWh)", o número de placas vem da meta mensal <span class="var">E_alvo</span>:</p>
@@ -110,10 +113,14 @@ N_placas = ⌈ kWp_nec · 1000 / W_módulo ⌉</div>
             <li><strong>30,42</strong> — dias médios por mês (365 ÷ 12), em vez do mês comercial de 30 dias.</li>
         </ul>
 
-        <h2><span>05</span>Economia mensal estimada</h2>
-        <div class="formula">Economia [R$/mês] = max(0, E − disponibilidade) × tarifa × (1 − FioB)</div>
-        <p>A <strong>disponibilidade</strong> é o consumo mínimo faturado pela distribuidora mesmo com injeção: 30 kWh (monofásico), 50 kWh (bifásico) ou 100 kWh (trifásico) — descontada da energia compensável. A tarifa é a cheia informada (R$/kWh).</p>
-        <p><strong>FioB</strong> é o campo opcional "Fio B / perda de compensação (%)" (padrão 0): representa a parcela da TUSD Fio B cobrada sobre a energia compensada (Lei 14.300/2022). O percentual correto depende da tarifa desagregada da distribuidora e do ano — por isso é informado pelo responsável, não estimado automaticamente. Com 0, a limitação permanece declarada na seção 10.</p>
+        <h2><span>05</span>Economia mensal e Fio B (Lei 14.300/2022)</h2>
+        <div class="formula">Economia [R$/mês] = max(0, E − disponibilidade) × tarifa_líquida
+tarifa_líquida = max(0, tarifa − TUSD_FioB × percentual_do_ano)</div>
+        <p>A <strong>disponibilidade</strong> é o consumo mínimo faturado pela distribuidora mesmo com injeção: 30 kWh (monofásico), 50 kWh (bifásico) ou 100 kWh (trifásico) — descontada da energia compensável.</p>
+        <p>A <strong>TUSD Fio B</strong> (R$/kWh, com tributos) é informada conforme a distribuidora do projeto. O percentual cobrado sobre a energia compensada segue o escalonamento legal do art. 27 da Lei 14.300:</p>
+        <div class="formula">2023: 15%  ·  2024: 30%  ·  2025: 45%  ·  2026: 60%
+2027: 75%  ·  2028: 90%  ·  2029+: 100% (cenário conservador)</div>
+        <p>Exemplo: tarifa R$ 0,95 com Fio B de R$ 0,28 em 2026 → tarifa líquida = 0,95 − 0,28 × 0,60 = <strong>R$ 0,78/kWh</strong>. Ignorar o Fio B superestima a economia em cerca de 20% e encurta indevidamente o payback — por isso o simulador alerta quando o campo está zerado.</p>
 
         <h2><span>06</span>Inversor — string ou microinversor</h2>
         <p><strong>Inversor string:</strong> potência CA recomendada com sobredimensionamento DC/AC de 1,25 (prática usual entre 1,1 e 1,5):</p>
@@ -122,16 +129,27 @@ N_placas = ⌈ kWp_nec · 1000 / W_módulo ⌉</div>
         <p><strong>Microinversor:</strong> a quantidade é exata pela razão de placas por micro (1, 2 ou 4, conforme o modelo):</p>
         <div class="formula">N_micros = ⌈ N_placas / placas_por_micro ⌉</div>
         <p>No orçamento, microinversores são sempre precificados <strong>por unidade</strong>.</p>
+        <p><strong>FDI — fator de dimensionamento do inversor.</strong> Quando o inversor real é informado, o simulador calcula e exibe:</p>
+        <div class="formula">FDI = P_pico [kWp] / P_CA_instalada [kW]</div>
+        <p>Faixa usual: <strong>1,10 a 1,30</strong>. Acima disso há clipping (perda de pico nos dias claros); abaixo, o inversor está superdimensionado. Fora da faixa, a ferramenta emite alerta. Sem marca/modelo definidos o FDI não é calculado — e a proposta não deve ser enviada, pois a homologação exige equipamento com registro INMETRO.</p>
 
         <h2><span>07</span>Composição do orçamento</h2>
         <ul>
             <li><strong>Módulos:</strong> <span class="var">N × Wp × preço[R$/Wp]</span> ou <span class="var">N × preço[R$/un]</span> (modo por unidade — usado também quando o preço vem de link de anúncio).</li>
             <li><strong>Inversor:</strong> <span class="var">P_inversor × preço[R$/kW]</span> ou <span class="var">N_unidades × preço[R$/un]</span>.</li>
-            <li><strong>Cabos (CC+CA):</strong> <span class="var">metros × preço[R$/m]</span>.</li>
+            <li><strong>Cabeamento:</strong> calculado em <strong>metros de condutor</strong>, não de percurso, com CC e CA precificados separadamente (são cabos e normas distintas):
+                <div class="formula">CC (NBR 16612) = 2 polos × N_strings × dist(módulos→inversor)
+CA (NBR 5410) = N_condutores × dist(inversor→quadro)
+   N_condutores = 3 (F+N+PE) mono · 4 (2F+N+PE) bi · 5 (3F+N+PE) tri
+Aterramento = 2 m × N_placas + dist(inversor→quadro)
+Conectores MC4 = 3 pares por string  ·  + eletroduto/eletrocalha</div>
+            </li>
             <li><strong>Estrutura:</strong> <span class="var">N_placas × preço[R$/placa]</span>.</li>
-            <li><strong>Proteção CC/CA:</strong> valor global informado (string box, DPS, disjuntores).</li>
+            <li><strong>Proteção CC/CA:</strong> valor global informado (string box, DPS, disjuntores, aterramento).</li>
+            <li><strong>Projeto, ART e homologação:</strong> valor global — linha própria para não ser diluída na mão de obra.</li>
             <li><strong>Mão de obra:</strong> <span class="var">P_pico × preço[R$/kWp]</span>.</li>
         </ul>
+        <p><strong>Regras que o projeto executivo deve observar:</strong> cabo solar (1,5 kV CC) não substitui cabo CA de 750 V e vice-versa; CC e CA nunca compartilham o mesmo eletroduto (NBR 16690); cabo CC exposto exige proteção mecânica — o UV do Cerrado degrada isolação amarrada em estrutura em poucos anos.</p>
         <p>Os preços de referência por classe (módulos Tier 1/2/3 — bancabilidade BloombergNEF; inversores Linha A/B/C — rede de assistência no Brasil) são <strong>pré-preenchimento editável</strong>: o valor que vale é sempre o digitado pelo responsável pela proposta.</p>
 
         <h2><span>08</span>Preço sugerido ao cliente</h2>
@@ -143,12 +161,14 @@ N_placas = ⌈ kWp_nec · 1000 / W_módulo ⌉</div>
         <div class="formula">Payback_simples [anos] = Preço / (Economia_mensal × 12)</div>
         <p><strong>Modelo completo</strong> (gráfico do relatório) — projeção ano a ano por 25 anos:</p>
         <div class="formula">E_t = E×12 × (1 − 0,006)^(t−1)
-tarifa_t = tarifa × (1 + reajuste)^(t−1)
-Econ_t = max(0, E_t − disp×12) × tarifa_t × (1 − FioB)
+tarifa_t  = tarifa    × (1 + reajuste)^(t−1)
+fioB_t    = TUSD_FioB × (1 + reajuste)^(t−1) × percentual(ano_t)
+Econ_t = max(0, E_t − disp×12) × max(0, tarifa_t − fioB_t)
 Acum_t = Σ Econ_1..t</div>
         <ul>
             <li><strong>Degradação dos módulos:</strong> 0,6% ao ano (geométrica) — compatível com garantias típicas de potência (≈84–87% após 25 anos).</li>
-            <li><strong>Reajuste tarifário:</strong> percentual anual configurável (padrão 8% a.a.) aplicado sobre a tarifa.</li>
+            <li><strong>Reajuste tarifário:</strong> percentual anual configurável (padrão 8% a.a.) aplicado à tarifa <em>e</em> à TUSD Fio B.</li>
+            <li><strong>Fio B escalonado:</strong> o percentual do ano <span class="var">t</span> segue a tabela da seção 05 — a alíquota sobe até 2029, então o payback correto é maior que o de um modelo que congela o ano atual.</li>
             <li><strong>Disponibilidade:</strong> continua descontada todos os anos.</li>
         </ul>
         <p>O payback é o ponto em que <span class="var">Acum_t</span> cruza o investimento, <strong>interpolado linearmente dentro do ano</strong>:</p>
@@ -158,7 +178,8 @@ Acum_t = Σ Econ_1..t</div>
         <h2><span>10</span>Premissas e limitações (leia antes de propor)</h2>
         <ul>
             <li>Estimativa <strong>educacional/comercial</strong> — não substitui projeto executivo assinado com ART.</li>
-            <li><strong>Fio B (Lei 14.300/2022):</strong> a compensação paga progressivamente a TUSD Fio B. A ferramenta oferece o campo manual "Fio B / perda de compensação (%)" para incluí-la no cálculo; se deixado em 0, a economia mostrada não desconta o Fio B e tende a ser um pouco otimista (tipicamente poucos % a ~15%, conforme distribuidora e ano).</li>
+            <li><strong>Fio B (Lei 14.300/2022):</strong> modelado (seção 05) a partir da TUSD Fio B informada e do escalonamento legal por ano. A precisão depende de você usar o valor real da sua distribuidora — com o campo zerado, a ferramenta alerta que a economia está otimista.</li>
+            <li><strong>Dimensionamento do circuito CA:</strong> o cabeamento aqui é <em>orçamentário</em> (metros de condutor × preço). A <strong>seção</strong> dos condutores deve ser verificada por ampacidade e queda de tensão — use a <a href="index.html" class="text-sky">calculadora NBR 5410</a> do próprio ElektroSys e registre o resultado no projeto executivo.</li>
             <li><strong>Simultaneidade:</strong> energia consumida no instante da geração não passa pela compensação — o modelo trata toda a geração como compensada.</li>
             <li><strong>Sombreamentos locais</strong> (árvores, platibandas, antenas) não são modelados; o corredor anti-sombra trata apenas do sombreamento entre fileiras.</li>
             <li>Dados de equipamento vindos de IA são sugestão de catálogo e <strong>devem ser conferidos no datasheet</strong>.</li>
