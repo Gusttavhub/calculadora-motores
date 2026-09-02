@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="js">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ferramentas gratuitas de cálculo elétrico | ElektroSys</title>
+<meta name="description" content="Calculadoras abertas da ElektroSys para pré-dimensionamento de motores trifásicos, sistemas fotovoltaicos e memorial de cálculo. Uso educacional e de estimativa.">
+<link rel="canonical" href="https://elektrosys.eng.br/ferramentas.html">
+<meta name="author" content="Gusttavo Gutierry">
+<meta name="theme-color" content="#0A1B2E">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ElektroSys Engenharia Elétrica">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:url" content="https://elektrosys.eng.br/ferramentas.html">
+<meta property="og:title" content="Ferramentas gratuitas de cálculo elétrico | ElektroSys">
+<meta property="og:description" content="Calculadoras abertas para pré-dimensionamento de motores trifásicos, sistemas fotovoltaicos e memorial de cálculo. Uso educacional e de estimativa.">
+<meta property="og:image" content="https://elektrosys.eng.br/assets/brand/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="ElektroSys Engenharia Elétrica — Eng. Gusttavo Gutierry, CREA 1023983184D-GO">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Ferramentas gratuitas de cálculo elétrico | ElektroSys">
+<meta name="twitter:description" content="Calculadoras abertas para pré-dimensionamento de motores trifásicos, sistemas fotovoltaicos e memorial de cálculo.">
+<meta name="twitter:image" content="https://elektrosys.eng.br/assets/brand/og-image.png">
+
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/assets/brand/favicon-192.png" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="/assets/brand/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+
+<link rel="preload" href="assets/fonts/barlow-semi-condensed-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/inter-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+
+<body>
+<a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+
+<header class="site-header">
+  <div class="wrap site-header__inner">
+    <a class="logo" href="index.html" aria-label="ElektroSys Engenharia Elétrica — início">
+      <img src="assets/brand/elektrosys-logo-tight.png" alt="ElektroSys Engenharia Elétrica" width="538" height="239" fetchpriority="high">
+    </a>
+
+    <nav class="nav" aria-label="Navegação principal">
+      <ul class="nav__list">
+        <li><a class="nav__link" href="index.html">Início</a></li>
+        <li><a class="nav__link" href="index.html#servicos">Serviços</a></li>
+        <li><a class="nav__link" href="index.html#pericias">Perícias</a></li>
+        <li><a class="nav__link" href="index.html#sobre">Sobre</a></li>
+        <li><a class="nav__link" href="index.html#contato">Contato</a></li>
+        <li><a class="nav__link nav__link--secondary" href="ferramentas.html" aria-current="page">Ferramentas</a></li>
+      </ul>
+    </nav>
+
+    <a class="btn btn--whatsapp site-header__cta"
+       href="https://wa.me/5564984395286?text=Ol%C3%A1%2C%20Gusttavo.%20Gostaria%20de%20solicitar%20uma%20an%C3%A1lise%20inicial%20para%20o%20meu%20caso."
+       target="_blank" rel="noopener noreferrer">
+      <svg class="btn__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2Zm5.8 14.16c-.24.68-1.2 1.26-1.96 1.42-.52.11-1.2.2-3.5-.75-2.94-1.22-4.83-4.2-4.98-4.4-.14-.19-1.19-1.58-1.19-3.02s.76-2.14 1.03-2.44c.27-.3.58-.37.78-.37.19 0 .39 0 .56.01.18.01.42-.07.66.5.24.58.83 2.01.9 2.16.07.15.12.32.02.51-.1.19-.15.31-.29.48-.15.17-.31.38-.44.51-.15.15-.3.31-.13.6.17.3.76 1.25 1.63 2.02 1.12 1 2.06 1.31 2.36 1.46.3.15.47.12.64-.07.17-.2.74-.86.94-1.16.2-.3.39-.25.66-.15.27.1 1.7.8 1.99.95.29.15.48.22.55.34.07.13.07.72-.17 1.4Z"/></svg>
+      Falar no WhatsApp
+    </a>
+
+    <button class="nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="menu-principal">
+      <span class="nav-toggle__bars" aria-hidden="true"><span></span><span></span><span></span></span>
+      <span class="visually-hidden">Abrir menu de navegação</span>
+    </button>
+  </div>
+
+  <nav class="mobile-nav" id="menu-principal" aria-label="Navegação principal (mobile)" hidden>
+    <ul class="mobile-nav__list">
+      <li><a class="mobile-nav__link" href="index.html">Início <span class="num">01</span></a></li>
+      <li><a class="mobile-nav__link" href="index.html#servicos">Serviços <span class="num">02</span></a></li>
+      <li><a class="mobile-nav__link" href="index.html#pericias">Perícias <span class="num">03</span></a></li>
+      <li><a class="mobile-nav__link" href="index.html#sobre">Sobre <span class="num">04</span></a></li>
+      <li><a class="mobile-nav__link" href="index.html#contato">Contato <span class="num">05</span></a></li>
+      <li><a class="mobile-nav__link" href="ferramentas.html" aria-current="page">Ferramentas <span class="num">06</span></a></li>
+    </ul>
+    <div class="mobile-nav__cta">
+      <a class="btn btn--whatsapp"
+         href="https://wa.me/5564984395286?text=Ol%C3%A1%2C%20Gusttavo.%20Gostaria%20de%20solicitar%20uma%20an%C3%A1lise%20inicial%20para%20o%20meu%20caso."
+         target="_blank" rel="noopener noreferrer">
+        <svg class="btn__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2Zm5.8 14.16c-.24.68-1.2 1.26-1.96 1.42-.52.11-1.2.2-3.5-.75-2.94-1.22-4.83-4.2-4.98-4.4-.14-.19-1.19-1.58-1.19-3.02s.76-2.14 1.03-2.44c.27-.3.58-.37.78-.37.19 0 .39 0 .56.01.18.01.42-.07.66.5.24.58.83 2.01.9 2.16.07.15.12.32.02.51-.1.19-.15.31-.29.48-.15.17-.31.38-.44.51-.15.15-.3.31-.13.6.17.3.76 1.25 1.63 2.02 1.12 1 2.06 1.31 2.36 1.46.3.15.47.12.64-.07.17-.2.74-.86.94-1.16.2-.3.39-.25.66-.15.27.1 1.7.8 1.99.95.29.15.48.22.55.34.07.13.07.72-.17 1.4Z"/></svg>
+        Falar no WhatsApp
+      </a>
+      <p class="mobile-nav__meta">
+        Eng. Gusttavo Gutierry · CREA 1023983184D-GO<br>
+        Segunda a sexta, das 8h às 18h
+      </p>
+    </div>
+  </nav>
+</header>
+
+<main id="conteudo">
+
+  <section class="page-head">
+    <div class="wrap">
+      <nav class="breadcrumb" aria-label="Trilha de navegação">
+        <ol>
+          <li><a href="index.html">Início</a></li>
+          <li><span aria-current="page">Ferramentas</span></li>
+        </ol>
+      </nav>
+      <h1>Calculadoras de engenharia, sem cadastro</h1>
+      <p class="lead">
+        Construí estas ferramentas para o meu próprio trabalho e deixei abertas para quem precisa
+        estimar rápido. Elas servem para pré-dimensionar e para conferir a ordem de grandeza de um
+        resultado — projeto assinado é outra etapa.
+      </p>
+      <p class="disclaimer measure">
+        <strong>Aviso</strong>
+        As ferramentas têm finalidade educacional e de estimativa. Toda instalação deve ser validada
+        por profissional habilitado e por projeto compatível com as normas aplicáveis.
+      </p>
+    </div>
+  </section>
+
+  <section class="wrap" aria-labelledby="lista-ferramentas">
+    <h2 class="visually-hidden" id="lista-ferramentas">Ferramentas disponíveis</h2>
+
+    <article class="tool-detail">
+      <div>
+        <p class="tool-detail__meta">01 · ABNT NBR 5410</p>
+        <h2>Motores trifásicos</h2>
+        <p>
+          Corrente nominal, corrente de partida, bitola do cabo, queda de tensão em regime e na
+          partida, disjuntor motor e contator. Útil para checar rapidamente se o alimentador
+          existente comporta um motor novo.
+        </p>
+        <div class="btn-row">
+          <a class="btn btn--primary" href="https://elektrosys.eng.br/motores.html" target="_blank" rel="noopener noreferrer">
+            Abrir calculadora<span class="visually-hidden"> de motores trifásicos (abre em nova aba)</span>
+          </a>
+        </div>
+      </div>
+      <div class="formulas">
+        <p class="formulas__title">Base de cálculo</p>
+        <code>In = P / (&#8730;3 &middot; V &middot; cos&#966; &middot; &#951;)</code>
+        <code>&#916;V = &#8730;3 &middot; I &middot; L &middot; (R&middot;cos&#966; + X&middot;sen&#966;)</code>
+      </div>
+    </article>
+
+    <article class="tool-detail">
+      <div>
+        <p class="tool-detail__meta">02 · Geração distribuída</p>
+        <h2>Sistema solar</h2>
+        <p>
+          Potência de pico necessária, número de módulos, inversor compatível e geração estimada a
+          partir do consumo informado. Serve para dimensionar a conversa comercial antes do projeto
+          de acesso.
+        </p>
+        <div class="btn-row">
+          <a class="btn btn--primary" href="https://elektrosys.eng.br/solar.html" target="_blank" rel="noopener noreferrer">
+            Abrir calculadora<span class="visually-hidden"> de sistema solar (abre em nova aba)</span>
+          </a>
+        </div>
+      </div>
+      <div class="formulas">
+        <p class="formulas__title">Base de cálculo</p>
+        <code>kWp = consumo / (HSP &middot; 30 &middot; PR)</code>
+        <code>payback = CAPEX / economia anual</code>
+      </div>
+    </article>
+
+    <article class="tool-detail">
+      <div>
+        <p class="tool-detail__meta">03 · Documento</p>
+        <h2>Memorial de cálculo</h2>
+        <p>
+          Monta um memorial base a partir dos parâmetros da instalação, pronto para revisar e
+          complementar. Cobre demanda, condutores e proteção, com saída em texto formatado.
+        </p>
+        <div class="btn-row">
+          <a class="btn btn--primary" href="https://elektrosys.eng.br/memorial.html" target="_blank" rel="noopener noreferrer">
+            Abrir ferramenta<span class="visually-hidden"> de memorial de cálculo (abre em nova aba)</span>
+          </a>
+        </div>
+      </div>
+      <div class="formulas">
+        <p class="formulas__title">Conteúdo gerado</p>
+        <code>demanda &middot; condutores &middot; proteção</code>
+        <code>saída em texto formatado</code>
+      </div>
+    </article>
+  </section>
+
+  <section class="final-cta">
+    <div class="wrap final-cta__inner">
+      <div>
+        <h2>Precisa de projeto, laudo, perícia ou ART?</h2>
+        <p>
+          A estimativa da calculadora não substitui projeto. Fale direto com o engenheiro
+          responsável e envie o que você já tem para receber uma avaliação inicial do escopo.
+        </p>
+      </div>
+      <div class="btn-row">
+        <a class="btn btn--whatsapp"
+           href="https://wa.me/5564984395286?text=Ol%C3%A1%2C%20Gusttavo.%20Gostaria%20de%20solicitar%20uma%20an%C3%A1lise%20inicial%20para%20o%20meu%20caso."
+           target="_blank" rel="noopener noreferrer">
+          <svg class="btn__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2Zm5.8 14.16c-.24.68-1.2 1.26-1.96 1.42-.52.11-1.2.2-3.5-.75-2.94-1.22-4.83-4.2-4.98-4.4-.14-.19-1.19-1.58-1.19-3.02s.76-2.14 1.03-2.44c.27-.3.58-.37.78-.37.19 0 .39 0 .56.01.18.01.42-.07.66.5.24.58.83 2.01.9 2.16.07.15.12.32.02.51-.1.19-.15.31-.29.48-.15.17-.31.38-.44.51-.15.15-.3.31-.13.6.17.3.76 1.25 1.63 2.02 1.12 1 2.06 1.31 2.36 1.46.3.15.47.12.64-.07.17-.2.74-.86.94-1.16.2-.3.39-.25.66-.15.27.1 1.7.8 1.99.95.29.15.48.22.55.34.07.13.07.72-.17 1.4Z"/></svg>
+          Conversar pelo WhatsApp
+        </a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="site-footer__grid">
+      <div>
+        <a class="logo" href="index.html" aria-label="ElektroSys Engenharia Elétrica — início">
+          <img src="assets/brand/elektrosys-logo-tight.png" alt="ElektroSys Engenharia Elétrica" width="538" height="239" loading="lazy">
+        </a>
+        <p class="site-footer__summary">
+          Projetos, laudos, inspeções, SPDA, fotovoltaico, perícias judiciais e assistência técnica.
+        </p>
+        <p class="site-footer__signature">Eng. Gusttavo Gutierry · CREA 1023983184D-GO</p>
+      </div>
+
+      <nav class="footer-col" aria-label="Navegação do rodapé">
+        <h2 class="footer-col__title">Navegação</h2>
+        <ul>
+          <li><a href="index.html">Início</a></li>
+          <li><a href="index.html#servicos">Serviços</a></li>
+          <li><a href="index.html#pericias">Perícias</a></li>
+          <li><a href="index.html#sobre">Sobre</a></li>
+          <li><a href="index.html#contato">Contato</a></li>
+          <li><a href="ferramentas.html">Ferramentas</a></li>
+        </ul>
+      </nav>
+
+      <div class="footer-col">
+        <h2 class="footer-col__title">Contato e ferramentas</h2>
+        <ul>
+          <li><a href="https://wa.me/5564984395286?text=Ol%C3%A1%2C%20Gusttavo.%20Gostaria%20de%20solicitar%20uma%20an%C3%A1lise%20inicial%20para%20o%20meu%20caso." target="_blank" rel="noopener noreferrer">WhatsApp · +55 64 98439-5286</a></li>
+          <li><a href="https://www.linkedin.com/in/gusttavo-gutierry-ferreira-moraes-bb71841a4/" target="_blank" rel="noopener noreferrer">LinkedIn · perfil profissional</a></li>
+          <li><a href="https://elektrosys.eng.br/motores.html" target="_blank" rel="noopener noreferrer">Calculadora · motores trifásicos</a></li>
+          <li><a href="https://elektrosys.eng.br/solar.html" target="_blank" rel="noopener noreferrer">Calculadora · sistema solar</a></li>
+          <li><a href="https://elektrosys.eng.br/memorial.html" target="_blank" rel="noopener noreferrer">Ferramenta · memorial de cálculo</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="site-footer__bottom">
+      <p>© <span data-year>2026</span> ElektroSys Engenharia Elétrica</p>
+      <p>Ferramentas com finalidade educacional e de estimativa. Instalações devem ser validadas por profissional habilitado.</p>
+    </div>
+  </div>
+</footer>
+
+<script src="assets/js/main.js" defer></script>
+</body>
+</html>
