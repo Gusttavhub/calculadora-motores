@@ -1,2 +1,8 @@
 __pycache__/
 *.pyc
+
+# Dependencias das ferramentas de build do site institucional
+node_modules/
+tools/node_modules/
+.DS_Store
+Thumbs.db

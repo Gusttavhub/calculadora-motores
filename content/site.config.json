@@ -1,0 +1,132 @@
+{
+  "$comment": "Fonte central de dados comerciais da ElektroSys. Editar aqui e rodar `npm run check` para validar que o HTML esta consistente. Ver README.md.",
+  "brand": {
+    "company": "ElektroSys",
+    "descriptor": "Engenharia Eletrica",
+    "descriptorAccented": "Engenharia Elétrica",
+    "logoAlt": "ElektroSys Engenharia Elétrica"
+  },
+  "professional": {
+    "name": "Gusttavo Gutierry",
+    "role": "Engenheiro Eletricista",
+    "crea": "1023983184D-GO",
+    "creaLabel": "CREA 1023983184D-GO",
+    "signature": "Eng. Gusttavo Gutierry · CREA 1023983184D-GO",
+    "experience": "Mais de 6 anos em ambiente industrial"
+  },
+  "contact": {
+    "whatsappNumber": "5564984395286",
+    "whatsappDisplay": "+55 64 98439-5286",
+    "whatsappUrl": "https://wa.me/5564984395286",
+    "linkedinUrl": "https://www.linkedin.com/in/gusttavo-gutierry-ferreira-moraes-bb71841a4/",
+    "attendance": "Presencial e remoto",
+    "hours": "Segunda a sexta, das 8h as 18h",
+    "hoursAccented": "Segunda a sexta, das 8h às 18h"
+  },
+  "whatsappMessages": {
+    "default": "Olá, Gusttavo. Gostaria de solicitar uma análise inicial para o meu caso.",
+    "projetos": "Olá, Gusttavo. Gostaria de solicitar uma análise inicial para projeto elétrico.",
+    "laudos": "Olá, Gusttavo. Gostaria de solicitar uma análise inicial para laudo ou inspeção elétrica.",
+    "pericias": "Olá, Gusttavo. Gostaria de solicitar uma análise inicial para perícia judicial ou assistência técnica.",
+    "spda": "Olá, Gusttavo. Gostaria de solicitar uma análise inicial para SPDA.",
+    "fotovoltaico": "Olá, Gusttavo. Gostaria de solicitar uma análise inicial para sistema fotovoltaico.",
+    "consultoria": "Olá, Gusttavo. Gostaria de solicitar uma análise inicial para consultoria técnica."
+  },
+  "site": {
+    "domain": "https://elektrosys.eng.br",
+    "canonicalHome": "https://elektrosys.eng.br/",
+    "title": "ElektroSys | Engenharia Elétrica, Laudos e Perícias em Goiás",
+    "description": "Projetos elétricos, laudos, inspeções, SPDA, sistemas fotovoltaicos, perícias judiciais e assistência técnica com atendimento direto do engenheiro responsável."
+  },
+  "tools": [
+    {
+      "id": "motores",
+      "name": "Motores trifásicos",
+      "url": "https://elektrosys.eng.br/motores.html",
+      "summary": "Corrente nominal, corrente de partida, bitola do cabo, queda de tensão, disjuntor motor e contator."
+    },
+    {
+      "id": "solar",
+      "name": "Sistema solar",
+      "url": "https://elektrosys.eng.br/solar.html",
+      "summary": "Potência de pico, número de módulos, inversor compatível e geração estimada."
+    },
+    {
+      "id": "memorial",
+      "name": "Memorial de cálculo",
+      "url": "https://elektrosys.eng.br/memorial.html",
+      "summary": "Documento base de memorial a partir dos parâmetros informados da instalação."
+    }
+  ],
+  "toolsDisclaimer": "As ferramentas têm finalidade educacional e de estimativa. Toda instalação deve ser validada por profissional habilitado e por projeto compatível com as normas aplicáveis.",
+  "standards": [
+    "ABNT NBR 5410",
+    "ABNT NBR 14039",
+    "ABNT NBR 5419",
+    "NR-10",
+    "ABNT NBR IEC 60947",
+    "Resolução Normativa ANEEL nº 1.059"
+  ],
+  "pendingValidation": {
+    "$comment": "Itens que existem no site atual mas que o design.md condiciona a permanecerem verdadeiros operacionalmente, ou que dependem de dado ainda nao fornecido. Revisar com o responsavel tecnico antes de publicar.",
+    "items": [
+      {
+        "id": "colisao-url-index",
+        "where": "branch site-institucional (aguardando merge)",
+        "text": "Calculadora de motores movida de /index.html para /motores.html",
+        "status": "RESOLVIDO NA BRANCH, PENDENTE DE MERGE. A branch site-institucional do repositorio Gusttavhub/calculadora-motores renomeia index.html para motores.html e coloca o site institucional na raiz. Enquanto a branch nao for mesclada, elektrosys.eng.br/ continua servindo a calculadora e elektrosys.eng.br/motores.html ainda nao existe. Ao mesclar, conferir se ha links externos apontando para /index.html que precisem de redirecionamento."
+      },
+      {
+        "id": "orcamento-sem-custo",
+        "where": "index.html secao #contato",
+        "text": "Orçamento sem custo",
+        "status": "Herdado do site atual. Manter apenas enquanto for verdadeiro; caso contrario, remover sem substituir por outra promessa."
+      },
+      {
+        "id": "resposta-48h",
+        "where": "index.html secao #contato",
+        "text": "Resposta em ate 48 h uteis",
+        "status": "Herdado do site atual. Manter apenas enquanto for verdadeiro; caso contrario, remover sem substituir por outra promessa."
+      },
+      {
+        "id": "email",
+        "where": "nao publicado",
+        "text": "E-mail institucional",
+        "status": "Nao fornecido. Nao publicar ate que o endereco real seja informado."
+      },
+      {
+        "id": "endereco",
+        "where": "nao publicado",
+        "text": "Endereco / cidade-sede",
+        "status": "Nao fornecido. O hero cita apenas 'Goias' conforme design.md. Nao inserir endereco em dados estruturados ate confirmacao."
+      },
+      {
+        "id": "cnpj",
+        "where": "nao publicado",
+        "text": "CNPJ",
+        "status": "Nao fornecido. Nao publicar."
+      },
+      {
+        "id": "logo-vetorial",
+        "where": "brand/",
+        "text": "Logotipo vetorial oficial (SVG/AI/EPS)",
+        "status": "Somente o PNG foi fornecido. Para grafica e registro de marca, vetorizar profissionalmente e revalidar o cartao."
+      }
+    ]
+  },
+  "card": {
+    "$comment": "Conteudo do cartao de apresentacao. Trocar qrTarget entre 'site' e 'whatsapp' muda o destino do QR; rodar `npm run brand` depois.",
+    "qrTarget": "site",
+    "qrUrlSite": "https://elektrosys.eng.br",
+    "qrUrlWhatsapp": "https://wa.me/5564984395286",
+    "qrCaptionSite": "ELEKTROSYS.ENG.BR",
+    "qrCaptionWhatsapp": "WHATSAPP",
+    "phoneLabel": "CELULAR · WHATSAPP",
+    "call": "ATENDIMENTO DIRETO COM O ENGENHEIRO",
+    "services": [
+      "Perícias judiciais e assistência técnica",
+      "Projetos, laudos e inspeções elétricas",
+      "SPDA e sistemas fotovoltaicos"
+    ]
+  }
+}

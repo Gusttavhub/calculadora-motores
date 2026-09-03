@@ -1,0 +1,17 @@
+{
+  "name": "elektrosys-site",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Site institucional da ElektroSys Engenharia Eletrica. HTML, CSS e JavaScript estaticos, sem framework.",
+  "scripts": {
+    "dev": "node tools/serve.mjs 4173",
+    "check": "node tools/check-site.mjs",
+    "test:qr": "node tools/test-qr.mjs",
+    "brand": "node tools/build-card.mjs && node tools/test-qr.mjs",
+    "brand:logo": "node tools/extract-logo.mjs && node tools/make-icons.mjs",
+    "brand:png": "node tools/render-card-png.mjs 600",
+    "previews": "node tools/capture-site.mjs",
+    "verify": "npm run check && npm run test:qr",
+    "brand:og": "node tools/capture-og.mjs"
+  }
+}

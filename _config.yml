@@ -1,0 +1,28 @@
+# Publicacao do GitHub Pages.
+# Tudo listado em "exclude" continua versionado no repositorio, mas nao vai ao ar.
+#
+# NAO acrescente aqui: assets/, styles.css, prices.json, robot-status.json,
+# og-image.png, CNAME, favicon.ico — o site e as calculadoras dependem deles.
+
+exclude:
+  # Material de trabalho do site institucional
+  - tools/
+  - content/
+  - previews/
+  - brand/
+  - design.md
+  - RELATORIO.md
+  - README-SITE.md
+  - package.json
+  - 855058ec-ab39-4ab7-b3da-bff39cc7e410.png
+  - .claude/
+
+  # Codigo que nao faz parte do site publicado
+  - backend/
+  - scripts/
+
+  # Padroes do Jekyll, repetidos porque "exclude" substitui a lista default
+  - node_modules/
+  - vendor/
+  - Gemfile
+  - Gemfile.lock
