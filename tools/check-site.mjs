@@ -183,7 +183,7 @@ const BANNED = [
   [/\b\d+\+? (?:clientes|obras|projetos entregues)\b/i, 'estatistica inventada'],
   [/\bCNPJ\b/i, 'CNPJ nao foi fornecido'],
   [/\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}/, 'CNPJ nao foi fornecido'],
-  [/[\w.+-]+@[\w-]+\.[\w.]+/, 'e-mail nao foi fornecido'],
+  // e-mail tem regra propria abaixo: o do config e permitido, qualquer outro nao
 ];
 for (const page of PAGES) {
   const h = html[page];
@@ -193,6 +193,13 @@ for (const page of PAGES) {
     if (m) fail(`${page}: conteudo proibido (${why}) — "${m[0]}"`);
   }
   pass(`${page}: sem conteudo proibido`);
+
+  // Só o e-mail declarado no config pode aparecer. Qualquer outro endereço e
+  // invencao ou erro de digitacao.
+  const emails = [...new Set((text.match(/[\w.+-]+@[\w-]+\.[\w.]+/g) || []))];
+  const intrusos = emails.filter((e) => e !== cfg.contact.email);
+  if (intrusos.length) fail(`${page}: e-mail nao declarado em site.config.json — ${intrusos.join(', ')}`);
+  else pass(`${page}: sem e-mail fora do config`);
 
   if (/ART quando aplic[aá]vel/i.test(h) || page === 'ferramentas.html') pass(`${page}: ART condicionada`);
   else fail(`${page}: falta a ressalva "ART quando aplicável"`);

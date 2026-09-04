@@ -69,7 +69,7 @@ Nenhum arquivo pré-existente foi alterado ou removido. `design.md`,
 
 O verso traz o logotipo oficial em miniatura (mesma marca do cabeçalho e do
 rodapé do site) sobre uma placa clara, nome, cargo, CREA, o número rotulado
-`WHATSAPP`, os três serviços e um QR code para
+`WHATSAPP`, o e-mail, os três serviços e um QR code para
 `elektrosys.eng.br` com a URL legível impressa abaixo. O destino do QR é
 configurável em `content/site.config.json` → `card.qrTarget` (`"site"` ou
 `"whatsapp"`).
@@ -85,7 +85,7 @@ validação, servidor local, capturas). Nada em `tools/` vai para o servidor.
 
 ### Validação automatizada — `npm run check`
 
-**204 verificações, 0 falhas, 0 avisos.**
+**206 verificações, 0 falhas, 0 avisos.**
 
 1. **Dados comerciais** — HTML confere com `site.config.json` em ambas as
    páginas: telefone, CREA, nome, LinkedIn, os 3 links de ferramentas, e todos
@@ -120,9 +120,9 @@ os leitores reais.
 ### Geometria do cartão — `npm run brand`
 
 O gerador mede cada linha com as métricas reais das fontes (via PDFKit) e
-**falha** se algo ultrapassar a área segura. Todas as 9 linhas do verso cabem
-na coluna útil de 54 mm; a mais larga é a primeira linha de serviços, com
-37,8 mm.
+**falha** se algo ultrapassar a área segura. Todas as 10 linhas do verso cabem
+na coluna útil de 54 mm; a mais larga é a segunda linha de serviços, com
+36,8 mm.
 
 ### Verificação visual
 
@@ -130,7 +130,7 @@ Renderização real do Chromium, capturada em `previews/`:
 
 | Largura | Resultado |
 | --- | --- |
-| 320 px | Sem rolagem horizontal. `concessionária`, a palavra mais larga, cabe. |
+| 320 px | Sem rolagem horizontal. `Engenharia`, a palavra mais larga do título, cabe. |
 | 375 px | Sem rolagem horizontal. Hero legível. |
 | 390 px | Menu móvel verificado interativamente. |
 | 768 px | Grades de 4 e 3 colunas caem para 2. |
@@ -267,8 +267,9 @@ Dois pontos decorrentes, já tratados na branch:
 
 ### Não fornecido, portanto não publicado
 
-E-mail institucional, endereço, CNPJ. **Nada foi inventado para preencher esses
-campos.** Não há no site nenhum e-mail, endereço, CNPJ, depoimento, cliente,
+Endereço e CNPJ. **Nada foi inventado para preencher esses campos.** O e-mail
+`gutierry.eng@gmail.com` foi fornecido pelo responsável em 4 de setembro de
+2026 e entrou no cartão; no site ele ainda não é publicado. Não há no site nenhum e-mail, endereço, CNPJ, depoimento, cliente,
 avaliação, certificação, obra ou estatística fictícia. Os dados estruturados
 `ProfessionalService` trazem apenas informação verificada.
 

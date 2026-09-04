@@ -156,9 +156,9 @@ const COL_W = QR_X - 4 - SAFE_L;      // 54 mm de largura util a esquerda
 // Logotipo oficial no verso, pequeno, sobre placa clara — mesma marca do
 // cabecalho e do rodape do site. Fica no canto superior esquerdo, ao lado da
 // chamada, sem competir com o bloco de identificacao nem com o QR.
-const BACK_LOGO_W = 20;                                        // mm
+const BACK_LOGO_W = 16;                                        // mm
 const BACK_LOGO_H = BACK_LOGO_W * (await sharp(path.join(ROOT, 'assets/brand/elektrosys-logo-tight.png')).metadata().then(m => m.height / m.width));
-const BACK_LOGO_PAD = 1.4;                                     // respiro da placa ao redor do logotipo
+const BACK_LOGO_PAD = 1.2;                                     // respiro da placa ao redor do logotipo
 const BACK_LOGO_PLATE = { x: COL_L, y: SAFE_T, w: BACK_LOGO_W + BACK_LOGO_PAD * 2, h: BACK_LOGO_H + BACK_LOGO_PAD * 2 };
 const BACK_LOGO_POS = { x: BACK_LOGO_PLATE.x + BACK_LOGO_PAD, y: BACK_LOGO_PLATE.y + BACK_LOGO_PAD };
 
@@ -167,16 +167,17 @@ const BACK_LOGO_POS = { x: BACK_LOGO_PLATE.x + BACK_LOGO_PAD, y: BACK_LOGO_PLATE
 // ocupava ao lado do logotipo virou respiro, e o bloco de identificacao ganhou
 // corpo maior.
 const BACK_TEXT = [
-  { id: 'name',       text: cfg.professional.name,       font: 'displayBold', size: 5,   ls: 0,    color: 'white',  y: 24.8, x: COL_L },
-  { id: 'role',       text: cfg.professional.role,       font: 'bodyMedium',  size: 2.7, ls: 0,    color: 'textHi', y: 28.6, x: COL_L },
-  { id: 'crea',       text: cfg.professional.creaLabel,  font: 'monoRegular', size: 2.2, ls: 0,    color: 'textLo', y: 31.8, x: COL_L },
-  { id: 'phoneLabel', text: card.phoneLabel,             font: 'monoMedium',  size: 1.7, ls: 0.12, color: 'textLo', y: 36.6, x: COL_L },
-  { id: 'phone',      text: cfg.contact.whatsappDisplay, font: 'monoMedium',  size: 3.2, ls: 0,    color: 'white',  y: 40.6, x: COL_L },
-  { id: 'svc1',       text: SERVICES[0],                 font: 'bodyRegular', size: 2.1, ls: 0,    color: 'textLo', y: 43.6, x: COL_L },
-  { id: 'svc2',       text: SERVICES[1],                 font: 'bodyRegular', size: 2.1, ls: 0,    color: 'textLo', y: 46,   x: COL_L },
-  { id: 'svc3',       text: SERVICES[2],                 font: 'bodyRegular', size: 2.1, ls: 0,    color: 'textLo', y: 48.4, x: COL_L },
+  { id: 'name',       text: cfg.professional.name,       font: 'displayBold', size: 4.8, ls: 0,    color: 'white',  y: 22.4, x: COL_L },
+  { id: 'role',       text: cfg.professional.role,       font: 'bodyMedium',  size: 2.5, ls: 0,    color: 'textHi', y: 26,   x: COL_L },
+  { id: 'crea',       text: cfg.professional.creaLabel,  font: 'monoRegular', size: 2.1, ls: 0,    color: 'textLo', y: 29,   x: COL_L },
+  { id: 'phoneLabel', text: card.phoneLabel,             font: 'monoMedium',  size: 1.6, ls: 0.12, color: 'textLo', y: 33.6, x: COL_L },
+  { id: 'phone',      text: cfg.contact.whatsappDisplay, font: 'monoMedium',  size: 3,   ls: 0,    color: 'white',  y: 37.2, x: COL_L },
+  { id: 'email',      text: cfg.contact.email,           font: 'monoRegular', size: 2.2, ls: 0,    color: 'textHi', y: 41,   x: COL_L },
+  { id: 'svc1',       text: SERVICES[0],                 font: 'bodyRegular', size: 2,   ls: 0,    color: 'textLo', y: 44,   x: COL_L },
+  { id: 'svc2',       text: SERVICES[1],                 font: 'bodyRegular', size: 2,   ls: 0,    color: 'textLo', y: 46.3, x: COL_L },
+  { id: 'svc3',       text: SERVICES[2],                 font: 'bodyRegular', size: 2,   ls: 0,    color: 'textLo', y: 48.6, x: COL_L },
 ];
-const DIVIDER = { x: COL_L, y: 33.6, w: 34, h: 0.25 };
+const DIVIDER = { x: COL_L, y: 30.8, w: 34, h: 0.25 };
 // A legenda do QR tambem serve como URL legivel para quem nao vai escanear.
 const QR_CAPTION = { text: QR_LABEL, font: 'monoMedium', size: 1.8, ls: 0.08, color: 'textLo', y: 43 };
 

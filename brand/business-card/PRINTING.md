@@ -80,7 +80,7 @@ O verso usa três famílias, todas **incorporadas no PDF** como subconjuntos:
 | --- | --- | --- |
 | Barlow Semi Condensed | 700 | Nome |
 | Inter | 500 / 400 | Cargo e lista de serviços |
-| IBM Plex Mono | 500 / 400 | CREA, rótulo e número do WhatsApp, legenda do QR |
+| IBM Plex Mono | 500 / 400 | CREA, rótulo e número do WhatsApp, e-mail, legenda do QR |
 
 O PDF do verso contém 5 subconjuntos `FontFile2` — não é necessário instalar
 nada na gráfica.
@@ -150,10 +150,10 @@ sobre o QR pode gerar reflexo e atrapalhar a câmera.
   (descritor e filete).
 - **Frente:** 40 × 17,77 mm, centralizado, sozinho — sem QR, sem slogan, sem
   lista de serviços, conforme `design.md`. Resolução efetiva de 342 dpi.
-- **Verso:** 20 × 8,88 mm, sobre uma placa clara de 22,8 × 11,68 mm no canto
+- **Verso:** 16 × 7,11 mm, sobre uma placa clara de 18,4 × 9,51 mm no canto
   superior esquerdo — a mesma marca que aparece no cabeçalho e no rodapé do
   site, para reforçar a identidade também no verso. Resolução efetiva de
-  684 dpi (o dobro da frente, por ser menor).
+  854 dpi (bem acima da frente, por ser menor).
 
 > **Pendência conhecida.** O logotipo oficial só foi fornecido em bitmap (PNG).
 > A 342 dpi ele imprime bem no tamanho atual, mas **para registro de marca e
@@ -187,6 +187,7 @@ Nada aqui é obrigatório — são recomendações compatíveis com a identidade
 - [ ] O QR code foi lido pela câmera de pelo menos dois celulares diferentes.
 - [ ] O QR abriu `elektrosys.eng.br` **com o site institucional novo**, não a calculadora.
 - [ ] O celular `+55 64 98439-5286` está correto e legível.
+- [ ] O e-mail `gutierry.eng@gmail.com` está correto e legível.
 - [ ] Nome, cargo e `CREA 1023983184D-GO` estão corretos e legíveis.
 - [ ] As três linhas de serviços estão completas, sem corte de acentuação.
 

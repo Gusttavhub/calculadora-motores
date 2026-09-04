@@ -21,7 +21,8 @@
     "linkedinUrl": "https://www.linkedin.com/in/gusttavo-gutierry-ferreira-moraes-bb71841a4/",
     "attendance": "Presencial e remoto",
     "hours": "Segunda a sexta, das 8h as 18h",
-    "hoursAccented": "Segunda a sexta, das 8h às 18h"
+    "hoursAccented": "Segunda a sexta, das 8h às 18h",
+    "email": "gutierry.eng@gmail.com"
   },
   "whatsappMessages": {
     "default": "Olá, Gusttavo. Gostaria de solicitar uma análise inicial para o meu caso.",
@@ -87,12 +88,6 @@
         "where": "index.html secao #contato",
         "text": "Resposta em ate 48 h uteis",
         "status": "Herdado do site atual. Manter apenas enquanto for verdadeiro; caso contrario, remover sem substituir por outra promessa."
-      },
-      {
-        "id": "email",
-        "where": "nao publicado",
-        "text": "E-mail institucional",
-        "status": "Nao fornecido. Nao publicar ate que o endereco real seja informado."
       },
       {
         "id": "endereco",

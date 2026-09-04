@@ -113,7 +113,7 @@ npm run check      # só a validação do site
 npm run test:qr    # só o QR do cartão
 ```
 
-`npm run check` roda **204 verificações** em cinco grupos:
+`npm run check` roda **206 verificações** em cinco grupos:
 
 1. **Dados comerciais** — HTML consistente com o `site.config.json`.
 2. **Links** — toda âncora existe, todo arquivo referenciado existe, todo link
@@ -229,7 +229,7 @@ Registradas em `content/site.config.json` → `pendingValidation`.
 | **Colisão de URL** | Resolvida na branch `site-institucional`: a calculadora virou `motores.html` e a raiz ficou para o site. Falta mesclar — e conferir se há links externos apontando para `/index.html` que precisem de redirecionamento. |
 | `Orçamento sem custo` | Herdado do site atual. Manter só enquanto for verdadeiro. |
 | `resposta em até 48 h úteis` | Herdado do site atual. Manter só enquanto for verdadeiro. |
-| E-mail institucional | Não fornecido. Não publicado. |
+| E-mail | `gutierry.eng@gmail.com`, fornecido em 4/9/2026. Está no cartão; no site ainda não é publicado. |
 | Endereço / cidade-sede | Não fornecido. O hero cita apenas "Goiás". Não incluído nos dados estruturados. |
 | CNPJ | Não fornecido. Não publicado. |
 | Logotipo vetorial | Só existe o PNG. Vetorizar profissionalmente antes de registro de marca e de aplicações maiores. |
