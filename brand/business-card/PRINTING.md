@@ -58,7 +58,6 @@ FOGRA39 ou SWOP), prefira converter a partir dos valores RGB da tabela.
 | Nome, WhatsApp e placa do QR | `#FFFFFF` | C0 M0 Y0 K0 | 0% |
 | Cargo | `#E8F0F8` | C6 M3 Y0 K3 | 12% |
 | CREA, serviços e legenda | `#8CA3BC` | C26 M13 Y0 K26 | 65% |
-| Chamada de atendimento | `#5AA9F0` | C62 M30 Y0 K6 | 98% |
 | Filete divisor | `#21425F` | C65 M31 Y0 K63 | 159% |
 
 Notas:
@@ -81,7 +80,7 @@ O verso usa três famílias, todas **incorporadas no PDF** como subconjuntos:
 | --- | --- | --- |
 | Barlow Semi Condensed | 700 | Nome |
 | Inter | 500 / 400 | Cargo e lista de serviços |
-| IBM Plex Mono | 500 / 400 | Chamada, CREA, WhatsApp e legenda do QR |
+| IBM Plex Mono | 500 / 400 | CREA, rótulo e número do WhatsApp, legenda do QR |
 
 O PDF do verso contém 5 subconjuntos `FontFile2` — não é necessário instalar
 nada na gráfica.
@@ -123,15 +122,10 @@ O destino é configurável em `content/site.config.json` → `card.qrTarget`:
 `"site"` (atual) ou `"whatsapp"`. Depois de trocar, rode `npm run brand` e
 `npm run brand:png`. A legenda e o teste acompanham a mudança automaticamente.
 
-> ⚠️ **Confirme antes de rodar a tiragem.** O QR aponta para a raiz de
-> `elektrosys.eng.br`. Esse endereço só passa a servir o site institucional
-> depois que a branch `site-institucional` for mesclada em `main` no
-> repositório `Gusttavhub/calculadora-motores`. **Enquanto isso não acontecer,
-> quem escanear o cartão cai na calculadora de motores.**
->
-> Portanto: **mescle a branch e confirme que `elektrosys.eng.br` abre o site
-> institucional antes de mandar imprimir.** Se preferir imprimir antes, troque
-> `card.qrTarget` para `"whatsapp"` e regere o cartão.
+O destino já está no ar: a branch `site-institucional` foi mesclada em `main`
+e `elektrosys.eng.br` serve o site institucional. Verificado no navegador em
+3 de setembro de 2026 — a home, `/ferramentas.html`, `/motores.html`,
+`/solar.html` e `/memorial.html` respondem corretamente.
 
 ### Verificação já executada
 
@@ -150,12 +144,16 @@ sobre o QR pode gerar reflexo e atrapalhar a câmera.
 
 - Arquivo aplicado: `logo-para-impressao.png`, gerado a partir do logotipo
   oficial recebido.
-- Tamanho no cartão: **40 × 17,77 mm**, centralizado na frente.
-- Resolução efetiva: **342 dpi** no tamanho final.
-- Proporção original preservada (2,251:1). Não foi redesenhado, recolorido,
-  inclinado nem esticado.
+- Proporção original preservada (2,251:1) nas duas aplicações. Não foi
+  redesenhado, recolorido, inclinado nem esticado.
 - Cores da marca no arquivo: `#025797` (símbolo e wordmark) e `#0C243F`
   (descritor e filete).
+- **Frente:** 40 × 17,77 mm, centralizado, sozinho — sem QR, sem slogan, sem
+  lista de serviços, conforme `design.md`. Resolução efetiva de 342 dpi.
+- **Verso:** 20 × 8,88 mm, sobre uma placa clara de 22,8 × 11,68 mm no canto
+  superior esquerdo — a mesma marca que aparece no cabeçalho e no rodapé do
+  site, para reforçar a identidade também no verso. Resolução efetiva de
+  684 dpi (o dobro da frente, por ser menor).
 
 > **Pendência conhecida.** O logotipo oficial só foi fornecido em bitmap (PNG).
 > A 342 dpi ele imprime bem no tamanho atual, mas **para registro de marca e

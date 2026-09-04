@@ -67,10 +67,12 @@ Nenhum arquivo pré-existente foi alterado ou removido. `design.md`,
 | `logo-para-impressao.png` | Logotipo achatado, sem alfa |
 | `PRINTING.md` | Especificação completa para a gráfica |
 
-O verso traz a chamada, nome, cargo, CREA, o celular rotulado
-`CELULAR · WHATSAPP`, os três serviços e um QR code para `elektrosys.eng.br`
-com a URL legível impressa abaixo. O destino do QR é configurável em
-`content/site.config.json` → `card.qrTarget` (`"site"` ou `"whatsapp"`).
+O verso traz o logotipo oficial em miniatura (mesma marca do cabeçalho e do
+rodapé do site) sobre uma placa clara, nome, cargo, CREA, o número rotulado
+`WHATSAPP`, os três serviços e um QR code para
+`elektrosys.eng.br` com a URL legível impressa abaixo. O destino do QR é
+configurável em `content/site.config.json` → `card.qrTarget` (`"site"` ou
+`"whatsapp"`).
 
 ### Documentação e ferramentas
 
@@ -118,8 +120,9 @@ os leitores reais.
 ### Geometria do cartão — `npm run brand`
 
 O gerador mede cada linha com as métricas reais das fontes (via PDFKit) e
-**falha** se algo ultrapassar a área segura. Todas as 10 linhas do verso cabem
-na coluna útil de 54 mm; a mais larga é a chamada, com 47,7 mm.
+**falha** se algo ultrapassar a área segura. Todas as 9 linhas do verso cabem
+na coluna útil de 54 mm; a mais larga é a primeira linha de serviços, com
+37,8 mm.
 
 ### Verificação visual
 
@@ -170,6 +173,31 @@ superfície.
 **Sobre fundo escuro o logotipo é aplicado sobre uma placa clara, nunca
 invertido.** O azul da marca sobre o azul-marinho institucional não atinge
 contraste suficiente, e o `design.md` proíbe inverter o bitmap.
+
+### Alteração pedida pelo responsável técnico
+
+Três mudanças no verso do cartão foram pedidas pelo responsável técnico e
+divergem do que o `design.md` especifica. São alterações deliberadas, não
+descuidos, e estão todas registradas em `content/site.config.json` → `card`:
+
+1. A chamada `ATENDIMENTO DIRETO COM O ENGENHEIRO`, que o `design.md` lista
+   como item do verso, foi **removida**.
+2. O rótulo do telefone foi simplificado de `CELULAR · WHATSAPP` para apenas
+   `WHATSAPP`.
+3. As três linhas de serviços foram reescritas:
+
+   | `design.md` | No cartão |
+   | --- | --- |
+   | Perícias judiciais e assistência técnica | Perícias Judiciais |
+   | Projetos, laudos e inspeções elétricas | Projetos, Laudos e Inspeções Técnicas |
+   | SPDA e sistemas fotovoltaicos | SPDA e Sistemas Fotovoltaicos |
+
+   O site **não** foi alterado: lá os serviços continuam com a redação do
+   `design.md`, inclusive "assistência técnica" e "inspeções elétricas", que o
+   público jurídico usa para buscar.
+
+Todos os demais itens que o `design.md` exige no verso continuam presentes:
+nome, cargo, registro no CREA, WhatsApp, os três serviços e o QR code.
 
 ### Desvios conscientes de `design.md`
 

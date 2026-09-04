@@ -73,14 +73,26 @@ if (missing.length) {
   fs.writeFileSync(giPath, gi);
 }
 
-/* sitemap.xml: uma unica lista cobrindo o site novo e as calculadoras. -------- */
+/* sitemap.xml: uma unica lista cobrindo o site novo e as calculadoras.
+   O lastmod de uma URL ja publicada e preservado — so recebe a data de hoje
+   quem entra agora. Regerar a data a cada sincronizacao daria aos buscadores
+   um sinal falso de que a pagina mudou. --------------------------------------- */
 const today = new Date().toISOString().slice(0, 10);
+const sitemapPath = path.join(DEST, 'sitemap.xml');
+const previous = new Map();
+if (fs.existsSync(sitemapPath)) {
+  const xml = fs.readFileSync(sitemapPath, 'utf8');
+  for (const m of xml.matchAll(/<loc>([^<]+)<\/loc>\s*<lastmod>([^<]+)<\/lastmod>/g)) {
+    previous.set(m[1], m[2]);
+  }
+}
+const since = (loc, fallback) => previous.get(loc) || fallback;
 const urls = [
-  ['https://elektrosys.eng.br/', '1.0', today],
-  ['https://elektrosys.eng.br/ferramentas.html', '0.7', today],
-  ['https://elektrosys.eng.br/motores.html', '0.8', today],
-  ['https://elektrosys.eng.br/solar.html', '0.8', '2026-07-14'],
-  ['https://elektrosys.eng.br/memorial.html', '0.6', '2026-07-14'],
+  ['https://elektrosys.eng.br/', '1.0', since('https://elektrosys.eng.br/', today)],
+  ['https://elektrosys.eng.br/ferramentas.html', '0.7', since('https://elektrosys.eng.br/ferramentas.html', today)],
+  ['https://elektrosys.eng.br/motores.html', '0.8', since('https://elektrosys.eng.br/motores.html', today)],
+  ['https://elektrosys.eng.br/solar.html', '0.8', since('https://elektrosys.eng.br/solar.html', '2026-07-14')],
+  ['https://elektrosys.eng.br/memorial.html', '0.6', since('https://elektrosys.eng.br/memorial.html', '2026-07-14')],
 ];
 fs.writeFileSync(path.join(DEST, 'sitemap.xml'),
   '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +

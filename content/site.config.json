@@ -115,18 +115,17 @@
     ]
   },
   "card": {
-    "$comment": "Conteudo do cartao de apresentacao. Trocar qrTarget entre 'site' e 'whatsapp' muda o destino do QR; rodar `npm run brand` depois.",
+    "$comment": "Conteudo do cartao de apresentacao. Trocar qrTarget entre \"site\" e \"whatsapp\" muda o destino do QR; rodar `npm run brand` depois. A chamada \"ATENDIMENTO DIRETO COM O ENGENHEIRO\", que design.md lista como item do verso, foi removida a pedido do responsavel.",
     "qrTarget": "site",
     "qrUrlSite": "https://elektrosys.eng.br",
     "qrUrlWhatsapp": "https://wa.me/5564984395286",
     "qrCaptionSite": "ELEKTROSYS.ENG.BR",
     "qrCaptionWhatsapp": "WHATSAPP",
-    "phoneLabel": "CELULAR · WHATSAPP",
-    "call": "ATENDIMENTO DIRETO COM O ENGENHEIRO",
+    "phoneLabel": "WHATSAPP",
     "services": [
-      "Perícias judiciais e assistência técnica",
-      "Projetos, laudos e inspeções elétricas",
-      "SPDA e sistemas fotovoltaicos"
+      "Perícias Judiciais",
+      "Projetos, Laudos e Inspeções Técnicas",
+      "SPDA e Sistemas Fotovoltaicos"
     ]
   }
 }

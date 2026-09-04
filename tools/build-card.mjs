@@ -91,7 +91,6 @@ const SVG_WEIGHT = { displayBold: 700, bodyMedium: 500, bodyRegular: 400, monoRe
 /* Conteudo — sempre a partir do site.config.json                              */
 /* -------------------------------------------------------------------------- */
 const card = cfg.card;
-const CALL = card.call;
 const SERVICES = card.services;
 
 // O destino do QR e configuravel: 'site' ou 'whatsapp' em content/site.config.json.
@@ -154,18 +153,30 @@ const QR_RECTS = qrRects();
 const COL_L = SAFE_L;                 // 7
 const COL_W = QR_X - 4 - SAFE_L;      // 54 mm de largura util a esquerda
 
+// Logotipo oficial no verso, pequeno, sobre placa clara — mesma marca do
+// cabecalho e do rodape do site. Fica no canto superior esquerdo, ao lado da
+// chamada, sem competir com o bloco de identificacao nem com o QR.
+const BACK_LOGO_W = 20;                                        // mm
+const BACK_LOGO_H = BACK_LOGO_W * (await sharp(path.join(ROOT, 'assets/brand/elektrosys-logo-tight.png')).metadata().then(m => m.height / m.width));
+const BACK_LOGO_PAD = 1.4;                                     // respiro da placa ao redor do logotipo
+const BACK_LOGO_PLATE = { x: COL_L, y: SAFE_T, w: BACK_LOGO_W + BACK_LOGO_PAD * 2, h: BACK_LOGO_H + BACK_LOGO_PAD * 2 };
+const BACK_LOGO_POS = { x: BACK_LOGO_PLATE.x + BACK_LOGO_PAD, y: BACK_LOGO_PLATE.y + BACK_LOGO_PAD };
+
+// A chamada "ATENDIMENTO DIRETO COM O ENGENHEIRO", que design.md lista como
+// item do verso, foi removida a pedido do responsavel tecnico. O espaco que ela
+// ocupava ao lado do logotipo virou respiro, e o bloco de identificacao ganhou
+// corpo maior.
 const BACK_TEXT = [
-  { id: 'call',       text: CALL,                        font: 'monoMedium',  size: 1.9, ls: 0.12, color: 'accent', y: 10.6 },
-  { id: 'name',       text: cfg.professional.name,       font: 'displayBold', size: 5.4, ls: 0,    color: 'white',  y: 17.9 },
-  { id: 'role',       text: cfg.professional.role,       font: 'bodyMedium',  size: 2.8, ls: 0,    color: 'textHi', y: 22.3 },
-  { id: 'crea',       text: cfg.professional.creaLabel,  font: 'monoRegular', size: 2.4, ls: 0,    color: 'textLo', y: 26.1 },
-  { id: 'phoneLabel', text: card.phoneLabel,             font: 'monoMedium',  size: 1.7, ls: 0.14, color: 'textLo', y: 32.2 },
-  { id: 'phone',      text: cfg.contact.whatsappDisplay, font: 'monoMedium',  size: 3.4, ls: 0,    color: 'white',  y: 36.4 },
-  { id: 'svc1',       text: SERVICES[0],                 font: 'bodyRegular', size: 2.2, ls: 0,    color: 'textLo', y: 41.6 },
-  { id: 'svc2',       text: SERVICES[1],                 font: 'bodyRegular', size: 2.2, ls: 0,    color: 'textLo', y: 44.8 },
-  { id: 'svc3',       text: SERVICES[2],                 font: 'bodyRegular', size: 2.2, ls: 0,    color: 'textLo', y: 48 },
+  { id: 'name',       text: cfg.professional.name,       font: 'displayBold', size: 5,   ls: 0,    color: 'white',  y: 24.8, x: COL_L },
+  { id: 'role',       text: cfg.professional.role,       font: 'bodyMedium',  size: 2.7, ls: 0,    color: 'textHi', y: 28.6, x: COL_L },
+  { id: 'crea',       text: cfg.professional.creaLabel,  font: 'monoRegular', size: 2.2, ls: 0,    color: 'textLo', y: 31.8, x: COL_L },
+  { id: 'phoneLabel', text: card.phoneLabel,             font: 'monoMedium',  size: 1.7, ls: 0.12, color: 'textLo', y: 36.6, x: COL_L },
+  { id: 'phone',      text: cfg.contact.whatsappDisplay, font: 'monoMedium',  size: 3.2, ls: 0,    color: 'white',  y: 40.6, x: COL_L },
+  { id: 'svc1',       text: SERVICES[0],                 font: 'bodyRegular', size: 2.1, ls: 0,    color: 'textLo', y: 43.6, x: COL_L },
+  { id: 'svc2',       text: SERVICES[1],                 font: 'bodyRegular', size: 2.1, ls: 0,    color: 'textLo', y: 46,   x: COL_L },
+  { id: 'svc3',       text: SERVICES[2],                 font: 'bodyRegular', size: 2.1, ls: 0,    color: 'textLo', y: 48.4, x: COL_L },
 ];
-const DIVIDER = { x: COL_L, y: 29, w: 34, h: 0.25 };
+const DIVIDER = { x: COL_L, y: 33.6, w: 34, h: 0.25 };
 // A legenda do QR tambem serve como URL legivel para quem nao vai escanear.
 const QR_CAPTION = { text: QR_LABEL, font: 'monoMedium', size: 1.8, ls: 0.08, color: 'textLo', y: 43 };
 
@@ -175,19 +186,28 @@ const QR_CAPTION = { text: QR_LABEL, font: 'monoMedium', size: 1.8, ls: 0.08, co
 const problems = [];
 for (const t of BACK_TEXT) {
   const w = widthMm(t.text, t.font, t.size, t.ls);
-  const right = COL_L + w;
+  const left = t.x ?? COL_L;
+  const right = left + w;
   // Enquanto a linha estiver na faixa vertical do QR, ela nao pode invadir a placa.
   // Abaixo dela, a coluna pode ir ate a margem segura.
   const besideQr = t.y <= QR_Y + QR_PLATE + 1;
   const limit = besideQr ? QR_X - 2 : SAFE_R;
   if (right > limit) problems.push(`verso/${t.id}: ${w.toFixed(1)}mm termina em ${right.toFixed(1)}mm (limite ${limit}mm)`);
+  if (left < SAFE_L) problems.push(`verso/${t.id}: comeca em ${left.toFixed(1)}mm, antes da area segura (${SAFE_L}mm)`);
   if (t.y > SAFE_B) problems.push(`verso/${t.id}: baseline ${t.y}mm abaixo da area segura (${SAFE_B}mm)`);
+  if (t.y - t.size < SAFE_T) problems.push(`verso/${t.id}: topo em ${(t.y - t.size).toFixed(1)}mm, acima da area segura (${SAFE_T}mm)`);
   t._w = w;
 }
 const capW = widthMm(QR_CAPTION.text, QR_CAPTION.font, QR_CAPTION.size, QR_CAPTION.ls);
 if (QR_CAPTION.y > SAFE_B) problems.push('verso/caption fora da area segura');
 if (QR_Y < SAFE_T) problems.push('verso/qr acima da area segura');
 if (QR_Y + QR_PLATE > SAFE_B) problems.push(`verso/qr termina em ${QR_Y + QR_PLATE}mm (area segura ate ${SAFE_B}mm)`);
+
+// Placa do logotipo no verso
+if (BACK_LOGO_PLATE.x < SAFE_L) problems.push('verso/logo: placa comeca antes da area segura');
+if (BACK_LOGO_PLATE.y < SAFE_T) problems.push('verso/logo: placa comeca acima da area segura');
+if (BACK_LOGO_PLATE.x + BACK_LOGO_PLATE.w > QR_X - 3) problems.push('verso/logo: placa encosta na placa do QR');
+if (BACK_LOGO_PLATE.y + BACK_LOGO_PLATE.h > SAFE_B) problems.push('verso/logo: placa ultrapassa a area segura');
 
 /* -------------------------------------------------------------------------- */
 /* Frente — logotipo oficial, sem qualquer outro elemento                      */
@@ -251,7 +271,9 @@ let back = svgOpen(
   `Dados de contato de ${cfg.professional.name}, ${cfg.professional.role}, ${cfg.professional.creaLabel}. QR code para ${QR_TARGET}.`
 );
 back += `  <rect width="${W}" height="${H}" fill="${RGB.navy}"/>\n`;
-for (const t of BACK_TEXT) back += svgText(t, COL_L);
+back += `  <rect x="${BACK_LOGO_PLATE.x}" y="${BACK_LOGO_PLATE.y}" width="${BACK_LOGO_PLATE.w}" height="${BACK_LOGO_PLATE.h}" rx="1" fill="${RGB.neutral}"/>\n`;
+back += `  <image x="${BACK_LOGO_POS.x}" y="${BACK_LOGO_POS.y}" width="${BACK_LOGO_W}" height="${BACK_LOGO_H.toFixed(3)}" xlink:href="data:image/png;base64,${logoB64}" preserveAspectRatio="xMidYMid meet"/>\n`;
+for (const t of BACK_TEXT) back += svgText(t, t.x ?? COL_L);
 back += `  <rect x="${DIVIDER.x}" y="${DIVIDER.y}" width="${DIVIDER.w}" height="${DIVIDER.h}" fill="${RGB.border}"/>\n`;
 back += `  <g id="qr">\n    <rect x="${QR_X}" y="${QR_Y}" width="${QR_PLATE}" height="${QR_PLATE}" fill="${RGB.white}"/>\n`;
 for (const r of QR_RECTS) {
@@ -290,12 +312,14 @@ async function writePdf(file, side, mode) {
     doc.image(LOGO_PRINT, mm(LOGO_X), mm(LOGO_Y), { width: mm(LOGO_W), height: mm(LOGO_H) });
   } else {
     doc.rect(0, 0, mm(W), mm(H)).fill(col('navy'));
+    doc.rect(mm(BACK_LOGO_PLATE.x), mm(BACK_LOGO_PLATE.y), mm(BACK_LOGO_PLATE.w), mm(BACK_LOGO_PLATE.h)).fill(col('neutral'));
+    doc.image(LOGO_PRINT, mm(BACK_LOGO_POS.x), mm(BACK_LOGO_POS.y), { width: mm(BACK_LOGO_W), height: mm(BACK_LOGO_H) });
     for (const t of BACK_TEXT) {
       doc.font(t.font).fontSize(mm(t.size)).fillColor(col(t.color));
       const opts = t.ls ? { characterSpacing: mm(t.ls * t.size), lineBreak: false } : { lineBreak: false };
       // PDFKit posiciona pelo topo da caixa; converter da baseline
       const ascender = doc._font.ascender / 1000 * mm(t.size);
-      doc.text(t.text, mm(COL_L), mm(t.y) - ascender, opts);
+      doc.text(t.text, mm(t.x ?? COL_L), mm(t.y) - ascender, opts);
     }
     doc.rect(mm(DIVIDER.x), mm(DIVIDER.y), mm(DIVIDER.w), mm(DIVIDER.h)).fill(col('border'));
     doc.rect(mm(QR_X), mm(QR_Y), mm(QR_PLATE), mm(QR_PLATE)).fill(col('white'));
