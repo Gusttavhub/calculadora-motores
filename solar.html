@@ -3,28 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ElektroSys - Simulador de Sistema Fotovoltaico | Dimensionamento Solar Online</title>
+    <title>Simulador de sistema fotovoltaico | ElektroSys</title>
 
     <!-- Segurança: Content Security Policy -->
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'self';
         script-src 'self' 'unsafe-inline';
-        style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com;
-        font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com data:;
+        style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com;
+        font-src 'self' https://cdnjs.cloudflare.com data:;
         img-src 'self' data:;
         connect-src 'self' https://generativelanguage.googleapis.com;
-        frame-ancestors 'none';
         base-uri 'self';
         form-action 'self';
     ">
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <meta name="referrer" content="strict-origin-when-cross-origin">
 
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%232C7BE5'%3E%3Cpath d='M13 2L3 14h9l-1 8 10-12h-9l1-8z'/%3E%3C/svg%3E">
+    <link rel="icon" href="/favicon.ico" sizes="32x32">
+    <link rel="icon" href="assets/brand/favicon-192.png" type="image/png" sizes="192x192">
+    <link rel="apple-touch-icon" href="assets/brand/apple-touch-icon.png">
+    <link rel="manifest" href="site.webmanifest">
 
     <link rel="stylesheet" href="styles.css">
 
-    <link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Fontes auto-hospedadas (mesmas do site institucional — sem Google Fonts) -->
+    <link rel="preload" href="assets/fonts/inter-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="assets/fonts/barlow-semi-condensed-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
 
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
@@ -32,26 +36,67 @@
           referrerpolicy="no-referrer">
 
     <!-- SEO -->
-    <meta name="description" content="Simulador online gratuito de sistema fotovoltaico: dimensione por área ou por consumo (kWh), veja o arranjo dos módulos, potência de pico, inversor, geração, economia e monte um orçamento itemizado em PDF.">
-    <meta name="keywords" content="simulador fotovoltaico, dimensionamento solar, orçamento energia solar, quantos paineis solares, potência kWp, geração solar mensal, proposta solar PDF">
+    <meta name="description" content="Simulador gratuito de sistema fotovoltaico: dimensione por área ou por consumo (kWh), veja o arranjo dos módulos, potência de pico, inversor, geração, economia com Fio B (Lei 14.300) e monte uma proposta itemizada em PDF.">
     <meta name="robots" content="index, follow">
     <meta name="author" content="Gusttavo Gutierry">
-    <meta http-equiv="content-language" content="pt-BR">
     <link rel="canonical" href="https://elektrosys.eng.br/solar.html">
 
     <!-- Open Graph (Redes Sociais) -->
     <meta property="og:type" content="website">
-    <meta property="og:title" content="ElektroSys | Simulador de Sistema Fotovoltaico">
-    <meta property="og:description" content="Dimensione por área ou consumo, monte o arranjo e gere um orçamento itemizado em PDF. Online e grátis.">
+    <meta property="og:site_name" content="ElektroSys Engenharia Elétrica">
+    <meta property="og:locale" content="pt_BR">
+    <meta property="og:title" content="Simulador de sistema fotovoltaico | ElektroSys">
+    <meta property="og:description" content="Dimensione por área ou consumo, monte o arranjo e gere uma proposta itemizada em PDF. Uso educacional e de estimativa.">
     <meta property="og:url" content="https://elektrosys.eng.br/solar.html">
-    <meta property="og:image" content="https://elektrosys.eng.br/og-image.png">
+    <meta property="og:image" content="https://elektrosys.eng.br/assets/brand/og-image.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="ElektroSys Engenharia Elétrica — Eng. Gusttavo Gutierry, CREA 1023983184D-GO">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:image" content="https://elektrosys.eng.br/og-image.png">
+    <meta name="twitter:image" content="https://elektrosys.eng.br/assets/brand/og-image.png">
     <meta name="theme-color" content="#0A1B2E">
 
     <style>
+        /* ===== Fontes (design.md: Barlow 600/700, Inter 400–700, IBM Plex Mono 400/500) ===== */
+        @font-face { font-family:'Barlow Semi Condensed'; font-weight:600; font-display:swap; src:url('assets/fonts/barlow-semi-condensed-latin-600-normal.woff2') format('woff2'); }
+        @font-face { font-family:'Barlow Semi Condensed'; font-weight:700; font-display:swap; src:url('assets/fonts/barlow-semi-condensed-latin-700-normal.woff2') format('woff2'); }
+        @font-face { font-family:'Inter'; font-weight:400; font-display:swap; src:url('assets/fonts/inter-latin-400-normal.woff2') format('woff2'); }
+        @font-face { font-family:'Inter'; font-weight:500; font-display:swap; src:url('assets/fonts/inter-latin-500-normal.woff2') format('woff2'); }
+        @font-face { font-family:'Inter'; font-weight:600; font-display:swap; src:url('assets/fonts/inter-latin-600-normal.woff2') format('woff2'); }
+        @font-face { font-family:'Inter'; font-weight:700; font-display:swap; src:url('assets/fonts/inter-latin-700-normal.woff2') format('woff2'); }
+        @font-face { font-family:'IBM Plex Mono'; font-weight:400; font-display:swap; src:url('assets/fonts/ibm-plex-mono-latin-400-normal.woff2') format('woff2'); }
+        @font-face { font-family:'IBM Plex Mono'; font-weight:500; font-display:swap; src:url('assets/fonts/ibm-plex-mono-latin-500-normal.woff2') format('woff2'); }
+        body, .font-sans { font-family:'Inter', system-ui, sans-serif; }
+
+        /* ===== Cabeçalho e rodapé alinhados ao site institucional ===== */
+        .ek-skip { position:absolute; left:-9999px; top:8px; z-index:100; background:#2C7BE5; color:#fff; padding:8px 14px; border-radius:4px; }
+        .ek-skip:focus { left:16px; }
+        .ek-logo { display:inline-flex; flex:none; padding:4px 7px; background:#F7F9FB; border-radius:4px; transition:box-shadow .15s; }
+        .ek-logo img { height:44px; width:auto; display:block; }
+        .ek-logo:hover { box-shadow:0 0 0 1px #2C7BE5; }
+        @media (min-width:1024px) { .ek-logo { padding:4px 9px; } .ek-logo img { height:50px; } }
+        .ek-foot .ek-logo { padding:10px 14px; }
+        .ek-foot .ek-logo img { height:auto; width:168px; }
+        .ek-nav { display:none; align-items:center; gap:24px; font-size:14px; font-weight:500; }
+        @media (min-width:1100px) { .ek-nav { display:flex; } }
+        .ek-nav a { color:#8CA3BC; padding:6px 0; transition:color .15s; }
+        .ek-nav a:hover { color:#E8F0F8; }
+        .ek-nav a[aria-current="page"] { color:#E8F0F8; box-shadow:inset 0 -2px 0 #2C7BE5; }
+        .ek-wa { display:inline-flex; align-items:center; gap:8px; min-height:44px; padding:0 18px; border-radius:6px;
+                 background:#25D366; color:#06231A; font-weight:600; font-size:14px; white-space:nowrap; transition:filter .15s, transform .15s; }
+        .ek-wa:hover { filter:brightness(1.06); transform:translateY(-1px); }
+        .ek-wa--lg { min-height:50px; padding:0 26px; font-size:16px; }
+        @media (max-width:399px) { .ek-wa__x { display:none; } }
+        .ek-note { border-left:2px solid #21425F; padding-left:12px; }
+        .ek-crumb { font-size:12px; color:#8CA3BC; }
+        .ek-crumb a { color:#8CA3BC; text-decoration:underline; text-underline-offset:3px; }
+        .ek-crumb a:hover { color:#E8F0F8; }
+        .ek-crumb li + li::before { content:'›'; margin:0 8px; color:#21425F; }
+        .ek-crumb ol { display:flex; flex-wrap:wrap; list-style:none; margin:0; padding:0; }
+        a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, summary:focus-visible {
+            outline:2px solid #2C7BE5; outline-offset:2px; }
+        @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition:none !important; animation:none !important; } }
+
         .grid-bp {
             background-image:
                 linear-gradient(rgba(44,123,229,0.06) 1px, transparent 1px),
@@ -93,11 +138,23 @@
             #printArea { display: block !important; }
             html, body { background:#fff !important; }
         }
-        .doc { color:#141413; font-family:'IBM Plex Sans', Arial, sans-serif; font-size:12px; line-height:1.5; }
-        .doc-head { display:flex; justify-content:space-between; align-items:flex-start; border-bottom:3px solid #2C7BE5; padding-bottom:12px; margin-bottom:18px; }
-        .doc-brand { font-family:'Barlow Semi Condensed', Arial, sans-serif; font-weight:700; font-size:26px; letter-spacing:.5px; color:#0A1B2E; }
-        .doc-brand span { color:#2C7BE5; }
-        .doc-sub { font-size:11px; color:#6b7280; text-transform:uppercase; letter-spacing:.15em; }
+        .doc { color:#141413; font-family:'Inter', Arial, sans-serif; font-size:12px; line-height:1.5; }
+        .doc-head { display:flex; justify-content:space-between; align-items:flex-start; border-bottom:3px solid #075B91; padding-bottom:12px; margin-bottom:18px; }
+        .doc-logo { width:190px; height:auto; display:block; }
+        .doc-sub { font-size:10px; color:#374151; margin-top:6px; font-family:'IBM Plex Mono', monospace; letter-spacing:.04em; }
+        .doc h2, .doc-table, .doc-total, .doc img, .doc-keep { break-inside:avoid; page-break-inside:avoid; }
+        .doc h2 { break-after:avoid; page-break-after:avoid; }
+        .doc-table tr.sub td { background:#f7f9fb; font-weight:600; color:#0A1B2E; }
+        .doc-list { margin:0 0 4px 18px; padding:0; font-size:12px; color:#374151; line-height:1.7; }
+        .doc-hl { display:flex; gap:10px; margin:4px 0 6px; }
+        .doc-hl__box { flex:1; border:1px solid; border-radius:6px; padding:10px 12px; text-align:center; }
+        .doc-hl__lbl { font-size:10px; color:#374151; text-transform:uppercase; letter-spacing:.06em; }
+        .doc-hl__val { font-family:'Barlow Semi Condensed', Arial, sans-serif; font-size:20px; font-weight:700; }
+        .doc-hl__sub { font-size:10px; color:#6b7280; }
+        .doc-sign { display:flex; gap:40px; margin-top:38px; }
+        .doc-sign > div { flex:1; text-align:center; }
+        .doc-sign__line { border-top:1px solid #374151; padding-top:6px; font-size:11px; color:#374151; }
+        .doc-sign__sub { font-size:10px; color:#6b7280; }
         .doc-meta { text-align:right; font-size:11px; color:#374151; }
         .doc-title { font-family:'Barlow Semi Condensed', Arial, sans-serif; font-size:22px; color:#0A1B2E; margin:0 0 6px; }
         .doc-client { display:flex; gap:32px; font-size:13px; margin:10px 0 18px; }
@@ -106,79 +163,71 @@
         .doc-table th, .doc-table td { text-align:left; padding:7px 8px; border-bottom:1px solid #e5e7eb; }
         .doc-table th { background:#f3f4f6; font-weight:600; color:#374151; }
         .doc-table td.r, .doc-table th.r { text-align:right; font-family:'IBM Plex Mono',monospace; }
-        .doc-total { display:flex; justify-content:space-between; align-items:center; margin-top:14px; padding:12px 16px; background:#eef4fd; border:1px solid #2C7BE5; border-radius:8px; }
+        .doc-total { display:flex; justify-content:space-between; align-items:center; margin-top:14px; padding:12px 16px; background:#eef4fd; border:1px solid #075B91; border-radius:6px; }
         .doc-total .lbl { font-weight:600; color:#0A1B2E; }
-        .doc-total .val { font-family:'Barlow Semi Condensed',Arial,sans-serif; font-size:24px; font-weight:700; color:#1E5FB8; }
+        .doc-total .val { font-family:'Barlow Semi Condensed',Arial,sans-serif; font-size:24px; font-weight:700; color:#075B91; }
         .doc-notes { font-size:12px; white-space:pre-wrap; color:#374151; }
         .doc-foot { margin-top:22px; padding-top:10px; border-top:1px solid #d1d5db; font-size:10px; color:#6b7280; }
     </style>
 </head>
 
 <body class="bg-navy grid-bp text-muted font-sans antialiased">
+    <a class="ek-skip" href="#ferramenta">Pular para o simulador</a>
 
-    <nav class="border-b border-line bg-navy/85 backdrop-blur-md sticky top-0 z-40">
-        <div class="container mx-auto px-4 h-16 flex items-center justify-between">
-            <a href="index.html" class="flex items-center gap-2.5">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-primary" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
-                </svg>
-                <span class="text-fg font-display font-bold text-xl tracking-wide">ELEKTRO<span class="text-primary">SYS</span></span>
+    <header class="border-b border-line bg-navy sticky top-0 z-40">
+        <div class="container mx-auto px-4 h-16 flex items-center justify-between gap-4">
+            <a class="ek-logo" href="index.html" aria-label="ElektroSys Engenharia Elétrica — início">
+                <img src="assets/brand/elektrosys-logo-tight.png" alt="ElektroSys Engenharia Elétrica" width="538" height="239">
             </a>
-            <div class="hidden md:flex items-center gap-7 text-sm font-medium text-muted">
-                <a href="index.html" class="hover:text-fg transition">Motores</a>
-                <a href="solar.html" class="text-fg" aria-current="page">Solar</a>
-                <button id="btnOpenAbout" class="hover:text-fg transition rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-primary">Sobre</button>
-                <a href="https://wa.me/5564984395286" target="_blank" rel="noopener noreferrer" class="bg-primary hover:bg-primary-700 text-white font-semibold px-4 py-2 rounded-md transition">Solicitar projeto</a>
-            </div>
-            <a href="https://wa.me/5564984395286" target="_blank" rel="noopener noreferrer" class="md:hidden bg-primary hover:bg-primary-700 text-white font-semibold px-3.5 py-2 rounded-md text-sm transition">Projeto</a>
+            <nav class="ek-nav" aria-label="Navegação principal">
+                <a href="index.html">Início</a>
+                <a href="index.html#servicos">Serviços</a>
+                <a href="index.html#pericias">Perícias</a>
+                <a href="index.html#sobre">Sobre</a>
+                <a href="index.html#contato">Contato</a>
+                <a href="ferramentas.html" aria-current="page">Ferramentas</a>
+            </nav>
+            <a class="ek-wa" data-wa href="https://wa.me/5564984395286" target="_blank" rel="noopener noreferrer">
+                <i class="fa-brands fa-whatsapp text-lg" aria-hidden="true"></i> <span class="ek-wa__x">Falar no </span>WhatsApp
+            </a>
         </div>
-    </nav>
+    </header>
 
-    <div id="aboutModal" role="dialog" aria-modal="true" aria-labelledby="aboutTitle" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-panel border border-line rounded-xl shadow-2xl w-full max-w-md relative overflow-hidden text-fg">
-            <button id="btnCloseAbout" aria-label="Fechar" class="absolute top-4 right-4 text-muted hover:text-fg rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-primary z-10"><i class="fa-solid fa-xmark text-xl"></i></button>
-            <div class="bg-primary p-6 text-white text-center">
-                <i class="fa-solid fa-user-tie text-4xl mb-2"></i>
-                <h3 id="aboutTitle" class="text-xl font-display font-bold tracking-wide">Gusttavo Gutierry</h3>
-                <p class="text-white/80 text-sm">Engenharia Elétrica & Desenvolvimento</p>
-            </div>
-            <div class="p-6 space-y-4">
-                <p class="text-sm text-muted mb-2 text-center">Projetos, laudos e consultoria em instalações elétricas. Fale direto comigo.</p>
-                <a href="https://www.linkedin.com/in/gusttavo-gutierry-ferreira-moraes-bb71841a4/" target="_blank" rel="noopener noreferrer" class="flex items-center gap-4 p-4 rounded-lg border border-line hover:border-primary hover:bg-panel-2 transition group">
-                    <div class="bg-[#0077b5] text-white w-10 h-10 rounded-full flex items-center justify-center shrink-0"><i class="fa-brands fa-linkedin-in text-lg"></i></div>
-                    <div><h4 class="font-semibold text-fg group-hover:text-sky transition">LinkedIn</h4><p class="text-xs text-muted">Conectar perfil profissional</p></div>
-                </a>
-                <a href="https://wa.me/5564984395286" target="_blank" rel="noopener noreferrer" class="flex items-center gap-4 p-4 rounded-lg border border-line hover:border-signal hover:bg-panel-2 transition group">
-                    <div class="bg-[#25D366] text-white w-10 h-10 rounded-full flex items-center justify-center shrink-0"><i class="fa-brands fa-whatsapp text-xl"></i></div>
-                    <div><h4 class="font-semibold text-fg group-hover:text-signal transition">WhatsApp</h4><p class="text-xs text-muted">+55 64 98439-5286</p></div>
-                </a>
-            </div>
-        </div>
-    </div>
+    <nav class="container mx-auto px-4 pt-5 relative z-10 ek-crumb" aria-label="Trilha de navegação">
+        <ol>
+            <li><a href="index.html">Início</a></li>
+            <li><a href="ferramentas.html">Ferramentas</a></li>
+            <li><span aria-current="page">Sistema fotovoltaico</span></li>
+        </ol>
+    </nav>
 
     <!-- HERO -->
     <header class="relative z-10 border-b border-line overflow-hidden">
-        <div class="container mx-auto px-4 py-14 md:py-20 grid lg:grid-cols-12 gap-10 items-center">
+        <div class="container mx-auto px-4 py-10 md:py-16 grid lg:grid-cols-12 gap-10 items-center">
             <div class="lg:col-span-7">
-                <p class="font-mono text-xs uppercase tracking-[0.25em] text-primary mb-5">Ferramenta · Energia Solar</p>
+                <p class="font-mono text-xs uppercase tracking-[0.25em] text-primary mb-5">Ferramenta 02 · Energia solar</p>
                 <h1 class="font-display text-4xl md:text-6xl font-bold text-fg leading-[1.02] mb-5">
                     Simulador de<br><span class="text-sky">sistema fotovoltaico</span>
                 </h1>
                 <p class="text-muted text-base md:text-lg max-w-xl mb-8 leading-relaxed">
-                    Dimensione por área ou por consumo (kWh), veja o arranjo dos módulos, potência, inversor e geração — e monte um orçamento itemizado para enviar em PDF.
+                    Dimensione por área ou por consumo (kWh), veja o arranjo dos módulos, potência, inversor, geração e economia com o Fio B da Lei 14.300 — e monte uma proposta itemizada em PDF.
                 </p>
                 <div class="flex flex-wrap gap-3">
                     <a href="#ferramenta" class="inline-flex items-center gap-2 bg-primary hover:bg-primary-700 text-white font-semibold px-6 py-3 rounded-md transition">
-                        <i class="fa-solid fa-solar-panel"></i> Abrir o simulador
+                        <i class="fa-solid fa-solar-panel" aria-hidden="true"></i> Abrir o simulador
                     </a>
-                    <a href="https://wa.me/5564984395286" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 border border-line text-fg hover:bg-panel px-6 py-3 rounded-md transition">
-                        <i class="fa-solid fa-drafting-compass"></i> Solicitar projeto
+                    <a href="memorial.html" class="inline-flex items-center gap-2 border border-line text-fg hover:bg-panel px-6 py-3 rounded-md transition">
+                        <i class="fa-solid fa-book-open" aria-hidden="true"></i> Ver memorial de cálculo
                     </a>
                 </div>
+                <p class="font-mono text-[11px] text-muted mt-6">Eng. Gusttavo Gutierry · CREA 1023983184D-GO</p>
+                <p class="text-xs text-muted mt-3 max-w-xl leading-relaxed ek-note">
+                    <strong class="text-fg font-semibold">Aviso:</strong> as ferramentas têm finalidade educacional e de estimativa. Toda instalação deve ser validada por profissional habilitado e por projeto compatível com as normas aplicáveis.
+                </p>
             </div>
             <div class="lg:col-span-5">
                 <div class="grid-bp bg-panel border border-line rounded-xl p-6 shadow-lg">
-                    <p class="font-mono text-[11px] uppercase tracking-widest text-muted mb-5">// base de cálculo</p>
+                    <p class="font-mono text-[11px] uppercase tracking-widest text-muted mb-5">Base de cálculo</p>
                     <div class="space-y-5 font-mono text-sm text-fg">
                         <div>
                             <span class="text-muted text-xs block mb-1">geração mensal</span>
@@ -203,7 +252,7 @@
     <!-- FERRAMENTA -->
     <main id="ferramenta" class="container mx-auto px-4 py-14 relative z-10">
         <div class="flex items-center gap-3 mb-8">
-            <span class="font-mono text-xs uppercase tracking-[0.25em] text-primary">// simulador</span>
+            <span class="font-mono text-xs uppercase tracking-[0.25em] text-primary">01 · Simulador</span>
             <div class="h-px flex-1 bg-line"></div>
         </div>
 
@@ -290,7 +339,7 @@
                             </div>
                             <div id="ppmBox" class="hidden mt-2">
                                 <label for="ppmInput" class="block text-[10px] font-semibold text-muted uppercase mb-1">Placas por microinversor</label>
-                                <select id="ppmInput" class="num-in" style="font-family:'IBM Plex Sans'">
+                                <select id="ppmInput" class="num-in" style="font-family:'Inter'">
                                     <option value="1">1 placa por micro</option>
                                     <option value="2" selected>2 placas por micro</option>
                                     <option value="4">4 placas por micro</option>
@@ -357,14 +406,14 @@
                         <div>
                             <label for="iaModeloModulo" class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Módulo (modelo)</label>
                             <div class="flex gap-2">
-                                <input type="text" id="iaModeloModulo" placeholder="Ex: Canadian Solar CS7L-600MS" class="num-in" style="font-family:'IBM Plex Sans'">
+                                <input type="text" id="iaModeloModulo" placeholder="Ex: Canadian Solar CS7L-600MS" class="num-in" style="font-family:'Inter'">
                                 <button id="btnIaModulo" class="bg-primary hover:bg-primary-700 text-white text-xs font-semibold px-3 rounded-md transition whitespace-nowrap">Buscar</button>
                             </div>
                             <p id="iaModNote" class="text-[10px] text-sky mt-1.5 leading-snug"></p>
                             <div class="mt-2">
                                 <label for="iaLinkModulo" class="block text-[10px] font-semibold text-muted uppercase mb-1">Link do anúncio (puxa o preço unitário)</label>
                                 <div class="flex gap-2">
-                                    <input type="url" id="iaLinkModulo" placeholder="https://loja.com/placa-550w" class="num-in" style="font-family:'IBM Plex Sans'">
+                                    <input type="url" id="iaLinkModulo" placeholder="https://loja.com/placa-550w" class="num-in" style="font-family:'Inter'">
                                     <button id="btnIaLink" class="bg-primary hover:bg-primary-700 text-white text-xs font-semibold px-3 rounded-md transition whitespace-nowrap">Preço</button>
                                 </div>
                                 <p id="iaLinkNote" class="text-[10px] text-sky mt-1.5 leading-snug"></p>
@@ -383,7 +432,7 @@
                         <div>
                             <label for="iaModeloInversor" class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Inversor (modelo)</label>
                             <div class="flex gap-2">
-                                <input type="text" id="iaModeloInversor" placeholder="Ex: Growatt MIN 5000TL-X" class="num-in" style="font-family:'IBM Plex Sans'">
+                                <input type="text" id="iaModeloInversor" placeholder="Ex: Growatt MIN 5000TL-X" class="num-in" style="font-family:'Inter'">
                                 <button id="btnIaInversor" class="bg-primary hover:bg-primary-700 text-white text-xs font-semibold px-3 rounded-md transition whitespace-nowrap">Buscar</button>
                             </div>
                             <p id="iaInvNote" class="text-[10px] text-sky mt-1.5 leading-snug"></p>
@@ -463,7 +512,7 @@
 
                 <div class="bg-panel border border-line border-l-4 border-l-alert p-4 rounded-r-md flex gap-3 text-xs text-muted">
                     <i class="fa-solid fa-triangle-exclamation text-alert mt-0.5 text-base"></i>
-                    <p><strong class="text-fg font-semibold">Isenção de responsabilidade:</strong> Estimativa educacional. A economia desconta o custo de disponibilidade, mas NÃO modela o Fio B (Lei 14.300/2022), simultaneidade de consumo nem sombreamentos locais. Dimensionamento definitivo exige projeto com análise de irradiação, estrutura e rede da distribuidora.</p>
+                    <p><strong class="text-fg font-semibold">Limites da estimativa:</strong> a economia já desconta o custo de disponibilidade e o Fio B escalonado da Lei 14.300/2022. Não são modelados: simultaneidade de consumo, sazonalidade mensal, sombreamentos locais, orientação/inclinação reais do telhado e a validação elétrica das strings (tensão × temperatura). O dimensionamento definitivo exige projeto com ART. <a href="memorial.html" class="text-sky underline">Ver memorial de cálculo</a>.</p>
                 </div>
             </div>
         </div>
@@ -471,7 +520,7 @@
         <!-- ORÇAMENTO ITEMIZADO -->
         <div id="orcamento" class="mt-14">
             <div class="flex items-center gap-3 mb-6">
-                <span class="font-mono text-xs uppercase tracking-[0.25em] text-primary">// orçamento</span>
+                <span class="font-mono text-xs uppercase tracking-[0.25em] text-primary">02 · Orçamento e proposta</span>
                 <div class="h-px flex-1 bg-line"></div>
             </div>
 
@@ -495,7 +544,7 @@
                                 </div>
                                 <div class="col-span-6">
                                     <label class="text-[9px] text-muted uppercase block mb-0.5">Classe de qualidade</label>
-                                    <select id="clsModulo" class="num-in" style="font-family:'IBM Plex Sans'">
+                                    <select id="clsModulo" class="num-in" style="font-family:'Inter'">
                                         <option value="tier1" selected>Tier 1 — bancável</option>
                                         <option value="tier2">Tier 2 — intermediário</option>
                                         <option value="tier3">Tier 3 — econômico</option>
@@ -506,7 +555,7 @@
                             <div class="grid grid-cols-12 gap-2 items-center mt-2">
                                 <div class="col-span-6">
                                     <label class="text-[9px] text-muted uppercase block mb-0.5">Cobrar por</label>
-                                    <select id="modoPrModulo" class="num-in" style="font-family:'IBM Plex Sans'">
+                                    <select id="modoPrModulo" class="num-in" style="font-family:'Inter'">
                                         <option value="wp" selected>R$/Wp (potência)</option>
                                         <option value="un">R$/unidade (placa)</option>
                                     </select>
@@ -530,7 +579,7 @@
                                 </div>
                                 <div class="col-span-6">
                                     <label class="text-[9px] text-muted uppercase block mb-0.5">Classe de qualidade</label>
-                                    <select id="clsInversor" class="num-in" style="font-family:'IBM Plex Sans'">
+                                    <select id="clsInversor" class="num-in" style="font-family:'Inter'">
                                         <option value="linhaA" selected>Linha A — suporte BR</option>
                                         <option value="linhaB">Linha B — suporte parcial</option>
                                         <option value="linhaC">Linha C — sem suporte local</option>
@@ -541,7 +590,7 @@
                             <div class="grid grid-cols-12 gap-2 items-center mt-2">
                                 <div class="col-span-6">
                                     <label class="text-[9px] text-muted uppercase block mb-0.5">Cobrar por</label>
-                                    <select id="modoPrInversor" class="num-in" style="font-family:'IBM Plex Sans'">
+                                    <select id="modoPrInversor" class="num-in" style="font-family:'Inter'">
                                         <option value="kw" selected>R$/kW (potência)</option>
                                         <option value="un">R$/unidade (inversor)</option>
                                     </select>
@@ -675,7 +724,7 @@
                         <div class="grid grid-cols-12 gap-2 items-center">
                             <div class="col-span-6">
                                 <p class="text-sm font-semibold text-fg">Margem / lucro do projeto</p>
-                                <p class="text-[10px] text-muted font-mono">aplicada sobre o custo total</p>
+                                <p class="text-[10px] text-muted font-mono">sobre o custo · no PDF fica embutida nos itens</p>
                             </div>
                             <div class="col-span-3">
                                 <label class="text-[9px] text-muted uppercase block mb-0.5">%</label>
@@ -702,11 +751,11 @@
                         <p class="font-display font-bold text-sm tracking-wide text-fg mb-1">DADOS DA PROPOSTA</p>
                         <div>
                             <label for="clientName" class="text-[10px] text-muted uppercase block mb-1">Cliente</label>
-                            <input type="text" id="clientName" placeholder="Nome do cliente" class="num-in" style="font-family:'IBM Plex Sans'">
+                            <input type="text" id="clientName" placeholder="Nome do cliente" class="num-in" style="font-family:'Inter'">
                         </div>
                         <div>
                             <label for="clientCity" class="text-[10px] text-muted uppercase block mb-1">Cidade / UF</label>
-                            <input type="text" id="clientCity" placeholder="Ex: Mineiros / GO" class="num-in" style="font-family:'IBM Plex Sans'">
+                            <input type="text" id="clientCity" placeholder="Ex: Mineiros / GO" class="num-in" style="font-family:'Inter'">
                         </div>
                         <div class="grid grid-cols-2 gap-2">
                             <div>
@@ -720,7 +769,7 @@
                         </div>
                         <div>
                             <label for="notesTpl" class="text-[10px] text-muted uppercase block mb-1">Modelo de condições</label>
-                            <select id="notesTpl" class="num-in" style="font-family:'IBM Plex Sans'">
+                            <select id="notesTpl" class="num-in" style="font-family:'Inter'">
                                 <option value="">Escolher modelo…</option>
                                 <option value="avista">À vista</option>
                                 <option value="cartao">Cartão em até 12x</option>
@@ -729,8 +778,8 @@
                             </select>
                         </div>
                         <div>
-                            <label for="propNotes" class="text-[10px] text-muted uppercase block mb-1">Observações</label>
-                            <textarea id="propNotes" rows="3" placeholder="Condições de pagamento, prazo de execução, garantias..." class="num-in" style="font-family:'IBM Plex Sans';resize:vertical"></textarea>
+                            <label for="propNotes" class="text-[10px] text-muted uppercase block mb-1">Condições comerciais</label>
+                            <textarea id="propNotes" rows="3" placeholder="Condições de pagamento, prazo de execução, garantias..." class="num-in" style="font-family:'Inter';resize:vertical"></textarea>
                         </div>
                         <button id="btnPdf" class="w-full bg-primary hover:bg-primary-700 text-white font-semibold px-4 py-3 rounded-md transition flex items-center justify-center gap-2">
                             <i class="fa-solid fa-file-pdf"></i> Gerar proposta (PDF)
@@ -743,7 +792,7 @@
                                 <button id="btnSaveProp" class="flex-1 border border-line hover:border-sky text-muted hover:text-sky text-xs font-semibold py-2 rounded-md transition">Salvar atual</button>
                                 <button id="btnNewProp" class="flex-1 border border-line hover:border-sky text-muted hover:text-sky text-xs font-semibold py-2 rounded-md transition">Nova proposta</button>
                             </div>
-                            <select id="savedProps" class="num-in mt-2" style="font-family:'IBM Plex Sans'">
+                            <select id="savedProps" class="num-in mt-2" style="font-family:'Inter'">
                                 <option value="">Propostas salvas…</option>
                             </select>
                             <div class="flex gap-2 mt-2">
@@ -753,16 +802,16 @@
                             <p id="propsNote" class="text-[10px] text-muted mt-1.5">Tudo que você preenche também é salvo automaticamente.</p>
                         </div>
 
-                        <div class="border-t border-line pt-3">
-                            <p class="text-[10px] font-semibold text-muted uppercase tracking-wider mb-1">Sincronizar com a nuvem</p>
+                        <details class="adv border-t border-line pt-3">
+                            <summary class="text-[10px] font-semibold text-muted uppercase tracking-wider mb-1 flex justify-between items-center">Sincronizar com a nuvem (opcional) <span class="chev">▼</span></summary>
                             <p id="apiStatusNote" class="text-[10px] text-muted mb-2">Sem servidor configurado — propostas ficam só neste navegador.</p>
                             <div id="apiConnectBox" class="space-y-2">
-                                <input type="url" id="apiBaseInput" placeholder="URL da API (ex: https://elektrosys-api.SEU.workers.dev)" class="num-in" style="font-family:'IBM Plex Sans'">
+                                <input type="url" id="apiBaseInput" placeholder="URL da API (ex: https://elektrosys-api.SEU.workers.dev)" class="num-in" style="font-family:'Inter'">
                                 <input type="password" id="apiPassInput" placeholder="Senha de acesso" class="num-in" autocomplete="off">
                                 <button id="btnApiConnect" class="w-full border border-line hover:border-sky text-muted hover:text-sky text-xs font-semibold py-2 rounded-md transition">Conectar</button>
                             </div>
                             <button id="btnApiDisconnect" class="hidden w-full border border-line hover:border-alert text-muted hover:text-alert text-xs font-semibold py-2 rounded-md transition">Desconectar deste navegador</button>
-                        </div>
+                        </details>
                     </div>
                 </div>
             </div>
@@ -777,62 +826,71 @@
                     <i class="fa-solid fa-user-check text-primary"></i>
                     <h3 class="font-display font-bold text-lg tracking-wide text-fg">QUER QUE UM ENGENHEIRO ANALISE ESSA SIMULAÇÃO?</h3>
                 </div>
-                <p class="text-xs text-muted mb-4">Opcional — deixe seu contato e eu retorno com uma avaliação real do seu caso. Nenhum dado é compartilhado com terceiros.</p>
+                <p class="text-xs text-muted mb-4">Opcional — deixe seu contato e eu retorno com uma avaliação real do seu caso.</p>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
-                    <input type="text" id="leadNome" placeholder="Seu nome" class="num-in" style="font-family:'IBM Plex Sans'">
-                    <input type="text" id="leadContato" placeholder="WhatsApp ou e-mail" class="num-in" style="font-family:'IBM Plex Sans'">
-                    <input type="text" id="leadCidade" placeholder="Cidade" class="num-in" style="font-family:'IBM Plex Sans'">
+                    <div><label for="leadNome" class="text-[10px] text-muted uppercase block mb-1">Nome</label>
+                        <input type="text" id="leadNome" autocomplete="name" class="num-in" style="font-family:'Inter'"></div>
+                    <div><label for="leadContato" class="text-[10px] text-muted uppercase block mb-1">WhatsApp ou e-mail</label>
+                        <input type="text" id="leadContato" autocomplete="tel" class="num-in" style="font-family:'Inter'"></div>
+                    <div><label for="leadCidade" class="text-[10px] text-muted uppercase block mb-1">Cidade / UF</label>
+                        <input type="text" id="leadCidade" autocomplete="address-level2" class="num-in" style="font-family:'Inter'"></div>
                 </div>
+                <label class="flex items-start gap-2 text-[11px] text-muted mt-3">
+                    <input type="checkbox" id="leadConsent" class="mt-0.5">
+                    <span>Autorizo o contato da ElektroSys sobre esta simulação. Os dados são usados só para esse retorno e não são compartilhados com terceiros (LGPD).</span>
+                </label>
                 <button id="btnLeadEnviar" class="mt-3 bg-primary hover:bg-primary-700 text-white font-semibold px-5 py-2.5 rounded-md transition text-sm">Enviar contato</button>
                 <p id="leadNote" class="text-[10px] text-sky mt-2"></p>
             </div>
         </div>
     </section>
 
-    <!-- CTA / SERVIÇOS -->
+    <!-- CTA FINAL -->
     <section class="border-y border-line grid-bp relative z-10">
         <div class="container mx-auto px-4 py-14 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
             <div class="max-w-2xl">
-                <p class="font-mono text-xs uppercase tracking-[0.25em] text-primary mb-3">// engenharia sob demanda</p>
-                <h2 class="font-display text-3xl md:text-4xl text-fg font-bold leading-tight">Quer um projeto fotovoltaico dimensionado?</h2>
-                <p class="text-muted mt-3 leading-relaxed">Do estudo de viabilidade à homologação na distribuidora — projeto, ART e acompanhamento. Fale direto com o engenheiro responsável.</p>
+                <p class="font-mono text-xs uppercase tracking-[0.25em] text-primary mb-3">Engenharia sob demanda</p>
+                <h2 class="font-display text-3xl md:text-4xl text-fg font-bold leading-tight">Quer o projeto fotovoltaico dimensionado e assinado?</h2>
+                <p class="text-muted mt-3 leading-relaxed">Do estudo de viabilidade à homologação na distribuidora — projeto, ART e acompanhamento. Envie a conta de energia e fotos do telhado; devolvo escopo, prazo e preço.</p>
             </div>
-            <a href="https://wa.me/5564984395286" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 bg-primary hover:bg-primary-700 text-white font-semibold px-7 py-3.5 rounded-md whitespace-nowrap transition shrink-0">
-                <i class="fa-brands fa-whatsapp text-lg"></i> Solicitar orçamento
+            <a class="ek-wa ek-wa--lg shrink-0" data-wa href="https://wa.me/5564984395286" target="_blank" rel="noopener noreferrer">
+                <i class="fa-brands fa-whatsapp text-lg" aria-hidden="true"></i> Conversar pelo WhatsApp
             </a>
         </div>
     </section>
 
-    <footer class="bg-ink/60 relative z-10">
+    <footer class="ek-foot bg-ink/60 relative z-10">
         <div class="container mx-auto px-4 py-10">
             <div class="flex flex-col md:flex-row justify-between gap-8">
                 <div class="max-w-sm">
-                    <div class="flex items-center gap-2.5 mb-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-                        <span class="text-fg font-display font-bold text-lg tracking-wide">ELEKTRO<span class="text-primary">SYS</span></span>
-                    </div>
-                    <p class="text-sm text-muted leading-relaxed">Ferramentas e serviços de engenharia elétrica. Estimativas educacionais — não substituem projeto assinado.</p>
+                    <a class="ek-logo mb-4" href="index.html" aria-label="ElektroSys Engenharia Elétrica — início">
+                        <img src="assets/brand/elektrosys-logo-tight.png" alt="ElektroSys Engenharia Elétrica" width="538" height="239" loading="lazy">
+                    </a>
+                    <p class="text-sm text-muted leading-relaxed">Projetos, laudos, inspeções, SPDA, fotovoltaico, perícias judiciais e assistência técnica.</p>
+                    <p class="font-mono text-[11px] text-muted mt-3">Eng. Gusttavo Gutierry · CREA 1023983184D-GO</p>
                 </div>
                 <div class="flex gap-14">
                     <div>
                         <p class="font-mono text-[11px] uppercase tracking-wider text-muted mb-3">Ferramentas</p>
                         <ul class="space-y-2 text-sm">
-                            <li><a href="index.html" class="text-fg hover:text-sky transition">Motores</a></li>
-                            <li><a href="solar.html" class="text-fg hover:text-sky transition">Solar</a></li>
+                            <li><a href="motores.html" class="text-fg hover:text-sky transition">Motores trifásicos</a></li>
+                            <li><a href="solar.html" class="text-fg hover:text-sky transition" aria-current="page">Sistema fotovoltaico</a></li>
                             <li><a href="memorial.html" class="text-fg hover:text-sky transition">Memorial de cálculo</a></li>
+                            <li><a href="ferramentas.html" class="text-fg hover:text-sky transition">Todas as ferramentas</a></li>
                         </ul>
                     </div>
                     <div>
                         <p class="font-mono text-[11px] uppercase tracking-wider text-muted mb-3">Contato</p>
                         <ul class="space-y-2 text-sm">
-                            <li><a href="https://wa.me/5564984395286" target="_blank" rel="noopener noreferrer" class="text-fg hover:text-signal transition flex items-center gap-2"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a></li>
-                            <li><a href="https://www.linkedin.com/in/gusttavo-gutierry-ferreira-moraes-bb71841a4/" target="_blank" rel="noopener noreferrer" class="text-fg hover:text-sky transition flex items-center gap-2"><i class="fa-brands fa-linkedin-in"></i> LinkedIn</a></li>
+                            <li><a data-wa href="https://wa.me/5564984395286" target="_blank" rel="noopener noreferrer" class="text-fg hover:text-signal transition flex items-center gap-2"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i> +55 64 98439-5286</a></li>
+                            <li><a href="https://www.linkedin.com/in/gusttavo-gutierry-ferreira-moraes-bb71841a4/" target="_blank" rel="noopener noreferrer" class="text-fg hover:text-sky transition flex items-center gap-2"><i class="fa-brands fa-linkedin-in" aria-hidden="true"></i> LinkedIn</a></li>
+                            <li><a href="index.html#contato" class="text-fg hover:text-sky transition">Solicitar orçamento</a></li>
                         </ul>
                     </div>
                 </div>
             </div>
             <div class="border-t border-line mt-8 pt-6 text-center text-xs text-muted font-mono">
-                © 2026 Gusttavo Gutierry · ElektroSys — Estimativa educacional. Valide com projeto e a distribuidora.
+                © <span data-year>2026</span> ElektroSys Engenharia Elétrica · Estimativa educacional — valide com projeto e com a distribuidora.
             </div>
         </div>
     </footer>
@@ -845,70 +903,79 @@
         <div class="doc">
             <div class="doc-head">
                 <div>
-                    <div class="doc-brand">ELEKTRO<span>SYS</span></div>
-                    <div class="doc-sub">Engenharia Elétrica · Sistemas Fotovoltaicos</div>
+                    <img class="doc-logo" src="assets/brand/elektrosys-logo-tight.png" alt="ElektroSys Engenharia Elétrica" width="538" height="239">
+                    <div class="doc-sub">Eng. Gusttavo Gutierry · Engenheiro Eletricista · CREA 1023983184D-GO</div>
                 </div>
                 <div class="doc-meta">
                     <div>Proposta Nº <strong id="pNum">—</strong></div>
-                    <div>Data: <span id="pDate">—</span></div>
-                    <div>Validade: <span id="pValid">—</span></div>
+                    <div>Emissão: <span id="pDate">—</span></div>
+                    <div>Válida até: <strong id="pValid">—</strong></div>
                 </div>
             </div>
 
-            <h1 class="doc-title">Proposta — Sistema Fotovoltaico</h1>
+            <h1 class="doc-title">Proposta técnica e comercial — Sistema fotovoltaico</h1>
             <div class="doc-client">
                 <div><strong>Cliente:</strong> <span id="pClient">—</span></div>
-                <div><strong>Local:</strong> <span id="pCity">—</span></div>
+                <div><strong>Local da instalação:</strong> <span id="pCity">—</span></div>
             </div>
 
-            <div style="display:flex;gap:10px;margin:4px 0 6px;">
-                <div style="flex:1;background:#eef4fd;border:1px solid #bfd7f5;border-radius:8px;padding:10px 12px;text-align:center;">
-                    <div style="font-size:10px;color:#374151;text-transform:uppercase;letter-spacing:.06em;">Economia estimada</div>
-                    <div id="hlEco" style="font-family:'Barlow Semi Condensed',Arial,sans-serif;font-size:20px;font-weight:700;color:#1E5FB8;">—</div>
-                    <div style="font-size:10px;color:#6b7280;">por mês, no 1º ano</div>
+            <div class="doc-keep doc-hl">
+                <div class="doc-hl__box" style="background:#eef4fd;border-color:#bfd7f5;">
+                    <div class="doc-hl__lbl">Economia estimada</div>
+                    <div class="doc-hl__val" id="hlEco" style="color:#075B91;">—</div>
+                    <div class="doc-hl__sub">por mês, no 1º ano</div>
                 </div>
-                <div style="flex:1;background:#ecfdf5;border:1px solid #a7f3d0;border-radius:8px;padding:10px 12px;text-align:center;">
-                    <div style="font-size:10px;color:#374151;text-transform:uppercase;letter-spacing:.06em;">Retorno do investimento</div>
-                    <div id="hlPay" style="font-family:'Barlow Semi Condensed',Arial,sans-serif;font-size:20px;font-weight:700;color:#047857;">—</div>
-                    <div style="font-size:10px;color:#6b7280;">projeção em 25 anos</div>
+                <div class="doc-hl__box" style="background:#ecfdf5;border-color:#a7f3d0;">
+                    <div class="doc-hl__lbl">Retorno do investimento</div>
+                    <div class="doc-hl__val" id="hlPay" style="color:#047857;">—</div>
+                    <div class="doc-hl__sub">projeção em 25 anos</div>
                 </div>
-                <div style="flex:1;background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:10px 12px;text-align:center;">
-                    <div style="font-size:10px;color:#374151;text-transform:uppercase;letter-spacing:.06em;">Geração estimada</div>
-                    <div id="hlGen" style="font-family:'Barlow Semi Condensed',Arial,sans-serif;font-size:20px;font-weight:700;color:#B45309;">—</div>
-                    <div style="font-size:10px;color:#6b7280;">kWh por mês</div>
+                <div class="doc-hl__box" style="background:#f7f9fb;border-color:#d1d5db;">
+                    <div class="doc-hl__lbl">Geração estimada</div>
+                    <div class="doc-hl__val" id="hlGen" style="color:#0A1B2E;">—</div>
+                    <div class="doc-hl__sub">kWh por mês (média anual)</div>
                 </div>
             </div>
 
-            <h2>Resumo do sistema</h2>
+            <h2>1. Resumo do sistema</h2>
             <table class="doc-table">
                 <tbody>
                     <tr><td>Potência de pico</td><td class="r" id="pPower">—</td><td>Módulos</td><td class="r" id="pModules">—</td></tr>
-                    <tr><td>Inversor sugerido</td><td class="r" id="pInverter">—</td><td>Geração estimada</td><td class="r" id="pGen">—</td></tr>
+                    <tr><td>Inversor</td><td class="r" id="pInverter">—</td><td>Geração estimada</td><td class="r" id="pGen">—</td></tr>
                     <tr><td>Economia estimada</td><td class="r" id="pSavings">—</td><td>Área ocupada pelos módulos</td><td class="r" id="pArea">—</td></tr>
                     <tr><td>Configuração das strings</td><td class="r" id="pStrings">—</td><td>Fator de dimensionamento (FDI)</td><td class="r" id="pFDI">—</td></tr>
                 </tbody>
             </table>
 
-            <h2>Disposição dos módulos na área</h2>
+            <h2>2. Premissas de cálculo</h2>
+            <table class="doc-table">
+                <tbody>
+                    <tr><td>Irradiação média (HSP)</td><td class="r" id="pqHsp">—</td><td>Taxa de desempenho (PR)</td><td class="r" id="pqPr">—</td></tr>
+                    <tr><td>Tarifa de energia</td><td class="r" id="pqTarifa">—</td><td>TUSD Fio B (Lei 14.300)</td><td class="r" id="pqFioB">—</td></tr>
+                    <tr><td>Tipo de ligação</td><td class="r" id="pqLigacao">—</td><td>Reajuste tarifário / degradação</td><td class="r" id="pqReaj">—</td></tr>
+                </tbody>
+            </table>
+
+            <h2>3. Disposição dos módulos na área</h2>
             <img id="pLayoutImg" alt="Disposição dos módulos" style="width:100%;max-width:640px;border:1px solid #d1d5db;border-radius:6px;">
 
-            <h2>Retorno do investimento</h2>
+            <h2>4. Retorno do investimento</h2>
             <p class="doc-notes" id="pPaybackTxt" style="margin-bottom:8px;">—</p>
             <img id="pChartImg" alt="Gráfico do retorno do investimento" style="width:100%;max-width:640px;border:1px solid #e5e7eb;border-radius:6px;">
 
-            <h2>Composição do orçamento</h2>
+            <h2>5. Investimento</h2>
             <table class="doc-table">
-                <thead><tr><th>Item</th><th>Detalhe</th><th class="r">Valor</th></tr></thead>
+                <thead><tr><th>Item</th><th>Especificação</th><th class="r">Valor</th></tr></thead>
                 <tbody>
                     <tr><td>Módulos fotovoltaicos</td><td id="pdModulos">—</td><td class="r" id="pvModulos">—</td></tr>
                     <tr><td>Inversor</td><td id="pdInversor">—</td><td class="r" id="pvInversor">—</td></tr>
-                    <tr><td>Cabeamento CC + CA</td><td id="pdCabo">—</td><td class="r" id="pvCabo">—</td></tr>
                     <tr><td>Estrutura de fixação</td><td id="pdEstrutura">—</td><td class="r" id="pvEstrutura">—</td></tr>
-                    <tr><td>Proteção CC/CA</td><td>String box, DPS, disjuntores, aterramento</td><td class="r" id="pvProtecao">—</td></tr>
-                    <tr><td>Projeto, ART e homologação</td><td>Projeto executivo, ART CREA e homologação na distribuidora</td><td class="r" id="pvArt">—</td></tr>
-                    <tr><td>Mão de obra / instalação</td><td id="pdMaoObra">—</td><td class="r" id="pvMaoObra">—</td></tr>
-                    <tr><td><strong>Custo total</strong></td><td></td><td class="r" id="pvCusto"><strong>—</strong></td></tr>
-                    <tr><td>Margem do projeto</td><td id="pdMargem">—</td><td class="r" id="pvMargem">—</td></tr>
+                    <tr><td>Cabeamento CC + CA</td><td id="pdCabo">—</td><td class="r" id="pvCabo">—</td></tr>
+                    <tr><td>Proteção CC/CA</td><td>String box, DPS, disjuntores e aterramento</td><td class="r" id="pvProtecao">—</td></tr>
+                    <tr class="sub"><td>Subtotal — equipamentos e materiais</td><td></td><td class="r" id="pvSubEquip">—</td></tr>
+                    <tr><td>Projeto, ART e homologação</td><td>Projeto executivo, ART no CREA-GO e homologação na distribuidora</td><td class="r" id="pvArt">—</td></tr>
+                    <tr><td>Instalação e comissionamento</td><td id="pdMaoObra">—</td><td class="r" id="pvMaoObra">—</td></tr>
+                    <tr class="sub"><td>Subtotal — serviços</td><td></td><td class="r" id="pvSubServ">—</td></tr>
                 </tbody>
             </table>
 
@@ -917,30 +984,31 @@
                 <span class="val" id="pvPreco">—</span>
             </div>
 
-            <h2>Observações</h2>
+            <h2>6. Condições comerciais</h2>
             <div class="doc-notes" id="pNotes">—</div>
 
-            <h2>Próximos passos</h2>
-            <ol style="margin:0 0 4px 18px;padding:0;font-size:12px;color:#374151;line-height:1.7;">
+            <h2>7. Não incluso nesta proposta</h2>
+            <p class="doc-notes">Salvo indicação expressa: adequação ou troca do padrão de entrada, reforço estrutural do telhado ou da laje, obras civis, SPDA, adequações na instalação elétrica interna e exigências adicionais da distribuidora. Quando necessários, são identificados na visita técnica e orçados à parte.</p>
+
+            <h2>8. Próximos passos</h2>
+            <ol class="doc-list">
                 <li>Aceite da proposta (assinatura abaixo ou confirmação por escrito).</li>
-                <li>Contrato e cronograma de execução.</li>
-                <li>Projeto executivo e homologação junto à distribuidora.</li>
+                <li>Visita técnica: confirmação do telhado, das distâncias, do padrão de entrada e de sombreamentos.</li>
+                <li>Contrato, projeto executivo e solicitação de acesso à distribuidora.</li>
                 <li>Instalação e comissionamento.</li>
-                <li>Ativação do sistema e orientações de monitoramento.</li>
+                <li>Vistoria da distribuidora, troca do medidor e ativação do sistema.</li>
             </ol>
 
-            <div style="display:flex;gap:40px;margin-top:38px;">
-                <div style="flex:1;text-align:center;">
-                    <div id="sigCliente" style="border-top:1px solid #374151;padding-top:6px;font-size:11px;color:#374151;">Cliente</div>
-                </div>
-                <div style="flex:1;text-align:center;">
-                    <div style="border-top:1px solid #374151;padding-top:6px;font-size:11px;color:#374151;">Gusttavo Gutierry — Engenharia Elétrica</div>
-                </div>
+            <div class="doc-keep doc-sign">
+                <div><div id="sigCliente" class="doc-sign__line">Cliente</div></div>
+                <div><div class="doc-sign__line">Eng. Gusttavo Gutierry<br><span class="doc-sign__sub">Engenheiro Eletricista · CREA 1023983184D-GO</span></div></div>
             </div>
 
             <div class="doc-foot">
-                Gusttavo Gutierry · Engenharia Elétrica · WhatsApp +55 64 98439-5286 · elektrosys.eng.br<br>
-                Estimativa comercial. Valores de equipamentos sujeitos a confirmação de cotação junto ao fornecedor. Geração e economia são estimativas e não modelam o Fio B (Lei 14.300/2022), simultaneidade nem sombreamentos. Não substitui projeto executivo assinado com ART.
+                ElektroSys Engenharia Elétrica · WhatsApp +55 64 98439-5286 · elektrosys.eng.br<br>
+                Geração estimada pela irradiação média anual (HSP) e pela taxa de desempenho informadas; a geração real varia com clima, sombreamento, sujidade e orientação dos módulos.
+                A economia desconta o custo de disponibilidade e o Fio B escalonado (Lei 14.300/2022) e não considera simultaneidade de consumo.
+                Preços de equipamentos sujeitos à confirmação no fechamento do pedido. Metodologia: elektrosys.eng.br/memorial.html
             </div>
         </div>
     </div>
@@ -1004,16 +1072,11 @@
     function sanitize(v, fallback) { const n = Number(v); return Number.isFinite(n) ? n : fallback; }
     function num(id, fb) { const v = parseFloat(document.getElementById(id).value); return Number.isFinite(v) ? v : fb; }
 
-    // === MODAL ===
-    (function initModal() {
-        const modal = document.getElementById('aboutModal');
-        const btnOpen = document.getElementById('btnOpenAbout');
-        const btnClose = document.getElementById('btnCloseAbout');
-        btnOpen.addEventListener('click', (e) => { e.preventDefault(); modal.classList.remove('hidden'); modal.classList.add('flex'); btnClose.focus(); });
-        function closeModal() { modal.classList.add('hidden'); modal.classList.remove('flex'); btnOpen.focus(); }
-        btnClose.addEventListener('click', closeModal);
-        modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
-        document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !modal.classList.contains('hidden')) closeModal(); });
+    // === WHATSAPP (mensagem pré-preenchida e editável) + ANO DO RODAPÉ ===
+    (function initChrome() {
+        const msg = 'Olá, Gusttavo. Gostaria de solicitar uma análise inicial para um sistema fotovoltaico.';
+        document.querySelectorAll('a[data-wa]').forEach(a => { a.href = 'https://wa.me/5564984395286?text=' + encodeURIComponent(msg); });
+        document.querySelectorAll('[data-year]').forEach(e => { e.textContent = new Date().getFullYear(); });
     })();
 
     // === GRUPOS DE BOTÕES (tiles) ===
@@ -1181,6 +1244,8 @@
         STATE.areaTotal = wTerreno * lTerreno; STATE.areaUtil = wUtil * lUtil;
         STATE.areaModulos = placed * pW * pL;
         STATE.avail = availabilityKWh; STATE.rate = rate;
+        STATE.hsp = hsp; STATE.pr = pr;
+        STATE.ligacao = (el.phase.options[el.phase.selectedIndex] || {}).textContent || '';
         STATE.adj = clamp(sanitize(document.getElementById('adjInput').value, 8), 0, 30);
 
         // Layout: regenera as posições só quando a geometria/quantidade muda
@@ -1754,6 +1819,8 @@
     }
 
     // === PROPOSTA / PDF ===
+    function structureLabel() { return tileValue('structureGroup') === 'ground' ? 'laje ou solo' : 'telhado inclinado'; }
+
     function fillProposal() {
         const s = STATE, b = STATE.budget;
         const t = (id, v) => { document.getElementById(id).textContent = v; };
@@ -1765,12 +1832,19 @@
         const auto = `${now.getFullYear()}-${String(seq).padStart(4, '0')}`;
         const digitado = (document.getElementById('propNum').value || '').trim();
         const propNum = digitado || auto;
-        if (!digitado) { try { localStorage.setItem('ek_prop_seq', String(seq + 1)); } catch (e) { } }
+        if (!digitado) {
+            // Grava o número no campo: reimprimir a mesma proposta não consome outro número
+            // e a proposta salva carrega o número que o cliente recebeu.
+            document.getElementById('propNum').value = propNum;
+            try { localStorage.setItem('ek_prop_seq', String(seq + 1)); } catch (e) { }
+            schedulePersist();
+        }
         const validDias = clamp(num('propValid', 15), 1, 3650);
+        const validAte = new Date(now.getTime() + validDias * 86400000);
 
         t('pNum', propNum);
         t('pDate', now.toLocaleDateString('pt-BR'));
-        t('pValid', `${validDias} dias`);
+        t('pValid', `${validAte.toLocaleDateString('pt-BR')} (${validDias} dias)`);
         t('pClient', (document.getElementById('clientName').value || '').trim() || '—');
         t('pCity', (document.getElementById('clientCity').value || '').trim() || '—');
 
@@ -1790,32 +1864,46 @@
         const modKey = document.getElementById('clsModulo').value;
         const invKey = document.getElementById('clsInversor').value;
         // Sem jargão interno da ferramenta no documento do cliente
-        const clsMod = EQUIPMENT_TIERS.modulo[modKey].label;
-        const clsInv = EQUIPMENT_TIERS.inversor[invKey].label;
+        // "Tier 1 — bancável" → "Tier 1 (bancável)": evita travessão duplo na especificação
+        const clsFmt = l => l.replace(' — ', ' (') + ')';
+        const clsMod = clsFmt(EQUIPMENT_TIERS.modulo[modKey].label);
+        const clsInv = clsFmt(EQUIPMENT_TIERS.inversor[invKey].label);
         // Usa o modelo digitado (já costuma incluir a marca; evita "Marca Marca Modelo")
-        const modName = (s.customPanelActive && CUSTOM_PANEL) ? `${CUSTOM_PANEL.modelo} — ` : '';
-        const invName = (b.micro ? 'Microinversor · ' : '') + (CUSTOM_INV ? `${CUSTOM_INV.modelo} — ` : '');
-        t('pdModulos', (b.modoMod === 'un')
-            ? `${modName}${s.placed} un × ${brl(b.moduloWp)}/un — ${clsMod}`
-            : `${modName}${s.placed} un × ${s.pPower} Wp × ${fmtBR(b.moduloWp, 2)} R$/Wp — ${clsMod}`);
-        t('pvModulos', brl(b.cModulos));
-        t('pdInversor', (b.modoInv === 'un')
-            ? `${invName}${b.invUnits} un × ${brl(b.inversorKW)}/un — ${clsInv}`
-            : `${invName}${fmtBR(s.inverterKW, 1)} kW × ${brl(b.inversorKW)}/kW — ${clsInv}`);
-        t('pvInversor', brl(b.cInversor));
+        const modName = (s.customPanelActive && CUSTOM_PANEL) ? `${CUSTOM_PANEL.modelo} · ` : '';
+        const invName = CUSTOM_INV ? `${CUSTOM_INV.modelo} · ` : '';
+        // Especificação = quantidade + modelo + classe. Sem preço unitário de custo no documento do cliente.
+        t('pdModulos', `${modName}${s.placed} × ${s.pPower} Wp — ${clsMod}`);
+        t('pdInversor', b.micro
+            ? `${invName}${b.invUnits} microinversor(es), ${s.ppm} módulo(s) por micro — ${clsInv}`
+            : (CUSTOM_INV ? `${invName}${b.invUnits} × ${fmtBR(CUSTOM_INV.kw, 1)} kW — ${clsInv}`
+                          : `${fmtBR(s.inverterKW, 1)} kW (modelo a definir) — ${clsInv}`));
         t('pdCabo', `CC solar ${b.mCC} m (NBR 16612) · CA ${b.mCA} m (${b.condCA} condutores) · ` +
                     `aterramento ${b.mTerra} m · ${b.paresMC4} pares MC4 · eletroduto/eletrocalha`);
-        t('pvCabo', brl(b.cCabo));
-        t('pvArt', brl(b.cArt));
-        t('pdEstrutura', `${s.placed} un × ${brl(b.estruturaUn)}/placa`);
-        t('pvEstrutura', brl(b.cEstrutura));
-        t('pvProtecao', brl(b.cProtecao));
-        t('pdMaoObra', `${fmtBR(s.kWp, 2)} kWp × ${brl(b.maoObraKWp)}/kWp`);
-        t('pvMaoObra', brl(b.cMaoObra));
-        t('pvCusto', brl(b.custo));
-        t('pdMargem', `${fmtBR(b.margem, 0)}%`);
-        t('pvMargem', brl(b.vMargem));
+        t('pdEstrutura', `${s.placed} conjunto(s) de fixação para ${structureLabel()}`);
+        t('pdMaoObra', `Montagem, passagem de cabos, conexões e testes — ${fmtBR(s.kWp, 2)} kWp`);
+
+        // Preço de VENDA por item: a margem é distribuída proporcionalmente ao custo de cada
+        // item. O cliente vê quanto paga por item e no total — custo e margem ficam só na tela.
+        const fator = b.custo > 0 ? b.preco / b.custo : 1;
+        const itens = [['pvModulos', b.cModulos], ['pvInversor', b.cInversor], ['pvEstrutura', b.cEstrutura],
+                       ['pvCabo', b.cCabo], ['pvProtecao', b.cProtecao], ['pvArt', b.cArt], ['pvMaoObra', b.cMaoObra]];
+        const venda = {};
+        let soma = 0;
+        itens.forEach(([id, c]) => { venda[id] = Math.round(c * fator * 100) / 100; soma += venda[id]; });
+        // Ajuste de centavos no último item para a soma bater exatamente com o total
+        venda.pvMaoObra = Math.round((venda.pvMaoObra + (Math.round(b.preco * 100) / 100 - soma)) * 100) / 100;
+        itens.forEach(([id]) => t(id, brl(venda[id])));
+        t('pvSubEquip', brl(venda.pvModulos + venda.pvInversor + venda.pvEstrutura + venda.pvCabo + venda.pvProtecao));
+        t('pvSubServ', brl(venda.pvArt + venda.pvMaoObra));
         t('pvPreco', brl(b.preco));
+
+        // Premissas (o cliente e o engenheiro dele conseguem auditar a conta)
+        t('pqHsp', `${fmtBR(s.hsp, 2)} kWh/m²·dia`);
+        t('pqPr', `${Math.round(s.pr * 100)}%`);
+        t('pqTarifa', `${brl(s.rate)}/kWh`);
+        t('pqFioB', s.fioBTar > 0 ? `${brl(s.fioBTar)}/kWh · ${Math.round(s.pctFioB * 100)}% em ${s.anoBase}` : 'não informado');
+        t('pqLigacao', s.ligacao);
+        t('pqReaj', `${fmtBR(s.adj, 1)}% a.a. / 0,6% a.a.`);
 
         // Disposição das placas (imagem do canvas ao vivo) — vai para o relatório
         try {
@@ -1931,17 +2019,19 @@
 
     // === MODELOS DE CONDIÇÕES (observações da proposta) ===
     // Nunca enviar "Condições a combinar" ao cliente — este é o texto mínimo
-    const NOTES_DEFAULT = 'Pagamento: a combinar (à vista, cartão ou financiamento bancário). ' +
-        'Prazo de execução: até 30 dias após a aprovação do projeto na distribuidora. ' +
+    // Prazo, garantias e escopo são iguais em todos os modelos — só o pagamento muda.
+    // (Antes os modelos divergiam do texto padrão e "perdiam" garantia e escopo.)
+    const NOTES_COMUM = 'Prazo de execução: até 30 dias após a aprovação do projeto na distribuidora. ' +
         'Garantias: módulos — 12 anos contra defeitos de fabricação e 25 anos de performance linear; ' +
-        'inversor — conforme fabricante (5 a 10 anos); instalação e mão de obra — 12 meses. ' +
-        'Inclui projeto executivo, ART do CREA-GO e acompanhamento da homologação junto à distribuidora.';
+        'inversor — conforme fabricante (5 a 10 anos); instalação — 12 meses. ' +
+        'Inclui projeto executivo, ART no CREA-GO e acompanhamento da homologação junto à distribuidora.';
+    const NOTES_DEFAULT = 'Pagamento: a combinar (à vista, cartão ou financiamento bancário).\n' + NOTES_COMUM;
 
     const NOTES_TPL = {
-        avista: 'Pagamento: à vista (PIX/transferência). Prazo de execução: até 30 dias após a homologação na distribuidora. Garantias: 12 meses de instalação; equipamentos conforme fabricante (módulos: 25 anos de potência; inversor: conforme datasheet).',
-        cartao: 'Pagamento: em até 12x no cartão de crédito (taxas da operadora repassadas). Prazo de execução: até 30 dias após a homologação. Garantias: 12 meses de instalação; equipamentos conforme fabricante.',
-        fin: 'Pagamento: financiamento bancário (sujeito a análise e aprovação de crédito). Entrada opcional. Prazo de execução: até 30 dias após liberação do crédito e homologação. Garantias: 12 meses de instalação; equipamentos conforme fabricante.',
-        '5050': 'Pagamento: 50% na assinatura do contrato e 50% na conclusão da instalação. Prazo de execução: até 30 dias após a homologação. Garantias: 12 meses de instalação; equipamentos conforme fabricante.'
+        avista: 'Pagamento: à vista (PIX ou transferência).\n' + NOTES_COMUM,
+        cartao: 'Pagamento: em até 12x no cartão de crédito (taxas da operadora repassadas).\n' + NOTES_COMUM,
+        fin: 'Pagamento: financiamento bancário, sujeito a análise e aprovação de crédito; entrada opcional. O prazo de execução conta a partir da liberação do crédito.\n' + NOTES_COMUM,
+        '5050': 'Pagamento: 50% na assinatura do contrato e 50% na conclusão da instalação.\n' + NOTES_COMUM
     };
 
     // === EVENTOS ===
@@ -2084,6 +2174,7 @@
         const cidade = (document.getElementById('leadCidade').value || '').trim();
         const note = document.getElementById('leadNote');
         if (!nome || !contato) { note.textContent = 'Preencha nome e contato.'; note.className = 'text-[10px] text-alert mt-2'; return; }
+        if (!document.getElementById('leadConsent').checked) { note.textContent = 'Marque a autorização de contato para enviar.'; note.className = 'text-[10px] text-alert mt-2'; return; }
         try {
             const base = API_BASE_DEFAULT;
             const r = await fetch(base + '/api/leads', {
@@ -2175,7 +2266,8 @@
         window.addEventListener('mousemove', (e) => move(e.clientX, e.clientY));
         window.addEventListener('mouseup', end);
         canvas.addEventListener('touchstart', (e) => { const t = e.touches[0]; if (start(t.clientX, t.clientY)) e.preventDefault(); }, { passive: false });
-        canvas.addEventListener('touchmove', (e) => { if (dragIndex >= 0) { const t = e.touches[0]; move(t.clientX, t.clientY); e.preventDefault(); } }, { passive: false });
+        // 'drag' (não dragIndex): no modo Conjunto dragIndex fica -1 e o toque não movia nada
+        canvas.addEventListener('touchmove', (e) => { if (drag) { const t = e.touches[0]; move(t.clientX, t.clientY); e.preventDefault(); } }, { passive: false });
         canvas.addEventListener('touchend', end);
         canvas.addEventListener('touchcancel', end);
     })();

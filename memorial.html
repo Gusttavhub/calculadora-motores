@@ -65,7 +65,7 @@
                 <span class="text-fg font-display font-bold text-xl tracking-wide">ELEKTRO<span class="text-primary">SYS</span></span>
             </a>
             <div class="hidden md:flex items-center gap-7 text-sm font-medium text-muted">
-                <a href="index.html" class="hover:text-fg transition">Motores</a>
+                <a href="motores.html" class="hover:text-fg transition">Motores</a>
                 <a href="solar.html" class="hover:text-fg transition">Solar</a>
                 <a href="memorial.html" class="text-fg" aria-current="page">Memorial</a>
                 <a href="https://wa.me/5564984395286" target="_blank" rel="noopener noreferrer" class="bg-primary hover:bg-primary-700 text-white font-semibold px-4 py-2 rounded-md transition">Solicitar projeto</a>
@@ -155,6 +155,7 @@ Conectores MC4 = 3 pares por string  ·  + eletroduto/eletrocalha</div>
         <h2><span>08</span>Preço sugerido ao cliente</h2>
         <div class="formula">Custo = Σ itens &nbsp;·&nbsp; Margem = Custo × m% &nbsp;·&nbsp; Preço = Custo + Margem</div>
         <p>O indicador <span class="var">R$/kWp</span> (Preço ÷ P_pico) permite comparar a proposta com o mercado.</p>
+        <p><strong>No documento do cliente</strong> custo e margem não aparecem: cada item é exibido pelo preço de venda, <span class="var">Venda_i = Custo_i × (Preço ÷ Custo)</span>, ou seja, a margem é distribuída proporcionalmente ao custo de cada item. Os centavos de arredondamento são ajustados no último item para que a soma bata exatamente com o investimento total. Os itens são agrupados em equipamentos e materiais e em serviços.</p>
 
         <h2><span>09</span>Retorno do investimento (payback)</h2>
         <p><strong>Payback simples</strong> (mostrado no cartão de preço):</p>
@@ -179,7 +180,7 @@ Acum_t = Σ Econ_1..t</div>
         <ul>
             <li>Estimativa <strong>educacional/comercial</strong> — não substitui projeto executivo assinado com ART.</li>
             <li><strong>Fio B (Lei 14.300/2022):</strong> modelado (seção 05) a partir da TUSD Fio B informada e do escalonamento legal por ano. A precisão depende de você usar o valor real da sua distribuidora — com o campo zerado, a ferramenta alerta que a economia está otimista.</li>
-            <li><strong>Dimensionamento do circuito CA:</strong> o cabeamento aqui é <em>orçamentário</em> (metros de condutor × preço). A <strong>seção</strong> dos condutores deve ser verificada por ampacidade e queda de tensão — use a <a href="index.html" class="text-sky">calculadora NBR 5410</a> do próprio ElektroSys e registre o resultado no projeto executivo.</li>
+            <li><strong>Dimensionamento do circuito CA:</strong> o cabeamento aqui é <em>orçamentário</em> (metros de condutor × preço). A <strong>seção</strong> dos condutores deve ser verificada por ampacidade e queda de tensão — use a <a href="motores.html" class="text-sky">calculadora NBR 5410</a> do próprio ElektroSys e registre o resultado no projeto executivo.</li>
             <li><strong>Simultaneidade:</strong> energia consumida no instante da geração não passa pela compensação — o modelo trata toda a geração como compensada.</li>
             <li><strong>Sombreamentos locais</strong> (árvores, platibandas, antenas) não são modelados; o corredor anti-sombra trata apenas do sombreamento entre fileiras.</li>
             <li>Dados de equipamento vindos de IA são sugestão de catálogo e <strong>devem ser conferidos no datasheet</strong>.</li>
@@ -194,7 +195,7 @@ Acum_t = Σ Econ_1..t</div>
 
     <footer class="bg-ink/60 relative z-10 mt-10">
         <div class="container mx-auto px-4 py-8 text-center text-xs text-muted font-mono">
-            © 2026 Gusttavo Gutierry · ElektroSys — <a href="solar.html" class="text-sky hover:text-fg transition">voltar ao simulador</a>
+            © Gusttavo Gutierry · CREA 1023983184D-GO · ElektroSys — <a href="solar.html" class="text-sky hover:text-fg transition">voltar ao simulador</a>
         </div>
     </footer>
 </body>
