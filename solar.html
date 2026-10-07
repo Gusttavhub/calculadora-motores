@@ -25,6 +25,7 @@
     <link rel="manifest" href="site.webmanifest">
 
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="assets/css/ek-chrome.css">
 
     <!-- Fontes auto-hospedadas (mesmas do site institucional — sem Google Fonts) -->
     <link rel="preload" href="assets/fonts/inter-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
@@ -57,45 +58,6 @@
     <meta name="theme-color" content="#0A1B2E">
 
     <style>
-        /* ===== Fontes (design.md: Barlow 600/700, Inter 400–700, IBM Plex Mono 400/500) ===== */
-        @font-face { font-family:'Barlow Semi Condensed'; font-weight:600; font-display:swap; src:url('assets/fonts/barlow-semi-condensed-latin-600-normal.woff2') format('woff2'); }
-        @font-face { font-family:'Barlow Semi Condensed'; font-weight:700; font-display:swap; src:url('assets/fonts/barlow-semi-condensed-latin-700-normal.woff2') format('woff2'); }
-        @font-face { font-family:'Inter'; font-weight:400; font-display:swap; src:url('assets/fonts/inter-latin-400-normal.woff2') format('woff2'); }
-        @font-face { font-family:'Inter'; font-weight:500; font-display:swap; src:url('assets/fonts/inter-latin-500-normal.woff2') format('woff2'); }
-        @font-face { font-family:'Inter'; font-weight:600; font-display:swap; src:url('assets/fonts/inter-latin-600-normal.woff2') format('woff2'); }
-        @font-face { font-family:'Inter'; font-weight:700; font-display:swap; src:url('assets/fonts/inter-latin-700-normal.woff2') format('woff2'); }
-        @font-face { font-family:'IBM Plex Mono'; font-weight:400; font-display:swap; src:url('assets/fonts/ibm-plex-mono-latin-400-normal.woff2') format('woff2'); }
-        @font-face { font-family:'IBM Plex Mono'; font-weight:500; font-display:swap; src:url('assets/fonts/ibm-plex-mono-latin-500-normal.woff2') format('woff2'); }
-        body, .font-sans { font-family:'Inter', system-ui, sans-serif; }
-
-        /* ===== Cabeçalho e rodapé alinhados ao site institucional ===== */
-        .ek-skip { position:absolute; left:-9999px; top:8px; z-index:100; background:#2C7BE5; color:#fff; padding:8px 14px; border-radius:4px; }
-        .ek-skip:focus { left:16px; }
-        .ek-logo { display:inline-flex; flex:none; padding:4px 7px; background:#F7F9FB; border-radius:4px; transition:box-shadow .15s; }
-        .ek-logo img { height:44px; width:auto; display:block; }
-        .ek-logo:hover { box-shadow:0 0 0 1px #2C7BE5; }
-        @media (min-width:1024px) { .ek-logo { padding:4px 9px; } .ek-logo img { height:50px; } }
-        .ek-foot .ek-logo { padding:10px 14px; }
-        .ek-foot .ek-logo img { height:auto; width:168px; }
-        .ek-nav { display:none; align-items:center; gap:24px; font-size:14px; font-weight:500; }
-        @media (min-width:1100px) { .ek-nav { display:flex; } }
-        .ek-nav a { color:#8CA3BC; padding:6px 0; transition:color .15s; }
-        .ek-nav a:hover { color:#E8F0F8; }
-        .ek-nav a[aria-current="page"] { color:#E8F0F8; box-shadow:inset 0 -2px 0 #2C7BE5; }
-        .ek-wa { display:inline-flex; align-items:center; gap:8px; min-height:44px; padding:0 18px; border-radius:6px;
-                 background:#25D366; color:#06231A; font-weight:600; font-size:14px; white-space:nowrap; transition:filter .15s, transform .15s; }
-        .ek-wa:hover { filter:brightness(1.06); transform:translateY(-1px); }
-        .ek-wa--lg { min-height:50px; padding:0 26px; font-size:16px; }
-        @media (max-width:399px) { .ek-wa__x { display:none; } }
-        .ek-note { border-left:2px solid #21425F; padding-left:12px; }
-        .ek-crumb { font-size:12px; color:#8CA3BC; }
-        .ek-crumb a { color:#8CA3BC; text-decoration:underline; text-underline-offset:3px; }
-        .ek-crumb a:hover { color:#E8F0F8; }
-        .ek-crumb li + li::before { content:'›'; margin:0 8px; color:#21425F; }
-        .ek-crumb ol { display:flex; flex-wrap:wrap; list-style:none; margin:0; padding:0; }
-        a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, summary:focus-visible {
-            outline:2px solid #2C7BE5; outline-offset:2px; }
-        @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition:none !important; animation:none !important; } }
 
         .grid-bp {
             background-image:
@@ -118,7 +80,6 @@
         input[type=range]::-moz-range-track {
             width: 100%; height: 4px; cursor: pointer; background: #21425F; border-radius: 2px;
         }
-        #aboutModal.hidden { display: none; }
         details.adv > summary { cursor: pointer; list-style: none; }
         details.adv > summary::-webkit-details-marker { display: none; }
         details.adv > summary .chev { transition: transform 0.2s; }
@@ -171,7 +132,7 @@
     </style>
 </head>
 
-<body class="bg-navy grid-bp text-muted font-sans antialiased">
+<body class="bg-navy grid-bp text-muted font-sans antialiased" data-wa-assunto="um sistema fotovoltaico">
     <a class="ek-skip" href="#ferramenta">Pular para o simulador</a>
 
     <header class="border-b border-line bg-navy sticky top-0 z-40">
@@ -188,7 +149,7 @@
                 <a href="ferramentas.html" aria-current="page">Ferramentas</a>
             </nav>
             <a class="ek-wa" data-wa href="https://wa.me/5564984395286" target="_blank" rel="noopener noreferrer">
-                <i class="fa-brands fa-whatsapp text-lg" aria-hidden="true"></i> <span class="ek-wa__x">Falar no </span>WhatsApp
+                <svg class="ek-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2Zm5.8 14.16c-.24.68-1.2 1.26-1.96 1.42-.52.11-1.2.2-3.5-.75-2.94-1.22-4.83-4.2-4.98-4.4-.14-.19-1.19-1.58-1.19-3.02s.76-2.14 1.03-2.44c.27-.3.58-.37.78-.37.19 0 .39 0 .56.01.18.01.42-.07.66.5.24.58.83 2.01.9 2.16.07.15.12.32.02.51-.1.19-.15.31-.29.48-.15.17-.31.38-.44.51-.15.15-.3.31-.13.6.17.3.76 1.25 1.63 2.02 1.12 1 2.06 1.31 2.36 1.46.3.15.47.12.64-.07.17-.2.74-.86.94-1.16.2-.3.39-.25.66-.15.27.1 1.7.8 1.99.95.29.15.48.22.55.34.07.13.07.72-.17 1.4Z"/></svg> <span class="ek-wa__x">Falar no </span>WhatsApp
             </a>
         </div>
     </header>
@@ -278,6 +239,10 @@
                             <label for="targetKwh" class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Consumo Alvo (kWh/mês)</label>
                             <input type="number" id="targetKwh" min="1" max="100000" step="10" value="500" class="w-full bg-ink border border-primary/50 rounded-md px-3 py-2 text-sm font-mono font-semibold text-fg focus:outline-none focus:border-primary">
                             <p id="metaInfo" class="text-[10px] text-sky mt-1.5">Informe seu consumo médio; o sistema calcula as placas necessárias.</p>
+                            <label class="flex items-start gap-2 text-[11px] text-muted mt-2">
+                                <input type="checkbox" id="descDisp" checked class="mt-0.5">
+                                <span>Descontar o custo de disponibilidade da meta <span class="text-sky">(recomendado)</span> — a fatura nunca fica abaixo do mínimo da ligação; gerar além disso vira crédito, não economia.</span>
+                            </label>
                         </div>
 
                         <div>
@@ -316,11 +281,41 @@
 
                         <div>
                             <label for="panelSelect" class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Módulo Fotovoltaico</label>
+                            <!-- Dimensões e Voc típicos de datasheet por formato de célula (2024–2026).
+                                 data-voc = Voc em STC (V), usado na verificação de tensão das strings. -->
                             <select id="panelSelect" class="w-full bg-ink border border-line rounded-md px-3 py-2 text-sm font-semibold text-fg focus:outline-none focus:border-primary">
-                                <option value="450" data-w="1.0" data-l="1.8">450 Wp — 1,8 × 1,0 m</option>
-                                <option value="550" data-w="1.1" data-l="2.2" selected>550 Wp — 2,2 × 1,1 m</option>
-                                <option value="650" data-w="1.3" data-l="2.4">650 Wp — 2,4 × 1,3 m</option>
+                                <optgroup label="108 células · 182 mm (1,72 × 1,13 m)">
+                                    <option value="410" data-w="1.134" data-l="1.722" data-voc="37.8">410 Wp</option>
+                                    <option value="440" data-w="1.134" data-l="1.722" data-voc="39.0">440 Wp</option>
+                                </optgroup>
+                                <optgroup label="144 células · 166 mm (2,09 × 1,04 m)">
+                                    <option value="450" data-w="1.038" data-l="2.094" data-voc="49.5">450 Wp</option>
+                                </optgroup>
+                                <optgroup label="144 células · 182 mm (2,28 × 1,13 m)">
+                                    <option value="550" data-w="1.134" data-l="2.278" data-voc="49.6" selected>550 Wp</option>
+                                    <option value="575" data-w="1.134" data-l="2.278" data-voc="51.2">575 Wp</option>
+                                    <option value="585" data-w="1.134" data-l="2.278" data-voc="51.6">585 Wp</option>
+                                </optgroup>
+                                <optgroup label="132 células · 210R (2,38 × 1,13 m)">
+                                    <option value="610" data-w="1.134" data-l="2.382" data-voc="47.6">610 Wp</option>
+                                    <option value="620" data-w="1.134" data-l="2.382" data-voc="48.0">620 Wp</option>
+                                </optgroup>
+                                <optgroup label="132 células · 210 mm (2,38 × 1,30 m)">
+                                    <option value="650" data-w="1.303" data-l="2.384" data-voc="45.4">650 Wp</option>
+                                    <option value="670" data-w="1.303" data-l="2.384" data-voc="46.1">670 Wp</option>
+                                    <option value="700" data-w="1.303" data-l="2.384" data-voc="48.5">700 Wp</option>
+                                    <option value="720" data-w="1.303" data-l="2.384" data-voc="49.0">720 Wp</option>
+                                </optgroup>
+                                <optgroup label="Outra">
+                                    <option value="0" id="optOutra">Outra potência (digitar)…</option>
+                                </optgroup>
                             </select>
+                            <div id="wpOutraBox" class="hidden mt-2">
+                                <label for="wpOutra" class="block text-[10px] font-semibold text-muted uppercase mb-1">Potência do módulo (Wp)</label>
+                                <input type="number" id="wpOutra" min="100" max="800" step="5" value="560" class="num-in">
+                                <p id="wpOutraNote" class="text-[10px] text-sky mt-1 leading-snug">—</p>
+                            </div>
+                            <p id="panelNote" class="text-[10px] text-muted mt-1.5">—</p>
                         </div>
 
                         <div>
@@ -425,6 +420,8 @@
                                     <input type="number" id="manW" min="0.5" max="3" step="0.01" placeholder="Larg. m" class="num-in" aria-label="Largura em metros">
                                     <input type="number" id="manL" min="0.5" max="3" step="0.01" placeholder="Compr. m" class="num-in" aria-label="Comprimento em metros">
                                 </div>
+                                <input type="number" id="manVoc" min="10" max="100" step="0.1" placeholder="Voc (V) — opcional, do datasheet" class="num-in mt-2" aria-label="Tensão de circuito aberto Voc em volts">
+                                <p class="text-[10px] text-muted mt-1">Sem o Voc, a verificação das strings usa o valor típico do formato do módulo.</p>
                                 <button id="btnManApply" class="mt-2 w-full border border-line hover:border-sky text-muted hover:text-sky text-xs font-semibold py-2 rounded-md transition">Aplicar dados manuais</button>
                                 <p id="manNote" class="text-[10px] text-sky mt-1.5 leading-snug"></p>
                             </div>
@@ -512,7 +509,7 @@
 
                 <div class="bg-panel border border-line border-l-4 border-l-alert p-4 rounded-r-md flex gap-3 text-xs text-muted">
                     <i class="fa-solid fa-triangle-exclamation text-alert mt-0.5 text-base"></i>
-                    <p><strong class="text-fg font-semibold">Limites da estimativa:</strong> a economia já desconta o custo de disponibilidade e o Fio B escalonado da Lei 14.300/2022. Não são modelados: simultaneidade de consumo, sazonalidade mensal, sombreamentos locais, orientação/inclinação reais do telhado e a validação elétrica das strings (tensão × temperatura). O dimensionamento definitivo exige projeto com ART. <a href="memorial.html" class="text-sky underline">Ver memorial de cálculo</a>.</p>
+                    <p><strong class="text-fg font-semibold">Limites da estimativa:</strong> a economia já desconta o custo de disponibilidade e o Fio B escalonado da Lei 14.300/2022. Não são modelados: simultaneidade de consumo, sazonalidade mensal, sombreamentos locais, orientação/inclinação reais do telhado, janela de MPPT e corrente por entrada do inversor (a tensão máxima das strings a frio já é verificada). O dimensionamento definitivo exige projeto com ART. <a href="memorial.html" class="text-sky underline">Ver memorial de cálculo</a>.</p>
                 </div>
             </div>
         </div>
@@ -624,8 +621,8 @@
                                     <input type="number" id="distInvQGBT" value="15" min="0" step="1" class="num-in">
                                 </div>
                                 <div class="col-span-4">
-                                    <label class="text-[9px] text-muted uppercase block mb-0.5">Nº de strings</label>
-                                    <input type="number" id="nStrings" value="2" min="1" max="12" step="1" class="num-in">
+                                    <label for="nStringsMan" class="text-[9px] text-muted uppercase block mb-0.5">Nº de strings</label>
+                                    <input type="number" id="nStringsMan" min="1" max="200" step="1" placeholder="auto" class="num-in">
                                 </div>
                             </div>
                             <div class="grid grid-cols-12 gap-2 items-end mt-2">
@@ -854,7 +851,7 @@
                 <p class="text-muted mt-3 leading-relaxed">Do estudo de viabilidade à homologação na distribuidora — projeto, ART e acompanhamento. Envie a conta de energia e fotos do telhado; devolvo escopo, prazo e preço.</p>
             </div>
             <a class="ek-wa ek-wa--lg shrink-0" data-wa href="https://wa.me/5564984395286" target="_blank" rel="noopener noreferrer">
-                <i class="fa-brands fa-whatsapp text-lg" aria-hidden="true"></i> Conversar pelo WhatsApp
+                <svg class="ek-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2Zm5.8 14.16c-.24.68-1.2 1.26-1.96 1.42-.52.11-1.2.2-3.5-.75-2.94-1.22-4.83-4.2-4.98-4.4-.14-.19-1.19-1.58-1.19-3.02s.76-2.14 1.03-2.44c.27-.3.58-.37.78-.37.19 0 .39 0 .56.01.18.01.42-.07.66.5.24.58.83 2.01.9 2.16.07.15.12.32.02.51-.1.19-.15.31-.29.48-.15.17-.31.38-.44.51-.15.15-.3.31-.13.6.17.3.76 1.25 1.63 2.02 1.12 1 2.06 1.31 2.36 1.46.3.15.47.12.64-.07.17-.2.74-.86.94-1.16.2-.3.39-.25.66-.15.27.1 1.7.8 1.99.95.29.15.48.22.55.34.07.13.07.72-.17 1.4Z"/></svg> Conversar pelo WhatsApp
             </a>
         </div>
     </section>
@@ -882,8 +879,8 @@
                     <div>
                         <p class="font-mono text-[11px] uppercase tracking-wider text-muted mb-3">Contato</p>
                         <ul class="space-y-2 text-sm">
-                            <li><a data-wa href="https://wa.me/5564984395286" target="_blank" rel="noopener noreferrer" class="text-fg hover:text-signal transition flex items-center gap-2"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i> +55 64 98439-5286</a></li>
-                            <li><a href="https://www.linkedin.com/in/gusttavo-gutierry-ferreira-moraes-bb71841a4/" target="_blank" rel="noopener noreferrer" class="text-fg hover:text-sky transition flex items-center gap-2"><i class="fa-brands fa-linkedin-in" aria-hidden="true"></i> LinkedIn</a></li>
+                            <li><a data-wa href="https://wa.me/5564984395286" target="_blank" rel="noopener noreferrer" class="text-fg hover:text-signal transition flex items-center gap-2"><svg class="ek-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2Zm5.8 14.16c-.24.68-1.2 1.26-1.96 1.42-.52.11-1.2.2-3.5-.75-2.94-1.22-4.83-4.2-4.98-4.4-.14-.19-1.19-1.58-1.19-3.02s.76-2.14 1.03-2.44c.27-.3.58-.37.78-.37.19 0 .39 0 .56.01.18.01.42-.07.66.5.24.58.83 2.01.9 2.16.07.15.12.32.02.51-.1.19-.15.31-.29.48-.15.17-.31.38-.44.51-.15.15-.3.31-.13.6.17.3.76 1.25 1.63 2.02 1.12 1 2.06 1.31 2.36 1.46.3.15.47.12.64-.07.17-.2.74-.86.94-1.16.2-.3.39-.25.66-.15.27.1 1.7.8 1.99.95.29.15.48.22.55.34.07.13.07.72-.17 1.4Z"/></svg> +55 64 98439-5286</a></li>
+                            <li><a href="https://www.linkedin.com/in/gusttavo-gutierry-ferreira-moraes-bb71841a4/" target="_blank" rel="noopener noreferrer" class="text-fg hover:text-sky transition flex items-center gap-2">LinkedIn</a></li>
                             <li><a href="index.html#contato" class="text-fg hover:text-sky transition">Solicitar orçamento</a></li>
                         </ul>
                     </div>
@@ -1039,6 +1036,41 @@
         return out.filter(x => x > 0);
     }
 
+    // Formato de célula típico por faixa de potência (datasheets 2024–2026). Usado quando
+    // só a potência é conhecida. lHint (comprimento) separa 108 células de 144 na faixa < 480 Wp.
+    function moduleFamily(wp, lHint) {
+        if (wp < 480 && (lHint == null ? wp < 445 : lHint < 1.9))
+            return { nome: '108 células 182 mm', w: 1.134, l: 1.722, voc: 38.5 };
+        if (wp < 480) return { nome: '144 células 166 mm', w: 1.038, l: 2.094, voc: 49.5 };
+        if (wp < 600) return { nome: '144 células 182 mm', w: 1.134, l: 2.278, voc: 50.5 };
+        if (wp < 640) return { nome: '132 células 210R', w: 1.134, l: 2.382, voc: 47.8 };
+        return { nome: '132 células 210 mm', w: 1.303, l: 2.384, voc: 47.0 };
+    }
+
+    // kWh/mês que efetivamente reduzem a fatura (ver memorial, seção 05)
+    function compensavel(gen, availKWh, consumo) {
+        return consumo != null
+            ? Math.min(gen, Math.max(0, consumo - availKWh))
+            : Math.max(0, gen - availKWh);
+    }
+
+    // Verificação de tensão das strings (pré-dimensionamento; o projeto confere com o datasheet do inversor)
+    const STRINGS = {
+        VDC_MAX: 1000,          // tensão CC máxima usual de inversores string de BT
+        TMIN: 0,                // temperatura mínima de projeto (°C) — conservador para Goiás
+        BETA_VOC: -0.0028,      // coeficiente de temperatura do Voc (/°C), típico PERC/TOPCon
+        MIN_POR_STRING: 4,      // abaixo disso a tensão de MPPT tende a ficar sob a partida
+    };
+    function stringDesign(total, vocStc, micro, nManual) {
+        const vocFrio = vocStc * (1 + STRINGS.BETA_VOC * (STRINGS.TMIN - 25));
+        const maxPorString = Math.max(1, Math.floor(STRINGS.VDC_MAX / vocFrio));
+        const nAuto = total > 0 ? Math.ceil(total / maxPorString) : 1;
+        if (micro || total <= 0) return { total, nStr: 0, nAuto, porString: 0, vFrio: 0, maxPorString, vocFrio };
+        const nStr = Number.isFinite(nManual) && nManual >= 1 ? Math.min(Math.round(nManual), total) : nAuto;
+        const porString = Math.ceil(total / nStr);
+        return { total, nStr, nAuto, porString, vFrio: porString * vocFrio, maxPorString, vocFrio };
+    }
+
     // Estado corrente do sistema (compartilhado entre cálculo e orçamento)
     const STATE = { placed: 0, capacity: 0, cols: 0, rows: 0, kWp: 0, inverterKW: 0,
                     pPower: 550, monthlyGen: 0, monthlySavings: 0, areaTotal: 0, areaUtil: 0, budget: {} };
@@ -1072,12 +1104,6 @@
     function sanitize(v, fallback) { const n = Number(v); return Number.isFinite(n) ? n : fallback; }
     function num(id, fb) { const v = parseFloat(document.getElementById(id).value); return Number.isFinite(v) ? v : fb; }
 
-    // === WHATSAPP (mensagem pré-preenchida e editável) + ANO DO RODAPÉ ===
-    (function initChrome() {
-        const msg = 'Olá, Gusttavo. Gostaria de solicitar uma análise inicial para um sistema fotovoltaico.';
-        document.querySelectorAll('a[data-wa]').forEach(a => { a.href = 'https://wa.me/5564984395286?text=' + encodeURIComponent(msg); });
-        document.querySelectorAll('[data-year]').forEach(e => { e.textContent = new Date().getFullYear(); });
-    })();
 
     // === GRUPOS DE BOTÕES (tiles) ===
     const TILE_ON  = "tile-btn bg-primary text-white rounded-md py-2 text-xs font-semibold ring-1 ring-sky transition";
@@ -1127,9 +1153,27 @@
 
         const opt = el.panel.options[el.panel.selectedIndex];
         STATE.customPanelActive = !!(opt && opt.id === 'optCustomPanel');
-        const pPower = sanitize(opt.value, 550);
-        const pW_raw = sanitize(opt.dataset.w, 1.1);
-        const pL_raw = sanitize(opt.dataset.l, 2.2);
+        const outra = !!(opt && opt.id === 'optOutra');
+        document.getElementById('wpOutraBox').classList.toggle('hidden', !outra);
+        let pPower, pW_raw, pL_raw, vocStc;
+        if (outra) {
+            // Potência digitada: dimensões e Voc do formato de célula típico dessa faixa
+            pPower = clamp(sanitize(document.getElementById('wpOutra').value, 560), 100, 800);
+            const fam = moduleFamily(pPower);
+            pW_raw = fam.w; pL_raw = fam.l; vocStc = fam.voc;
+            document.getElementById('wpOutraNote').textContent =
+                `Formato estimado: ${fam.nome} — ${fmtBR(fam.l, 2)} × ${fmtBR(fam.w, 2)} m, Voc ≈ ${fmtBR(fam.voc, 1)} V. ` +
+                'Para outro tamanho, use "dados manuais" no card Equipamento real.';
+        } else {
+            pPower = sanitize(opt.value, 550);
+            pW_raw = sanitize(opt.dataset.w, 1.134);
+            pL_raw = sanitize(opt.dataset.l, 2.278);
+            vocStc = sanitize(opt.dataset.voc, 0) ||
+                     ((STATE.customPanelActive && CUSTOM_PANEL && CUSTOM_PANEL.voc) || moduleFamily(pPower, pL_raw).voc);
+        }
+        document.getElementById('panelNote').textContent =
+            `${pPower} Wp · ${fmtBR(pL_raw, 3)} × ${fmtBR(pW_raw, 3)} m (${fmtBR(pL_raw * pW_raw, 2)} m²) · ` +
+            `eficiência ≈ ${fmtBR(pPower / (pL_raw * pW_raw) / 10, 1)}% · Voc ${fmtBR(vocStc, 1)} V`;
 
         const pW = (orientation === 'portrait') ? pW_raw : pL_raw;
         const pL = (orientation === 'portrait') ? pL_raw : pW_raw;
@@ -1153,13 +1197,20 @@
         const warnTx = document.getElementById('metaWarnText');
         const metaInfo = document.getElementById('metaInfo');
 
+        // Consumo conhecido (modo consumo): a fatura nunca fica abaixo do custo de
+        // disponibilidade, então só o consumo ACIMA dele pode ser compensado.
+        let consumo = null;
         if (mode === 'consumo') {
-            const target = clamp(sanitize(el.target.value, 500), 1, 1e6);
+            consumo = clamp(sanitize(el.target.value, 500), 1, 1e6);
+            const descontar = document.getElementById('descDisp').checked;
+            const target = descontar ? Math.max(0, consumo - availabilityKWh) : consumo;
             const requiredKWp = target / (hsp * pr * SOLAR.DAYS_PER_MONTH);
             const requiredPanels = Math.max(0, Math.ceil((requiredKWp * 1000) / pPower));
             placed = Math.min(requiredPanels, capacity);
 
-            if (metaInfo) metaInfo.textContent = `Meta: ${requiredPanels} placa(s) ≈ ${fmtBR(requiredKWp, 2)} kWp para ${Math.round(target).toLocaleString('pt-BR')} kWh/mês.`;
+            if (metaInfo) metaInfo.textContent = `Meta de geração: ${Math.round(target).toLocaleString('pt-BR')} kWh/mês` +
+                (descontar ? ` (${Math.round(consumo).toLocaleString('pt-BR')} − ${availabilityKWh} de disponibilidade)` : '') +
+                ` → ${requiredPanels} placa(s) ≈ ${fmtBR(requiredKWp, 2)} kWp.`;
 
             if (requiredPanels > capacity) {
                 warnEl.classList.remove('hidden');
@@ -1175,7 +1226,12 @@
         const totalPanels = placed;
         const kWp = (totalPanels * pPower) / 1000;
         const monthlyGen = kWp * hsp * pr * SOLAR.DAYS_PER_MONTH;
-        const compensable = Math.max(0, monthlyGen - availabilityKWh);
+        // Energia que efetivamente reduz a fatura:
+        //  - consumo conhecido: min(geração, consumo − disponibilidade); o excedente vira crédito;
+        //  - só área (consumo desconhecido): assume sistema casado com o consumo → geração − disponibilidade.
+        const compensable = compensavel(monthlyGen, availabilityKWh, consumo);
+        STATE.consumo = consumo;
+        STATE.excedente = consumo != null ? Math.max(0, monthlyGen - Math.max(0, consumo - availabilityKWh)) : 0;
         // Fio B (Lei 14.300/2022): a energia compensada paga um percentual da TUSD Fio B,
         // escalonado por ano. Tarifa líquida = tarifa cheia − Fio B × percentual do ano.
         const fioBTar = clamp(sanitize(document.getElementById('fioBTarifa').value, 0), 0, 2);
@@ -1229,7 +1285,15 @@
         const fdiEl = document.getElementById('resFDI');
         fdiEl.textContent = STATE.fdi ? fmtBR(STATE.fdi, 2) : '–';
         fdiEl.className = STATE.fdi ? ((STATE.fdi >= 1.10 && STATE.fdi <= 1.30) ? 'text-signal' : 'text-alert') : '';
-        checkEngWarnings(invACtotal, availabilityKWh);
+
+        // Strings: nº automático pelo limite de tensão CC do inversor (Voc corrigido a frio).
+        // Antes era fixo em 2 — uma usina de 352 módulos saía "2 × 176", ~9 kV por string.
+        const str = stringDesign(totalPanels, vocStc, invType === 'micro', num('nStringsMan', NaN));
+        STATE.nStr = str.nStr; STATE.porString = str.porString; STATE.vStringFrio = str.vFrio;
+        STATE.maxPorString = str.maxPorString; STATE.nStrAuto = str.nAuto; STATE.vocStc = vocStc;
+        document.getElementById('nStringsMan').placeholder = invType === 'micro' ? '—' : `auto: ${str.nAuto}`;
+
+        checkEngWarnings({ invACtotal, availKWh: availabilityKWh, kWp, invType, str, consumo, monthlyGen });
         document.getElementById('resGen').textContent = Math.round(monthlyGen).toLocaleString('pt-BR');
         document.getElementById('resSavings').textContent = brl(monthlySavings);
 
@@ -1262,8 +1326,28 @@
     }
 
     // Pendências que impedem uma proposta séria (homologação, FDI, Fio B, ligação)
-    function checkEngWarnings(invACtotal, availKWh) {
+    function checkEngWarnings(p) {
+        const { invACtotal, availKWh, kWp, invType, str, consumo, monthlyGen } = p;
         const w = [];
+        if (invType !== 'micro' && str.nStr > 0) {
+            if (str.vFrio > STRINGS.VDC_MAX) {
+                w.push(`String de ${str.porString} módulos chega a ≈ ${Math.round(str.vFrio)} V de Voc a ${STRINGS.TMIN} °C — acima de ${STRINGS.VDC_MAX} V CC. ` +
+                       `Use pelo menos ${str.nAuto} strings (máx. ${str.maxPorString} módulos por string).`);
+            } else if (str.porString < STRINGS.MIN_POR_STRING && str.total >= STRINGS.MIN_POR_STRING) {
+                w.push(`String com ${str.porString} módulo(s): a tensão de MPPT pode ficar abaixo da partida do inversor. Reduza o nº de strings.`);
+            }
+        }
+        // Microgeração vai até 75 kW (REN ANEEL 1.059); acima disso é minigeração
+        const kwCA = invACtotal > 0 ? invACtotal : kWp / SOLAR.INVERTER_RATIO;
+        if (kwCA > 75) w.push(`≈ ${fmtBR(kwCA, 0)} kW CA: acima de 75 kW é minigeração — conexão em média tensão (Grupo A), estudo de acesso, ` +
+                              'proteções (relé 27/59/81/50/51) e subestação/transformador. Esses custos NÃO estão no orçamento.');
+        if (consumo != null) {
+            const compensavelMax = Math.max(0, consumo - availKWh);
+            const exc = monthlyGen - compensavelMax;
+            if (compensavelMax > 0 && exc > 0.10 * compensavelMax)
+                w.push(`Geração ${Math.round(exc)} kWh/mês acima do que a fatura consegue compensar (${Math.round(compensavelMax)} kWh): ` +
+                       'o excedente vira crédito (validade de 60 meses) e não entra na economia. Confira se o sistema está superdimensionado.');
+        }
         if (!CUSTOM_INV) w.push('Inversor sem marca/modelo: a distribuidora exige equipamento com registro INMETRO para homologar. Informe o modelo real no card "Equipamento real (IA)".');
         if (STATE.fdi && (STATE.fdi < 1.10 || STATE.fdi > 1.30)) {
             w.push(`FDI de ${fmtBR(STATE.fdi, 2)} fora da faixa usual (1,10–1,30): ` +
@@ -1278,10 +1362,12 @@
     }
 
     function arrangementLabel(cols, rows, placed, capacity) {
+        if (placed <= 0) return '0';
         if (placed >= capacity) return `${cols} × ${rows}`;
-        // arranjo parcial: fileiras cheias + resto
+        // arranjo parcial: fileiras cheias + resto ("6 × 0 + 4" saía quando cabia menos de uma fileira)
         const full = Math.floor(placed / cols);
         const rest = placed % cols;
+        if (full === 0) return `1 fileira de ${rest}`;
         return rest === 0 ? `${cols} × ${full}` : `${cols} × ${full} + ${rest}`;
     }
 
@@ -1374,13 +1460,30 @@
     function updateBudget() {
         const s = STATE;
         const modoMod = document.getElementById('modoPrModulo').value;    // 'wp' | 'un'
-        let modoInv = document.getElementById('modoPrInversor').value;    // 'kw' | 'un'
+        // modoInv é lido DEPOIS do bloco micro↔string abaixo, que pode alterar o seletor
         // Microinversor é sempre precificado por unidade
         const micro = s.invType === 'micro';
         const selInvModo = document.getElementById('modoPrInversor');
+        const inPrInv = document.getElementById('prInversorKW');
+        // Ao entrar em micro, guarda modo e preço do inversor string; ao sair, restaura.
+        // (Sem isso o modo ficava "R$/un" com o valor de R$/kW: 12 kW saíam por R$ 700.)
+        if (micro && !selInvModo.dataset.prevModo) {
+            selInvModo.dataset.prevModo = selInvModo.value;
+            selInvModo.dataset.prevPreco = inPrInv.value;
+        } else if (!micro && selInvModo.dataset.prevModo) {
+            selInvModo.value = selInvModo.dataset.prevModo;
+            inPrInv.value = selInvModo.dataset.prevPreco;
+            delete selInvModo.dataset.prevModo; delete selInvModo.dataset.prevPreco;
+        } else if (!micro && selInvModo.disabled) {
+            // Saindo de micro sem histórico (ex.: proposta restaurada já em micro): volta à referência por kW
+            const cls = document.getElementById('clsInversor').value;
+            const live = liveTier('inversor', cls);
+            selInvModo.value = 'kw';
+            inPrInv.value = live ? live.median : EQUIPMENT_TIERS.inversor[cls].ref;
+        }
         if (micro && selInvModo.value !== 'un') selInvModo.value = 'un';
         selInvModo.disabled = micro;
-        if (micro) modoInv = 'un';
+        const modoInv = micro ? 'un' : selInvModo.value;   // 'kw' | 'un'
         const moduloWp   = clamp(num('prModuloWp', 0.80), 0, modoMod === 'un' ? 1e7 : 50);
         const inversorKW = clamp(num('prInversorKW', 700), 0, 1e7);
         const estruturaUn= clamp(num('prEstruturaUn', 130), 0, 1e6);
@@ -1394,17 +1497,20 @@
         // CA: F+N+PE (mono), 2F+N+PE (bi) ou 3F+N+PE (tri) na distância inversor→quadro.
         const distMI  = clamp(num('distModInv', 25), 0, 1e5);
         const distIQ  = clamp(num('distInvQGBT', 15), 0, 1e5);
-        const nStr    = Math.round(clamp(num('nStrings', 2), 1, 12));
+        const nStr    = s.nStr || 0;   // definido em calculate() (auto pelo limite de tensão, ou manual)
         const rCC     = clamp(num('prCaboCC', 11), 0, 1e5);
         const rCA     = clamp(num('prCaboCA', 9), 0, 1e5);
         const rTerra  = clamp(num('prCaboTerra', 9), 0, 1e5);
         const rConec  = clamp(num('prConector', 25), 0, 1e5);
         const vEletro = clamp(num('prEletroduto', 500), 0, 1e7);
         const condCA  = (s.avail <= 30) ? 3 : (s.avail <= 50 ? 4 : 5);
-        const mCC     = 2 * nStr * distMI;
-        const mCA     = condCA * distIQ;
+        // Microinversor: a conversão é no telhado — não há cabo solar CC até o inversor;
+        // o tronco CA percorre módulos→quadro (distMI + distIQ).
+        const micro0  = s.invType === 'micro';
+        const mCC     = micro0 ? 0 : 2 * nStr * distMI;
+        const mCA     = condCA * (micro0 ? distMI + distIQ : distIQ);
         const mTerra  = s.placed * 2 + distIQ;   // equipotencialização das molduras + descida
-        const paresMC4= 3 * nStr;
+        const paresMC4= micro0 ? 0 : 3 * nStr;
         const caboLen = mCC + mCA + mTerra;      // metragem total de condutor
 
         const invUnits   = s.invUnits || 1;
@@ -1430,6 +1536,12 @@
                 ? `${invUnits} un × ${fmtBR(CUSTOM_INV.kw, 1)} kW (${CUSTOM_INV.marca})`
                 : ((modoInv === 'un') ? `${invUnits} un · ${fmtBR(s.inverterKW, 1)} kW` : `${fmtBR(s.inverterKW, 1)} kW`);
         document.getElementById('ctxEstrutura').textContent = `${s.placed} un`;
+        // Sanidade: inversor string abaixo de R$ 150/kW quase sempre é preço por kW digitado como unidade
+        const ctxInv = document.getElementById('ctxInversor');
+        const invSuspeito = !micro && s.inverterKW > 0 && cInversor < 150 * s.inverterKW;
+        if (invSuspeito) ctxInv.textContent += ` · ⚠ ${brl(cInversor / s.inverterKW)}/kW — confira se o preço é por unidade ou por kW`;
+        ctxInv.classList.toggle('text-alert', invSuspeito);
+        ctxInv.classList.toggle('text-muted', !invSuspeito);   // text-muted vence text-alert na ordem do CSS
         document.getElementById('ctxMaoObra').textContent   = `${fmtBR(s.kWp, 2)} kWp`;
 
         // Subtotais
@@ -1437,8 +1549,10 @@
         document.getElementById('stInversor').textContent  = brl(cInversor);
         document.getElementById('stCabo').textContent      = brl(cCabo);
         document.getElementById('stArt').textContent       = brl(cArt);
-        document.getElementById('caboBreakdown').textContent =
-            `CC ${mCC} m (${nStr} string(s) × 2 polos × ${distMI} m) · CA ${mCA} m (${condCA} condutores × ${distIQ} m) · ` +
+        document.getElementById('caboBreakdown').textContent = (micro0
+            ? `Microinversor: sem cabo CC · tronco CA ${mCA} m (${condCA} condutores × ${distMI + distIQ} m) · `
+            : `CC ${mCC} m (${nStr} string(s) × 2 polos × ${distMI} m; ${s.porString} módulos/string, Voc a frio ≈ ${Math.round(s.vStringFrio)} V) · ` +
+              `CA ${mCA} m (${condCA} condutores × ${distIQ} m) · `) +
             `aterramento ${mTerra} m · ${paresMC4} pares MC4 · infra ${brl(vEletro)}`;
         document.getElementById('stEstrutura').textContent = brl(cEstrutura);
         document.getElementById('stProtecao').textContent  = brl(cProtecao);
@@ -1599,7 +1713,7 @@
     const SCHEMA_MODULO = { type: 'OBJECT', properties: {
         encontrado: { type: 'BOOLEAN' }, marca: { type: 'STRING' },
         potencia_wp: { type: 'NUMBER' }, largura_m: { type: 'NUMBER' },
-        comprimento_m: { type: 'NUMBER' }, eficiencia_pct: { type: 'NUMBER' },
+        comprimento_m: { type: 'NUMBER' }, eficiencia_pct: { type: 'NUMBER' }, voc_v: { type: 'NUMBER' },
         tier: { type: 'STRING', enum: ['tier1', 'tier2', 'tier3'] },
         observacao: { type: 'STRING' }
     }, required: ['encontrado'] };
@@ -1626,7 +1740,7 @@
             const d = await geminiJson(
                 `Você é um engenheiro fotovoltaico. Retorne os dados de DATASHEET do módulo fotovoltaico "${modelo}". ` +
                 `potencia_wp = potência nominal STC em Wp; largura_m e comprimento_m = dimensões físicas em metros; ` +
-                `eficiencia_pct = eficiência do módulo em %; tier = bancabilidade do fabricante ` +
+                `eficiencia_pct = eficiência do módulo em %; voc_v = tensão de circuito aberto Voc em STC (V); tier = bancabilidade do fabricante ` +
                 `(tier1 = lista BloombergNEF; tier2 = intermediário; tier3 = montadora pequena/desconhecida). ` +
                 `Se você NÃO conhecer este modelo com segurança, retorne encontrado=false — NÃO invente números.`,
                 SCHEMA_MODULO);
@@ -1635,7 +1749,9 @@
             if (!(wp >= 100 && wp <= 800 && w >= 0.5 && w <= 3 && l >= 0.5 && l <= 3)) {
                 note.textContent = `Dados fora do plausível (${wp} Wp, ${w}×${l} m) — descartados. Confira o modelo.`; return;
             }
-            CUSTOM_PANEL = { marca: d.marca || '', modelo, wp, w, l, ef: sanitize(d.eficiencia_pct, 0) };
+            const voc = sanitize(d.voc_v, 0);
+            CUSTOM_PANEL = { marca: d.marca || '', modelo, wp, w, l, ef: sanitize(d.eficiencia_pct, 0),
+                             voc: (voc >= 10 && voc <= 100) ? voc : 0 };
             let opt2 = document.getElementById('optCustomPanel');
             if (!opt2) { opt2 = document.createElement('option'); opt2.id = 'optCustomPanel'; el.panel.appendChild(opt2); }
             opt2.value = wp; opt2.dataset.w = w; opt2.dataset.l = l;
@@ -1683,7 +1799,9 @@
         if (!(wp >= 100 && wp <= 800 && w >= 0.5 && w <= 3 && l >= 0.5 && l <= 3)) {
             note.textContent = 'Preencha Wp (100–800) e dimensões em metros (0,5–3).'; return;
         }
-        CUSTOM_PANEL = { marca: '', modelo: `Módulo ${wp} Wp (dados do cliente)`, wp, w, l, ef: 0 };
+        const voc = sanitize(document.getElementById('manVoc').value, 0);
+        CUSTOM_PANEL = { marca: '', modelo: `Módulo ${wp} Wp (dados do cliente)`, wp, w, l, ef: 0,
+                         voc: (voc >= 10 && voc <= 100) ? voc : 0 };
         let o = document.getElementById('optCustomPanel');
         if (!o) { o = document.createElement('option'); o.id = 'optCustomPanel'; el.panel.appendChild(o); }
         o.value = wp; o.dataset.w = w; o.dataset.l = l;
@@ -1754,7 +1872,7 @@
 
     // Fio B escalonado ano a ano conforme a Lei 14.300 (a alíquota sobe até 2029),
     // com a própria TUSD Fio B reajustada pelo mesmo índice da tarifa.
-    function computePayback(invest, genMonthly, availKWh, tarifa, adjPct, fioBTar, anoBase) {
+    function computePayback(invest, genMonthly, availKWh, tarifa, adjPct, fioBTar, anoBase, consumo) {
         let acc = 0, payback = null;
         const serie = [0];
         for (let t = 1; t <= PAYBACK_YEARS; t++) {
@@ -1762,7 +1880,9 @@
             const genAno = genMonthly * 12 * Math.pow(1 - DEGRADACAO_ANUAL, t - 1);
             const tarAno = tarifa * reaj;
             const fioBAno = (fioBTar || 0) * reaj * fioBPct((anoBase || new Date().getFullYear()) + t - 1);
-            const econAno = Math.max(0, genAno - availKWh * 12) * Math.max(0, tarAno - fioBAno);
+            // Mesma regra do mês 1 (compensavel): com consumo conhecido, a degradação só reduz
+            // a economia quando a geração cai abaixo do consumo compensável.
+            const econAno = compensavel(genAno / 12, availKWh, consumo) * 12 * Math.max(0, tarAno - fioBAno);
             const prev = acc;
             acc += econAno;
             serie.push(acc);
@@ -1858,7 +1978,12 @@
         // Área OCUPADA pelos módulos (não a área do telhado)
         t('pArea', `${fmtBR(s.areaModulos, 1)} m²`);
         const split = stringSplit(s.placed, b.nStr);
-        t('pStrings', b.micro ? `${b.invUnits} microinversor(es)` : `${split.length} × (${split.join(' + ')} módulos)`);
+        // Strings longas: "8 strings de 19 + 6 de 18" em vez de listar 14 parcelas
+        const grupos = {};
+        split.forEach(n => { grupos[n] = (grupos[n] || 0) + 1; });
+        const strTxt = Object.keys(grupos).sort((a, b) => b - a).map(n => `${grupos[n]} × ${n}`).join(' + ');
+        t('pStrings', !s.placed ? '—' : b.micro ? `${b.invUnits} microinversor(es)`
+            : `${strTxt} módulos · Voc a frio ≈ ${Math.round(s.vStringFrio)} V`);
         t('pFDI', s.fdi ? fmtBR(s.fdi, 2) : 'definir com o inversor');
 
         const modKey = document.getElementById('clsModulo').value;
@@ -1911,7 +2036,7 @@
         } catch (e) { /* canvas indisponível: imagem fica vazia, o resto do PDF sai normal */ }
 
         // Gráfico de retorno do investimento (após a disposição, conforme o layout do documento)
-        const pb = computePayback(b.preco, s.monthlyGen, s.avail, s.rate, s.adj, s.fioBTar, s.anoBase);
+        const pb = computePayback(b.preco, s.monthlyGen, s.avail, s.rate, s.adj, s.fioBTar, s.anoBase, s.consumo);
         drawPaybackChart(b.preco, pb.serie, pb.payback);
         try {
             document.getElementById('pChartImg').src = document.getElementById('paybackCanvas').toDataURL('image/png');
@@ -1941,13 +2066,14 @@
     const PERSIST_INPUTS = ['widthSlider','lengthSlider','marginSlider','targetKwh','ppmInput',
         'hspInput','prInput','rateInput','adjInput','fioBTarifa','phaseSelect','corridorInput',
         'clsModulo','clsInversor','modoPrModulo','modoPrInversor','prModuloWp','prInversorKW',
-        'distModInv','distInvQGBT','nStrings','prCaboCC','prCaboCA','prCaboTerra','prConector','prEletroduto',
+        'distModInv','distInvQGBT','nStringsMan','wpOutra','prCaboCC','prCaboCA','prCaboTerra','prConector','prEletroduto',
         'prArt','prEstruturaUn','prProtecao','prMaoObraKWp','prMargem',
         'clientName','clientCity','propNum','propValid','propNotes','iaModeloModulo','iaModeloInversor'];
     const PERSIST_TILES = ['modeGroup','structureGroup','orientationGroup','invTypeGroup'];
 
     function snapshotState() {
         const o = { v: 1, inputs: {}, tiles: {}, inv: CUSTOM_INV || null,
+                    flags: { descDisp: document.getElementById('descDisp').checked },
                     panel: { custom: (STATE.customPanelActive && CUSTOM_PANEL) ? CUSTOM_PANEL : null, value: el.panel.value } };
         PERSIST_INPUTS.forEach(id => { const e = document.getElementById(id); if (e) o.inputs[id] = e.value; });
         PERSIST_TILES.forEach(g => o.tiles[g] = tileValue(g));
@@ -1982,6 +2108,7 @@
                 const e = document.getElementById(id);
                 if (e && o.inputs && o.inputs[id] != null && !e.disabled) e.value = o.inputs[id];
             });
+            if (o.flags && typeof o.flags.descDisp === 'boolean') document.getElementById('descDisp').checked = o.flags.descDisp;
             applyModuloClass(true); applyInversorClass(true);
         } finally { RESTORING = false; }
         calculate();
@@ -2050,7 +2177,7 @@
 
     // Preços recalculam só o orçamento (não mexem no sistema)
     ['prModuloWp','prInversorKW','prEstruturaUn','prProtecao','prMaoObraKWp','prMargem','prArt',
-     'distModInv','distInvQGBT','nStrings','prCaboCC','prCaboCA','prCaboTerra','prConector','prEletroduto']
+     'distModInv','distInvQGBT','prCaboCC','prCaboCA','prCaboTerra','prConector','prEletroduto']
         .forEach(id => document.getElementById(id).addEventListener('input', updateBudget));
 
     // Classe de qualidade: troca a classe pré-preenche o preço (continua editável depois)
@@ -2079,6 +2206,9 @@
         calculate();
     });
     document.getElementById('ppmInput').addEventListener('change', calculate);
+    // Potência digitada, nº de strings e meta líquida mudam o sistema (não só o orçamento)
+    ['wpOutra', 'nStringsMan'].forEach(id => document.getElementById(id).addEventListener('input', calculate));
+    document.getElementById('descDisp').addEventListener('change', () => { calculate(); schedulePersist(); });
     document.getElementById('adjInput').addEventListener('input', calculate);
     document.getElementById('fioBTarifa').addEventListener('input', calculate);
     document.getElementById('btnManApply').addEventListener('click', aplicarManual);
@@ -2308,5 +2438,6 @@
     refreshApiStatusUI();
     refreshSavedList();
     </script>
+    <script src="assets/js/ek-chrome.js"></script>
 </body>
 </html>

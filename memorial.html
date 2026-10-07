@@ -3,24 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ElektroSys - Memorial de Cálculo | Simulador Fotovoltaico</title>
+    <title>Memorial de cálculo do simulador fotovoltaico | ElektroSys</title>
 
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'self';
         script-src 'self' 'unsafe-inline';
-        style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com;
-        font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com data:;
+        style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com;
+        font-src 'self' https://cdnjs.cloudflare.com data:;
         img-src 'self' data:;
         connect-src 'self';
-        frame-ancestors 'none';
         base-uri 'self';
         form-action 'self';
     ">
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <meta name="referrer" content="strict-origin-when-cross-origin">
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%232C7BE5'%3E%3Cpath d='M13 2L3 14h9l-1 8 10-12h-9l1-8z'/%3E%3C/svg%3E">
+    <link rel="icon" href="/favicon.ico" sizes="32x32">
+    <link rel="icon" href="assets/brand/favicon-192.png" type="image/png" sizes="192x192">
+    <link rel="apple-touch-icon" href="assets/brand/apple-touch-icon.png">
     <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/ek-chrome.css">
+    <link rel="preload" href="assets/fonts/inter-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 
     <meta name="description" content="Memorial de cálculo do simulador fotovoltaico ElektroSys: todas as fórmulas de arranjo, geração, economia, inversor, orçamento e retorno do investimento, com premissas explícitas.">
     <meta name="robots" content="index, follow">
@@ -51,26 +53,40 @@
             .memo p, .memo li { color:#374151; }
             .memo h2, .memo strong { color:#111827; }
             .formula { background:#f3f4f6; border-color:#d1d5db; color:#111827; }
-            nav, footer { display:none !important; }
+            nav, footer, body > header.sticky, .ek-skip { display:none !important; }
         }
     </style>
 </head>
 
-<body class="bg-navy grid-bp text-muted font-sans antialiased">
+<body class="bg-navy grid-bp text-muted font-sans antialiased" data-wa-assunto="um sistema fotovoltaico">
 
-    <nav class="border-b border-line bg-navy/85 backdrop-blur-md sticky top-0 z-40">
-        <div class="container mx-auto px-4 h-16 flex items-center justify-between">
-            <a href="index.html" class="flex items-center gap-2.5">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-primary" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-                <span class="text-fg font-display font-bold text-xl tracking-wide">ELEKTRO<span class="text-primary">SYS</span></span>
+    <a class="ek-skip" href="#memorial">Pular para o conteúdo</a>
+
+    <header class="border-b border-line bg-navy sticky top-0 z-40">
+        <div class="container mx-auto px-4 h-16 flex items-center justify-between gap-4">
+            <a class="ek-logo" href="index.html" aria-label="ElektroSys Engenharia Elétrica — início">
+                <img src="assets/brand/elektrosys-logo-tight.png" alt="ElektroSys Engenharia Elétrica" width="538" height="239">
             </a>
-            <div class="hidden md:flex items-center gap-7 text-sm font-medium text-muted">
-                <a href="motores.html" class="hover:text-fg transition">Motores</a>
-                <a href="solar.html" class="hover:text-fg transition">Solar</a>
-                <a href="memorial.html" class="text-fg" aria-current="page">Memorial</a>
-                <a href="https://wa.me/5564984395286" target="_blank" rel="noopener noreferrer" class="bg-primary hover:bg-primary-700 text-white font-semibold px-4 py-2 rounded-md transition">Solicitar projeto</a>
-            </div>
+            <nav class="ek-nav" aria-label="Navegação principal">
+                <a href="index.html">Início</a>
+                <a href="index.html#servicos">Serviços</a>
+                <a href="index.html#pericias">Perícias</a>
+                <a href="index.html#sobre">Sobre</a>
+                <a href="index.html#contato">Contato</a>
+                <a href="ferramentas.html" aria-current="page">Ferramentas</a>
+            </nav>
+            <a class="ek-wa" data-wa href="https://wa.me/5564984395286" target="_blank" rel="noopener noreferrer">
+                <svg class="ek-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2Zm5.8 14.16c-.24.68-1.2 1.26-1.96 1.42-.52.11-1.2.2-3.5-.75-2.94-1.22-4.83-4.2-4.98-4.4-.14-.19-1.19-1.58-1.19-3.02s.76-2.14 1.03-2.44c.27-.3.58-.37.78-.37.19 0 .39 0 .56.01.18.01.42-.07.66.5.24.58.83 2.01.9 2.16.07.15.12.32.02.51-.1.19-.15.31-.29.48-.15.17-.31.38-.44.51-.15.15-.3.31-.13.6.17.3.76 1.25 1.63 2.02 1.12 1 2.06 1.31 2.36 1.46.3.15.47.12.64-.07.17-.2.74-.86.94-1.16.2-.3.39-.25.66-.15.27.1 1.7.8 1.99.95.29.15.48.22.55.34.07.13.07.72-.17 1.4Z"/></svg> <span class="ek-wa__x">Falar no </span>WhatsApp
+            </a>
         </div>
+    </header>
+
+    <nav class="container mx-auto px-4 pt-5 relative z-10 ek-crumb" aria-label="Trilha de navegação">
+        <ol>
+            <li><a href="index.html">Início</a></li>
+            <li><a href="ferramentas.html">Ferramentas</a></li>
+            <li><span aria-current="page">Memorial de cálculo</span></li>
+        </ol>
     </nav>
 
     <header class="relative z-10 border-b border-line">
@@ -81,7 +97,7 @@
         </div>
     </header>
 
-    <main class="container mx-auto px-4 py-10 max-w-4xl relative z-10 memo">
+    <main id="memorial" class="container mx-auto px-4 py-10 max-w-4xl relative z-10 memo">
 
         <h2><span>01</span>Área útil e arranjo dos módulos</h2>
         <p>Da área informada (largura <span class="var">W</span> × comprimento <span class="var">L</span>, em metros) desconta-se o recuo perimetral <span class="var">r</span> nos quatro lados:</p>
@@ -96,14 +112,19 @@
         <p>A área do terreno e a área útil (após recuo) aparecem apenas como contexto no simulador. Confundir as duas superestima a ocupação do telhado em várias vezes.</p>
 
         <h2><span>02</span>Dimensionamento por consumo</h2>
-        <p>No modo "Consumo (kWh)", o número de placas vem da meta mensal <span class="var">E_alvo</span>:</p>
-        <div class="formula">kWp_nec = E_alvo / (HSP · PR · 30,42)
+        <p>No modo "Consumo (kWh)", a meta de geração <span class="var">E_alvo</span> parte do consumo médio <span class="var">C</span>. Por padrão desconta-se o custo de disponibilidade <span class="var">D</span>, porque a fatura nunca fica abaixo desse mínimo — gerar além de <span class="var">C − D</span> só acumula crédito:</p>
+        <div class="formula">E_alvo = C − D   (recomendado; opção desmarcável no simulador)
+kWp_nec = E_alvo / (HSP · PR · 30,42)
 N_placas = ⌈ kWp_nec · 1000 / W_módulo ⌉</div>
-        <p>O arredondamento é sempre <strong>para cima</strong> (⌈·⌉): a meta é atendida, nunca subatendida. Se a área não comportar <span class="var">N_placas</span>, o simulador avisa e usa o máximo que cabe.</p>
+        <p>O arredondamento é sempre <strong>para cima</strong> (⌈·⌉): a meta é atendida, nunca subatendida. Se a área não comportar <span class="var">N_placas</span>, o simulador avisa e usa o máximo que cabe. Se o arredondamento gerar mais de 10% acima de <span class="var">C − D</span> (comum em sistemas pequenos com módulos grandes), o simulador alerta para superdimensionamento.</p>
 
         <h2><span>03</span>Potência de pico do sistema</h2>
         <div class="formula">P_pico [kWp] = N_placas × W_módulo [Wp] / 1000</div>
-        <p><span class="var">W_módulo</span> vem do módulo selecionado, dos <strong>dados informados manualmente</strong> (Wp, largura, comprimento) ou dos dados de catálogo retornados pela IA — nos dois últimos casos o kWp reflete exatamente a placa real do projeto.</p>
+        <p><span class="var">W_módulo</span> vem da lista de módulos (agrupada por formato de célula, com dimensões e Voc típicos de datasheet), da opção <strong>"Outra potência"</strong> (digita-se o Wp; dimensões e Voc são estimados pelo formato típico daquela faixa), dos <strong>dados informados manualmente</strong> (Wp, largura, comprimento e Voc opcional) ou dos dados de catálogo retornados pela IA.</p>
+        <div class="formula">&lt; 480 Wp → 108 cél. 182 mm (1,722 × 1,134 m) ou 144 cél. 166 mm (2,094 × 1,038 m)
+480–599 Wp → 144 cél. 182 mm (2,278 × 1,134 m)
+600–639 Wp → 132 cél. 210R (2,382 × 1,134 m)
+≥ 640 Wp → 132 cél. 210 mm (2,384 × 1,303 m)</div>
 
         <h2><span>04</span>Geração mensal estimada</h2>
         <div class="formula">E [kWh/mês] = P_pico · HSP · PR · 30,42</div>
@@ -114,9 +135,11 @@ N_placas = ⌈ kWp_nec · 1000 / W_módulo ⌉</div>
         </ul>
 
         <h2><span>05</span>Economia mensal e Fio B (Lei 14.300/2022)</h2>
-        <div class="formula">Economia [R$/mês] = max(0, E − disponibilidade) × tarifa_líquida
+        <div class="formula">Compensável = min(E, C − D)        (consumo C conhecido — modo consumo)
+Compensável = max(0, E − D)        (só área: assume sistema casado com o consumo)
+Economia [R$/mês] = Compensável × tarifa_líquida
 tarifa_líquida = max(0, tarifa − TUSD_FioB × percentual_do_ano)</div>
-        <p>A <strong>disponibilidade</strong> é o consumo mínimo faturado pela distribuidora mesmo com injeção: 30 kWh (monofásico), 50 kWh (bifásico) ou 100 kWh (trifásico) — descontada da energia compensável.</p>
+        <p>A <strong>disponibilidade</strong> <span class="var">D</span> é o consumo mínimo faturado pela distribuidora mesmo com injeção: 30 kWh (monofásico), 50 kWh (bifásico) ou 100 kWh (trifásico). Só o consumo acima dela pode ser compensado. Com o consumo conhecido, a geração que passa de <span class="var">C − D</span> vira crédito (validade de 60 meses) e <strong>não</strong> entra na economia — a versão anterior contava esse excedente e superestimava a economia de sistemas pequenos em até ~18%.</p>
         <p>A <strong>TUSD Fio B</strong> (R$/kWh, com tributos) é informada conforme a distribuidora do projeto. O percentual cobrado sobre a energia compensada segue o escalonamento legal do art. 27 da Lei 14.300:</p>
         <div class="formula">2023: 15%  ·  2024: 30%  ·  2025: 45%  ·  2026: 60%
 2027: 75%  ·  2028: 90%  ·  2029+: 100% (cenário conservador)</div>
@@ -131,6 +154,12 @@ tarifa_líquida = max(0, tarifa − TUSD_FioB × percentual_do_ano)</div>
         <p>No orçamento, microinversores são sempre precificados <strong>por unidade</strong>.</p>
         <p><strong>FDI — fator de dimensionamento do inversor.</strong> Quando o inversor real é informado, o simulador calcula e exibe:</p>
         <div class="formula">FDI = P_pico [kWp] / P_CA_instalada [kW]</div>
+        <p><strong>Strings (inversor string).</strong> O número de strings é calculado pelo limite de tensão CC do inversor, com o Voc corrigido para a temperatura mínima de projeto:</p>
+        <div class="formula">Voc_frio = Voc_STC × (1 + β × (T_min − 25))   β = −0,28 %/°C · T_min = 0 °C
+máx_por_string = ⌊ 1000 V / Voc_frio ⌋
+N_strings = ⌈ N_placas / máx_por_string ⌉   (ou o valor digitado)</div>
+        <p>Se o nº de strings for informado manualmente e a string passar de 1000 V a frio, ou ficar com menos de 4 módulos (tensão de MPPT abaixo da partida), o simulador alerta. É pré-dimensionamento: o projeto executivo confere com a janela de MPPT, a tensão máxima e a corrente por entrada do inversor escolhido.</p>
+        <p><strong>Micro × minigeração.</strong> Acima de 75 kW CA a conexão é de minigeração (média tensão, estudo de acesso, relé de proteção, subestação) — custos fora do orçamento desta ferramenta; o simulador alerta.</p>
         <p>Faixa usual: <strong>1,10 a 1,30</strong>. Acima disso há clipping (perda de pico nos dias claros); abaixo, o inversor está superdimensionado. Fora da faixa, a ferramenta emite alerta. Sem marca/modelo definidos o FDI não é calculado — e a proposta não deve ser enviada, pois a homologação exige equipamento com registro INMETRO.</p>
 
         <h2><span>07</span>Composição do orçamento</h2>
@@ -140,6 +169,7 @@ tarifa_líquida = max(0, tarifa − TUSD_FioB × percentual_do_ano)</div>
             <li><strong>Cabeamento:</strong> calculado em <strong>metros de condutor</strong>, não de percurso, com CC e CA precificados separadamente (são cabos e normas distintas):
                 <div class="formula">CC (NBR 16612) = 2 polos × N_strings × dist(módulos→inversor)
 CA (NBR 5410) = N_condutores × dist(inversor→quadro)
+Microinversor: CC = 0 · CA (tronco) = N_condutores × (dist(módulos→inversor) + dist(inversor→quadro)) · sem pares MC4 avulsos
    N_condutores = 3 (F+N+PE) mono · 4 (2F+N+PE) bi · 5 (3F+N+PE) tri
 Aterramento = 2 m × N_placas + dist(inversor→quadro)
 Conectores MC4 = 3 pares por string  ·  + eletroduto/eletrocalha</div>
@@ -164,13 +194,13 @@ Conectores MC4 = 3 pares por string  ·  + eletroduto/eletrocalha</div>
         <div class="formula">E_t = E×12 × (1 − 0,006)^(t−1)
 tarifa_t  = tarifa    × (1 + reajuste)^(t−1)
 fioB_t    = TUSD_FioB × (1 + reajuste)^(t−1) × percentual(ano_t)
-Econ_t = max(0, E_t − disp×12) × max(0, tarifa_t − fioB_t)
+Econ_t = Compensável(E_t) × 12 × max(0, tarifa_t − fioB_t)     (regra da seção 05)
 Acum_t = Σ Econ_1..t</div>
         <ul>
             <li><strong>Degradação dos módulos:</strong> 0,6% ao ano (geométrica) — compatível com garantias típicas de potência (≈84–87% após 25 anos).</li>
             <li><strong>Reajuste tarifário:</strong> percentual anual configurável (padrão 8% a.a.) aplicado à tarifa <em>e</em> à TUSD Fio B.</li>
             <li><strong>Fio B escalonado:</strong> o percentual do ano <span class="var">t</span> segue a tabela da seção 05 — a alíquota sobe até 2029, então o payback correto é maior que o de um modelo que congela o ano atual.</li>
-            <li><strong>Disponibilidade:</strong> continua descontada todos os anos.</li>
+            <li><strong>Disponibilidade e consumo:</strong> a mesma regra da seção 05 vale todos os anos — com consumo conhecido, a degradação só reduz a economia quando a geração cai abaixo de <span class="var">C − D</span>.</li>
         </ul>
         <p>O payback é o ponto em que <span class="var">Acum_t</span> cruza o investimento, <strong>interpolado linearmente dentro do ano</strong>:</p>
         <div class="formula">Payback = (t−1) + (Preço − Acum_(t−1)) / Econ_t</div>
@@ -189,14 +219,46 @@ Acum_t = Σ Econ_1..t</div>
 
         <div class="mt-12 bg-panel border border-line rounded-xl p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <p class="text-sm text-muted">Dúvidas sobre a metodologia ou projeto sob medida?</p>
-            <a href="https://wa.me/5564984395286" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 bg-primary hover:bg-primary-700 text-white font-semibold px-5 py-2.5 rounded-md transition whitespace-nowrap">Falar com o engenheiro</a>
+            <a class="ek-wa" data-wa href="https://wa.me/5564984395286" target="_blank" rel="noopener noreferrer"><svg class="ek-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2Zm5.8 14.16c-.24.68-1.2 1.26-1.96 1.42-.52.11-1.2.2-3.5-.75-2.94-1.22-4.83-4.2-4.98-4.4-.14-.19-1.19-1.58-1.19-3.02s.76-2.14 1.03-2.44c.27-.3.58-.37.78-.37.19 0 .39 0 .56.01.18.01.42-.07.66.5.24.58.83 2.01.9 2.16.07.15.12.32.02.51-.1.19-.15.31-.29.48-.15.17-.31.38-.44.51-.15.15-.3.31-.13.6.17.3.76 1.25 1.63 2.02 1.12 1 2.06 1.31 2.36 1.46.3.15.47.12.64-.07.17-.2.74-.86.94-1.16.2-.3.39-.25.66-.15.27.1 1.7.8 1.99.95.29.15.48.22.55.34.07.13.07.72-.17 1.4Z"/></svg> Falar com o engenheiro</a>
         </div>
     </main>
 
-    <footer class="bg-ink/60 relative z-10 mt-10">
-        <div class="container mx-auto px-4 py-8 text-center text-xs text-muted font-mono">
-            © Gusttavo Gutierry · CREA 1023983184D-GO · ElektroSys — <a href="solar.html" class="text-sky hover:text-fg transition">voltar ao simulador</a>
+    <div class="mt-10"></div>
+    <footer class="ek-foot bg-ink/60 relative z-10">
+        <div class="container mx-auto px-4 py-10">
+            <div class="flex flex-col md:flex-row justify-between gap-8">
+                <div class="max-w-sm">
+                    <a class="ek-logo mb-4" href="index.html" aria-label="ElektroSys Engenharia Elétrica — início">
+                        <img src="assets/brand/elektrosys-logo-tight.png" alt="ElektroSys Engenharia Elétrica" width="538" height="239" loading="lazy">
+                    </a>
+                    <p class="text-sm text-muted leading-relaxed">Projetos, laudos, inspeções, SPDA, fotovoltaico, perícias judiciais e assistência técnica.</p>
+                    <p class="font-mono text-[11px] text-muted mt-3">Eng. Gusttavo Gutierry · CREA 1023983184D-GO</p>
+                </div>
+                <div class="flex gap-14">
+                    <div>
+                        <p class="font-mono text-[11px] uppercase tracking-wider text-muted mb-3">Ferramentas</p>
+                        <ul class="space-y-2 text-sm">
+                            <li><a href="motores.html" class="text-fg hover:text-sky transition">Motores trifásicos</a></li>
+                            <li><a href="solar.html" class="text-fg hover:text-sky transition">Sistema fotovoltaico</a></li>
+                            <li><a href="memorial.html" class="text-fg hover:text-sky transition" aria-current="page">Memorial de cálculo</a></li>
+                            <li><a href="ferramentas.html" class="text-fg hover:text-sky transition">Todas as ferramentas</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <p class="font-mono text-[11px] uppercase tracking-wider text-muted mb-3">Contato</p>
+                        <ul class="space-y-2 text-sm">
+                            <li><a data-wa href="https://wa.me/5564984395286" target="_blank" rel="noopener noreferrer" class="text-fg hover:text-signal transition flex items-center gap-2"><svg class="ek-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2Zm5.8 14.16c-.24.68-1.2 1.26-1.96 1.42-.52.11-1.2.2-3.5-.75-2.94-1.22-4.83-4.2-4.98-4.4-.14-.19-1.19-1.58-1.19-3.02s.76-2.14 1.03-2.44c.27-.3.58-.37.78-.37.19 0 .39 0 .56.01.18.01.42-.07.66.5.24.58.83 2.01.9 2.16.07.15.12.32.02.51-.1.19-.15.31-.29.48-.15.17-.31.38-.44.51-.15.15-.3.31-.13.6.17.3.76 1.25 1.63 2.02 1.12 1 2.06 1.31 2.36 1.46.3.15.47.12.64-.07.17-.2.74-.86.94-1.16.2-.3.39-.25.66-.15.27.1 1.7.8 1.99.95.29.15.48.22.55.34.07.13.07.72-.17 1.4Z"/></svg> +55 64 98439-5286</a></li>
+                            <li><a href="https://www.linkedin.com/in/gusttavo-gutierry-ferreira-moraes-bb71841a4/" target="_blank" rel="noopener noreferrer" class="text-fg hover:text-sky transition flex items-center gap-2">LinkedIn</a></li>
+                            <li><a href="index.html#contato" class="text-fg hover:text-sky transition">Solicitar orçamento</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="border-t border-line mt-8 pt-6 text-center text-xs text-muted font-mono">
+                © <span data-year>2026</span> ElektroSys Engenharia Elétrica · Estimativa educacional — valide com projeto e com as normas aplicáveis.
+            </div>
         </div>
     </footer>
+    <script src="assets/js/ek-chrome.js"></script>
 </body>
 </html>

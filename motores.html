@@ -3,28 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ElektroSys - Engenharia Elétrica | Dimensionamento de Cabos para Motores Trifásicos (NBR 5410)</title>
+    <title>Dimensionamento de cabos para motores trifásicos (NBR 5410) | ElektroSys</title>
 
     <!-- Segurança: Content Security Policy -->
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'self';
         script-src 'self' 'unsafe-inline';
-        style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com;
-        font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com data:;
+        style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com;
+        font-src 'self' https://cdnjs.cloudflare.com data:;
         img-src 'self' data:;
         connect-src 'self';
-        frame-ancestors 'none';
         base-uri 'self';
         form-action 'self';
     ">
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <meta name="referrer" content="strict-origin-when-cross-origin">
 
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%232C7BE5'%3E%3Cpath d='M13 2L3 14h9l-1 8 10-12h-9l1-8z'/%3E%3C/svg%3E">
+    <link rel="icon" href="/favicon.ico" sizes="32x32">
+    <link rel="icon" href="assets/brand/favicon-192.png" type="image/png" sizes="192x192">
+    <link rel="apple-touch-icon" href="assets/brand/apple-touch-icon.png">
 
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="assets/css/ek-chrome.css">
+    <link rel="preload" href="assets/fonts/inter-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
 
-    <link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
@@ -40,18 +42,18 @@
     <meta name="robots" content="index, follow">
     <meta name="author" content="Gusttavo Gutierry">
     <meta http-equiv="content-language" content="pt-BR">
-    <link rel="canonical" href="https://elektrosys.eng.br/">
+    <link rel="canonical" href="https://elektrosys.eng.br/motores.html">
 
     <!-- Open Graph (Redes Sociais) -->
     <meta property="og:type" content="website">
     <meta property="og:title" content="ElektroSys | Engenharia Elétrica & Dimensionamento de Cabos">
     <meta property="og:description" content="Dimensione cabos, disjuntores e contatores para motores trifásicos conforme NBR 5410. Projetos e serviços de engenharia elétrica sob demanda.">
-    <meta property="og:url" content="https://elektrosys.eng.br/">
-    <meta property="og:image" content="https://elektrosys.eng.br/og-image.png">
+    <meta property="og:url" content="https://elektrosys.eng.br/motores.html">
+    <meta property="og:image" content="https://elektrosys.eng.br/assets/brand/og-image.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:image" content="https://elektrosys.eng.br/og-image.png">
+    <meta name="twitter:image" content="https://elektrosys.eng.br/assets/brand/og-image.png">
     <meta name="theme-color" content="#0A1B2E">
 
     <!-- Dados Estruturados (Google Rich Results) -->
@@ -60,7 +62,7 @@
       "@context": "https://schema.org",
       "@type": "WebApplication",
       "name": "ElektroSys - Calculadora de Motores",
-      "url": "https://elektrosys.eng.br",
+      "url": "https://elektrosys.eng.br/motores.html",
       "description": "Calculadora online para dimensionamento de cabos e proteção de motores trifásicos conforme NBR 5410",
       "applicationCategory": "EngineeringApplication",
       "operatingSystem": "Web",
@@ -92,8 +94,7 @@
         input[type=range]::-moz-range-track {
             width: 100%; height: 4px; cursor: pointer; background: #21425F; border-radius: 2px;
         }
-        #aboutModal.hidden { display: none; }
-        .phasor-text { font-size: 12px; font-weight: 600; pointer-events: none; font-family: 'IBM Plex Mono', monospace; }
+                .phasor-text { font-size: 12px; font-weight: 600; pointer-events: none; font-family: 'IBM Plex Mono', monospace; }
         .phasor-label { font-size: 10px; fill: #8CA3BC; font-weight: 500; }
         .phasor-value { font-size: 13px; font-weight: 700; }
         #customVoltageContainer { transition: all 0.3s ease; }
@@ -104,53 +105,42 @@
     </style>
 </head>
 
-<body class="bg-navy grid-bp text-muted font-sans antialiased">
+<body class="bg-navy grid-bp text-muted font-sans antialiased" data-wa-assunto="um projeto elétrico com motores">
 
-    <nav class="border-b border-line bg-navy/85 backdrop-blur-md sticky top-0 z-40">
-        <div class="container mx-auto px-4 h-16 flex items-center justify-between">
-            <a href="index.html" class="flex items-center gap-2.5">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-primary" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
-                </svg>
-                <span class="text-fg font-display font-bold text-xl tracking-wide">ELEKTRO<span class="text-primary">SYS</span></span>
+    <a class="ek-skip" href="#ferramenta">Pular para a calculadora</a>
+
+    <header class="border-b border-line bg-navy sticky top-0 z-40">
+        <div class="container mx-auto px-4 h-16 flex items-center justify-between gap-4">
+            <a class="ek-logo" href="index.html" aria-label="ElektroSys Engenharia Elétrica — início">
+                <img src="assets/brand/elektrosys-logo-tight.png" alt="ElektroSys Engenharia Elétrica" width="538" height="239">
             </a>
-            <div class="hidden md:flex items-center gap-7 text-sm font-medium text-muted">
-                <a href="motores.html" class="text-fg" aria-current="page">Motores</a>
-                <a href="solar.html" class="hover:text-fg transition">Solar</a>
-                <button id="btnOpenAbout" class="hover:text-fg transition rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-primary">Sobre</button>
-                <a href="https://wa.me/5564984395286" target="_blank" rel="noopener noreferrer" class="bg-primary hover:bg-primary-700 text-white font-semibold px-4 py-2 rounded-md transition">Solicitar projeto</a>
-            </div>
-            <a href="https://wa.me/5564984395286" target="_blank" rel="noopener noreferrer" class="md:hidden bg-primary hover:bg-primary-700 text-white font-semibold px-3.5 py-2 rounded-md text-sm transition">Projeto</a>
+            <nav class="ek-nav" aria-label="Navegação principal">
+                <a href="index.html">Início</a>
+                <a href="index.html#servicos">Serviços</a>
+                <a href="index.html#pericias">Perícias</a>
+                <a href="index.html#sobre">Sobre</a>
+                <a href="index.html#contato">Contato</a>
+                <a href="ferramentas.html" aria-current="page">Ferramentas</a>
+            </nav>
+            <a class="ek-wa" data-wa href="https://wa.me/5564984395286" target="_blank" rel="noopener noreferrer">
+                <svg class="ek-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2Zm5.8 14.16c-.24.68-1.2 1.26-1.96 1.42-.52.11-1.2.2-3.5-.75-2.94-1.22-4.83-4.2-4.98-4.4-.14-.19-1.19-1.58-1.19-3.02s.76-2.14 1.03-2.44c.27-.3.58-.37.78-.37.19 0 .39 0 .56.01.18.01.42-.07.66.5.24.58.83 2.01.9 2.16.07.15.12.32.02.51-.1.19-.15.31-.29.48-.15.17-.31.38-.44.51-.15.15-.3.31-.13.6.17.3.76 1.25 1.63 2.02 1.12 1 2.06 1.31 2.36 1.46.3.15.47.12.64-.07.17-.2.74-.86.94-1.16.2-.3.39-.25.66-.15.27.1 1.7.8 1.99.95.29.15.48.22.55.34.07.13.07.72-.17 1.4Z"/></svg> <span class="ek-wa__x">Falar no </span>WhatsApp
+            </a>
         </div>
-    </nav>
+    </header>
 
-    <div id="aboutModal" role="dialog" aria-modal="true" aria-labelledby="aboutTitle" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-panel border border-line rounded-xl shadow-2xl w-full max-w-md relative overflow-hidden text-fg">
-            <button id="btnCloseAbout" aria-label="Fechar" class="absolute top-4 right-4 text-muted hover:text-fg rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-primary z-10"><i class="fa-solid fa-xmark text-xl"></i></button>
-            <div class="bg-primary p-6 text-white text-center">
-                <i class="fa-solid fa-user-tie text-4xl mb-2"></i>
-                <h3 id="aboutTitle" class="text-xl font-display font-bold tracking-wide">Gusttavo Gutierry</h3>
-                <p class="text-white/80 text-sm">Engenharia Elétrica & Desenvolvimento</p>
-            </div>
-            <div class="p-6 space-y-4">
-                <p class="text-sm text-muted mb-2 text-center">Projetos, laudos e consultoria em instalações elétricas. Fale direto comigo.</p>
-                <a href="https://www.linkedin.com/in/gusttavo-gutierry-ferreira-moraes-bb71841a4/" target="_blank" rel="noopener noreferrer" class="flex items-center gap-4 p-4 rounded-lg border border-line hover:border-primary hover:bg-panel-2 transition group">
-                    <div class="bg-[#0077b5] text-white w-10 h-10 rounded-full flex items-center justify-center shrink-0"><i class="fa-brands fa-linkedin-in text-lg"></i></div>
-                    <div><h4 class="font-semibold text-fg group-hover:text-sky transition">LinkedIn</h4><p class="text-xs text-muted">Conectar perfil profissional</p></div>
-                </a>
-                <a href="https://wa.me/5564984395286" target="_blank" rel="noopener noreferrer" class="flex items-center gap-4 p-4 rounded-lg border border-line hover:border-signal hover:bg-panel-2 transition group">
-                    <div class="bg-[#25D366] text-white w-10 h-10 rounded-full flex items-center justify-center shrink-0"><i class="fa-brands fa-whatsapp text-xl"></i></div>
-                    <div><h4 class="font-semibold text-fg group-hover:text-signal transition">WhatsApp</h4><p class="text-xs text-muted">+55 64 98439-5286</p></div>
-                </a>
-            </div>
-        </div>
-    </div>
+    <nav class="container mx-auto px-4 pt-5 relative z-10 ek-crumb" aria-label="Trilha de navegação">
+        <ol>
+            <li><a href="index.html">Início</a></li>
+            <li><a href="ferramentas.html">Ferramentas</a></li>
+            <li><span aria-current="page">Motores trifásicos</span></li>
+        </ol>
+    </nav>
 
     <!-- HERO -->
     <header class="relative z-10 border-b border-line overflow-hidden">
         <div class="container mx-auto px-4 py-14 md:py-20 grid lg:grid-cols-12 gap-10 items-center">
             <div class="lg:col-span-7">
-                <p class="font-mono text-xs uppercase tracking-[0.25em] text-primary mb-5">Ferramenta · NBR 5410</p>
+                <p class="font-mono text-xs uppercase tracking-[0.25em] text-primary mb-5">Ferramenta 01 · ABNT NBR 5410</p>
                 <h1 class="font-display text-4xl md:text-6xl font-bold text-fg leading-[1.02] mb-5">
                     Dimensionamento de cabos para<br><span class="text-sky">motores trifásicos</span>
                 </h1>
@@ -161,14 +151,15 @@
                     <a href="#ferramenta" class="inline-flex items-center gap-2 bg-primary hover:bg-primary-700 text-white font-semibold px-6 py-3 rounded-md transition">
                         <i class="fa-solid fa-gauge-high"></i> Abrir a calculadora
                     </a>
-                    <a href="https://wa.me/5564984395286" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 border border-line text-fg hover:bg-panel px-6 py-3 rounded-md transition">
-                        <i class="fa-solid fa-drafting-compass"></i> Solicitar projeto
+                    <a data-wa href="https://wa.me/5564984395286" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 border border-line text-fg hover:bg-panel px-6 py-3 rounded-md transition">
+                        <i class="fa-solid fa-drafting-compass" aria-hidden="true"></i> Solicitar projeto
                     </a>
                 </div>
+                <p class="font-mono text-[11px] text-muted mt-6">Eng. Gusttavo Gutierry · CREA 1023983184D-GO</p>
             </div>
             <div class="lg:col-span-5">
                 <div class="grid-bp bg-panel border border-line rounded-xl p-6 shadow-lg">
-                    <p class="font-mono text-[11px] uppercase tracking-widest text-muted mb-5">// base de cálculo</p>
+                    <p class="font-mono text-[11px] uppercase tracking-widest text-muted mb-5">Base de cálculo</p>
                     <div class="space-y-5 font-mono text-sm text-fg">
                         <div>
                             <span class="text-muted text-xs block mb-1">corrente nominal</span>
@@ -215,7 +206,7 @@
     <!-- FERRAMENTA -->
     <main id="ferramenta" class="container mx-auto px-4 py-14 relative z-10">
         <div class="flex items-center gap-3 mb-8">
-            <span class="font-mono text-xs uppercase tracking-[0.25em] text-primary">// calculadora</span>
+            <span class="font-mono text-xs uppercase tracking-[0.25em] text-primary">01 · Calculadora</span>
             <div class="h-px flex-1 bg-line"></div>
         </div>
 
@@ -379,50 +370,52 @@
         </div>
     </main>
 
-    <!-- CTA / SERVIÇOS -->
+    <!-- CTA FINAL -->
     <section class="border-y border-line grid-bp relative z-10">
         <div class="container mx-auto px-4 py-14 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
             <div class="max-w-2xl">
-                <p class="font-mono text-xs uppercase tracking-[0.25em] text-primary mb-3">// engenharia sob demanda</p>
+                <p class="font-mono text-xs uppercase tracking-[0.25em] text-primary mb-3">Engenharia sob demanda</p>
                 <h2 class="font-display text-3xl md:text-4xl text-fg font-bold leading-tight">Precisa de um projeto elétrico completo?</h2>
-                <p class="text-muted mt-3 leading-relaxed">Laudos técnicos, dimensionamento, projetos elétricos e consultoria — do memorial de cálculo à ART. Fale direto com o engenheiro responsável.</p>
+                <p class="text-muted mt-3 leading-relaxed">Laudos técnicos, dimensionamento, projetos elétricos e consultoria — do memorial de cálculo à ART, quando aplicável. Fale direto com o engenheiro responsável.</p>
             </div>
-            <a href="https://wa.me/5564984395286" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 bg-primary hover:bg-primary-700 text-white font-semibold px-7 py-3.5 rounded-md whitespace-nowrap transition shrink-0">
-                <i class="fa-brands fa-whatsapp text-lg"></i> Solicitar orçamento
+            <a class="ek-wa ek-wa--lg shrink-0" data-wa href="https://wa.me/5564984395286" target="_blank" rel="noopener noreferrer">
+                <svg class="ek-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2Zm5.8 14.16c-.24.68-1.2 1.26-1.96 1.42-.52.11-1.2.2-3.5-.75-2.94-1.22-4.83-4.2-4.98-4.4-.14-.19-1.19-1.58-1.19-3.02s.76-2.14 1.03-2.44c.27-.3.58-.37.78-.37.19 0 .39 0 .56.01.18.01.42-.07.66.5.24.58.83 2.01.9 2.16.07.15.12.32.02.51-.1.19-.15.31-.29.48-.15.17-.31.38-.44.51-.15.15-.3.31-.13.6.17.3.76 1.25 1.63 2.02 1.12 1 2.06 1.31 2.36 1.46.3.15.47.12.64-.07.17-.2.74-.86.94-1.16.2-.3.39-.25.66-.15.27.1 1.7.8 1.99.95.29.15.48.22.55.34.07.13.07.72-.17 1.4Z"/></svg> Conversar pelo WhatsApp
             </a>
         </div>
     </section>
 
-    <footer class="bg-ink/60 relative z-10">
+    <footer class="ek-foot bg-ink/60 relative z-10">
         <div class="container mx-auto px-4 py-10">
             <div class="flex flex-col md:flex-row justify-between gap-8">
                 <div class="max-w-sm">
-                    <div class="flex items-center gap-2.5 mb-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-primary" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
-                        <span class="text-fg font-display font-bold text-lg tracking-wide">ELEKTRO<span class="text-primary">SYS</span></span>
-                    </div>
-                    <p class="text-sm text-muted leading-relaxed">Ferramentas e serviços de engenharia elétrica. Cálculos conforme NBR 5410 — não substituem projeto assinado.</p>
+                    <a class="ek-logo mb-4" href="index.html" aria-label="ElektroSys Engenharia Elétrica — início">
+                        <img src="assets/brand/elektrosys-logo-tight.png" alt="ElektroSys Engenharia Elétrica" width="538" height="239" loading="lazy">
+                    </a>
+                    <p class="text-sm text-muted leading-relaxed">Projetos, laudos, inspeções, SPDA, fotovoltaico, perícias judiciais e assistência técnica.</p>
+                    <p class="font-mono text-[11px] text-muted mt-3">Eng. Gusttavo Gutierry · CREA 1023983184D-GO</p>
                 </div>
                 <div class="flex gap-14">
                     <div>
                         <p class="font-mono text-[11px] uppercase tracking-wider text-muted mb-3">Ferramentas</p>
                         <ul class="space-y-2 text-sm">
-                            <li><a href="motores.html" class="text-fg hover:text-sky transition">Motores</a></li>
-                            <li><a href="solar.html" class="text-fg hover:text-sky transition">Solar</a></li>
+                            <li><a href="motores.html" class="text-fg hover:text-sky transition" aria-current="page">Motores trifásicos</a></li>
+                            <li><a href="solar.html" class="text-fg hover:text-sky transition">Sistema fotovoltaico</a></li>
                             <li><a href="memorial.html" class="text-fg hover:text-sky transition">Memorial de cálculo</a></li>
+                            <li><a href="ferramentas.html" class="text-fg hover:text-sky transition">Todas as ferramentas</a></li>
                         </ul>
                     </div>
                     <div>
                         <p class="font-mono text-[11px] uppercase tracking-wider text-muted mb-3">Contato</p>
                         <ul class="space-y-2 text-sm">
-                            <li><a href="https://wa.me/5564984395286" target="_blank" rel="noopener noreferrer" class="text-fg hover:text-signal transition flex items-center gap-2"><i class="fa-brands fa-whatsapp"></i> WhatsApp</a></li>
-                            <li><a href="https://www.linkedin.com/in/gusttavo-gutierry-ferreira-moraes-bb71841a4/" target="_blank" rel="noopener noreferrer" class="text-fg hover:text-sky transition flex items-center gap-2"><i class="fa-brands fa-linkedin-in"></i> LinkedIn</a></li>
+                            <li><a data-wa href="https://wa.me/5564984395286" target="_blank" rel="noopener noreferrer" class="text-fg hover:text-signal transition flex items-center gap-2"><svg class="ek-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2Zm5.8 14.16c-.24.68-1.2 1.26-1.96 1.42-.52.11-1.2.2-3.5-.75-2.94-1.22-4.83-4.2-4.98-4.4-.14-.19-1.19-1.58-1.19-3.02s.76-2.14 1.03-2.44c.27-.3.58-.37.78-.37.19 0 .39 0 .56.01.18.01.42-.07.66.5.24.58.83 2.01.9 2.16.07.15.12.32.02.51-.1.19-.15.31-.29.48-.15.17-.31.38-.44.51-.15.15-.3.31-.13.6.17.3.76 1.25 1.63 2.02 1.12 1 2.06 1.31 2.36 1.46.3.15.47.12.64-.07.17-.2.74-.86.94-1.16.2-.3.39-.25.66-.15.27.1 1.7.8 1.99.95.29.15.48.22.55.34.07.13.07.72-.17 1.4Z"/></svg> +55 64 98439-5286</a></li>
+                            <li><a href="https://www.linkedin.com/in/gusttavo-gutierry-ferreira-moraes-bb71841a4/" target="_blank" rel="noopener noreferrer" class="text-fg hover:text-sky transition flex items-center gap-2">LinkedIn</a></li>
+                            <li><a href="index.html#contato" class="text-fg hover:text-sky transition">Solicitar orçamento</a></li>
                         </ul>
                     </div>
                 </div>
             </div>
             <div class="border-t border-line mt-8 pt-6 text-center text-xs text-muted font-mono">
-                © 2026 Gusttavo Gutierry · ElektroSys — Ferramenta educacional. Valide com a NBR 5410.
+                © <span data-year>2026</span> ElektroSys Engenharia Elétrica · Estimativa educacional — valide com projeto e com as normas aplicáveis.
             </div>
         </div>
     </footer>
@@ -728,18 +721,6 @@
     function formatKilo(value) { return (value / 1000).toFixed(1).replace('.', ','); }
     function fmtBR(value, decimals) { return Number(value).toFixed(decimals).replace('.', ','); }
 
-    // === MÓDULO: MODAL ===
-    (function initModal() {
-        const modal = document.getElementById('aboutModal');
-        const btnOpen = document.getElementById('btnOpenAbout');
-        const btnClose = document.getElementById('btnCloseAbout');
-        btnOpen.addEventListener('click', (e) => { e.preventDefault(); modal.classList.remove('hidden'); modal.classList.add('flex'); btnClose.focus(); });
-        function closeModal() { modal.classList.add('hidden'); modal.classList.remove('flex'); btnOpen.focus(); }
-        btnClose.addEventListener('click', closeModal);
-        modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
-        document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !modal.classList.contains('hidden')) closeModal(); });
-    })();
-
     // === MÓDULO: CALCULADORA PRINCIPAL ===
     (function initCalculator() {
         let currentVoltage = 380;
@@ -964,5 +945,6 @@
         calculate();
     })();
     </script>
+    <script src="assets/js/ek-chrome.js"></script>
 </body>
 </html>
