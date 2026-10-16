@@ -12,7 +12,7 @@
         style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com;
         font-src 'self' https://cdnjs.cloudflare.com data:;
         img-src 'self' data: https://server.arcgisonline.com https://tile.openstreetmap.org https://cdnjs.cloudflare.com;
-        connect-src 'self' https://generativelanguage.googleapis.com https://nominatim.openstreetmap.org;
+        connect-src 'self' https://generativelanguage.googleapis.com https://nominatim.openstreetmap.org https://server.arcgisonline.com;
         base-uri 'self';
         form-action 'self';
     ">
@@ -554,7 +554,7 @@
                         <div class="col-span-12 md:col-span-6">
                             <label for="mapBusca" class="text-[10px] text-muted uppercase block mb-1">Endereço ou coordenadas</label>
                             <div class="flex gap-2">
-                                <input type="text" id="mapBusca" placeholder="Rua, nº, cidade — ou -17.8812, -51.7210" class="num-in" style="font-family:'Inter'">
+                                <input type="text" id="mapBusca" placeholder="Endereço, coordenadas (-17.5467, -52.5385) ou link do Google Maps" class="num-in" style="font-family:'Inter'">
                                 <button id="btnMapBuscar" class="bg-primary hover:bg-primary-700 text-white text-xs font-semibold px-3 rounded-md transition whitespace-nowrap">Localizar</button>
                             </div>
                         </div>
@@ -589,7 +589,8 @@
                         <button id="btnMapRemover" disabled class="border border-line hover:border-alert text-muted hover:text-alert text-xs font-semibold px-4 py-2 rounded-md transition disabled:opacity-50">Remover do mapa</button>
                     </div>
                     <div id="mapBox" class="hidden mt-3 rounded-lg overflow-hidden border border-line" style="height:440px"></div>
-                    <p id="mapNote" class="text-[10px] text-muted mt-2 leading-snug">Imagem de satélite: Esri World Imagery. A busca de endereço usa o OpenStreetMap (Nominatim) — o texto digitado é enviado a esse serviço.</p>
+                    <p id="mapZoomNote" class="text-[10px] text-sky mt-2 leading-snug"></p>
+                    <p id="mapNote" class="text-[10px] text-muted mt-1 leading-snug">Imagem de satélite: Esri World Imagery. A busca de endereço usa o OpenStreetMap (Nominatim) — o texto digitado é enviado a esse serviço.</p>
                 </div>
 
                 <div class="bg-panel border border-line border-l-4 border-l-alert p-4 rounded-r-md flex gap-3 text-xs text-muted">
@@ -2539,7 +2540,35 @@
     const LEAFLET_JS = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js';
     const LEAFLET_CSS = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css';
     const MAPA = { lat: -16.6869, lng: -49.2648, zoom: 18, cLat: null, cLng: null, placed: false };  // padrão: Goiânia
-    let map = null, mapLayer = null, mapDrag = null, mapRaf = 0;
+    let map = null, mapLayer = null, mapDrag = null, mapRaf = 0, mapSat = null, mapZoomT = null, mapZoomKey = '';
+
+    // Maior nível de imagem que a Esri tem no ponto (serviço "tilemap" — o mesmo que o esri-leaflet usa).
+    // Acima desse nível o Leaflet amplia a última imagem disponível em vez de mostrar o aviso cinza.
+    async function ajustarZoomNativo(lat, lng) {
+        if (!mapSat) return;
+        const tile = z => {
+            const n = 2 ** z, r = lat * Math.PI / 180;
+            return { x: Math.floor((lng + 180) / 360 * n), y: Math.floor((1 - Math.log(Math.tan(r) + 1 / Math.cos(r)) / Math.PI) / 2 * n) };
+        };
+        const key = `${tile(15).x}/${tile(15).y}`;            // só reconsulta ao mudar de região (~1 km)
+        if (key === mapZoomKey) return;
+        mapZoomKey = key;
+        const niveis = [19, 18, 17, 16, 15, 14, 13];
+        const tem = await Promise.all(niveis.map(async z => {
+            const t = tile(z);
+            try {
+                const r = await fetch(`https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tilemap/${z}/${t.y}/${t.x}/1/1`);
+                const d = await r.json();
+                return !!(d && d.data && d.data[0]);
+            } catch (e) { return null; }                       // falha de rede: não decide por esse nível
+        }));
+        if (tem.every(v => v === null)) { mapZoomKey = ''; return; }
+        const i = tem.findIndex(v => v === true);
+        const zMax = i >= 0 ? niveis[i] : 13;
+        if (mapSat.options.maxNativeZoom !== zMax) { mapSat.options.maxNativeZoom = zMax; mapSat.redraw(); }
+        document.getElementById('mapZoomNote').textContent = zMax < 19
+            ? `Imagem de satélite disponível até o nível ${zMax} nesta região — aproximando mais, ela aparece ampliada (menos nítida).` : '';
+    }
 
     function loadLeaflet() {
         if (window.L) return Promise.resolve();
@@ -2619,12 +2648,18 @@
             const LL = window.L;
             map = LL.map(box, { preferCanvas: true, zoomControl: true }).setView([MAPA.lat, MAPA.lng], MAPA.zoom);
             const sat = LL.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+                // maxNativeZoom é ajustado por local (ajustarZoomNativo): no interior a Esri pode não ter
+                // os níveis 18–19 e devolveria "Map data not yet available".
                 { maxNativeZoom: 19, maxZoom: 21, attribution: 'Imagem © Esri, Maxar, Earthstar Geographics' }).addTo(map);
+            mapSat = sat;
             const ruas = LL.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                 { maxNativeZoom: 19, maxZoom: 21, attribution: '© OpenStreetMap' });
             LL.control.layers({ 'Satélite': sat, 'Ruas': ruas }, null, { position: 'topright' }).addTo(map);
             LL.control.scale({ imperial: false }).addTo(map);
-            map.on('moveend', () => { const c = map.getCenter(); MAPA.lat = c.lat; MAPA.lng = c.lng; MAPA.zoom = map.getZoom(); schedulePersist(); });
+            map.on('moveend', () => {
+                const c = map.getCenter(); MAPA.lat = c.lat; MAPA.lng = c.lng; MAPA.zoom = map.getZoom(); schedulePersist();
+                clearTimeout(mapZoomT); mapZoomT = setTimeout(() => ajustarZoomNativo(c.lat, c.lng), 500);
+            });
         }
         setTimeout(() => map.invalidateSize(), 0);
         if (MAPA.placed) { map.setView([MAPA.cLat, MAPA.cLng], Math.max(map.getZoom(), 18)); }
@@ -2649,18 +2684,63 @@
         mapRedraw(); schedulePersist(); calculate();
     }
 
+    // Aceita os formatos que se costuma colar (Google Maps, WhatsApp, planilha):
+    //   -17.546744, -52.538523 · "-17.5467 -52.5385" · (-17.5467; -52.5385) · -17,5467; -52,5385
+    //   17°32'48.3"S 52°32'18.7"W (também O/L) · links do Google Maps (@lat,lng · !3dlat!4dlng · q=lat,lng)
+    function parseCoord(q) {
+        const ok = (lat, lng) => (Number.isFinite(lat) && Number.isFinite(lng) && Math.abs(lat) <= 90 && Math.abs(lng) <= 180) ? { lat, lng } : null;
+        const url = q.match(/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/) || q.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/) ||
+                    q.match(/[?&](?:q|query|ll|center)=(-?\d+\.\d+)(?:,|%2C)\s*(-?\d+\.\d+)/i);
+        if (url) return ok(parseFloat(url[1]), parseFloat(url[2]));
+        if (/^https?:/i.test(q)) return null;
+        // Graus, minutos e segundos com hemisfério
+        const dms = [...q.matchAll(/(\d{1,3})\s*°\s*(?:(\d{1,2}(?:[.,]\d+)?)\s*['′’]\s*)?(?:(\d{1,2}(?:[.,]\d+)?)\s*(?:["″”]|'')\s*)?([NSLOEW])/gi)];
+        if (dms.length === 2) {
+            const val = m => {
+                const v = Number(m[1]) + Number((m[2] || '0').replace(',', '.')) / 60 + Number((m[3] || '0').replace(',', '.')) / 3600;
+                return /[SOW]/i.test(m[4]) ? -v : v;
+            };
+            const a = dms.find(m => /[NS]/i.test(m[4])), b = dms.find(m => /[LOEW]/i.test(m[4]));
+            return (a && b) ? ok(val(a), val(b)) : null;
+        }
+        // Decimal: tira aspas, parênteses e rótulos; vírgula decimal só quando não há ponto
+        const t = q.replace(/["'“”‘’()\[\]]/g, ' ').replace(/lat(itude)?|lon(g|gitude)?|lng|[:=]/gi, ' ').trim();
+        let nums;
+        if (/\d\.\d/.test(t)) nums = t.match(/-?\d+(?:\.\d+)?/g);
+        else nums = (t.replace(/,\s+/g, ' ').match(/-?\d+(?:,\d+)?/g) || []).map(x => x.replace(',', '.'));
+        if (!nums || nums.length !== 2 || /[a-zà-ú]{3,}/i.test(t)) return null;
+        return ok(parseFloat(nums[0]), parseFloat(nums[1]));
+    }
+
+    let mapPin = null;
+    function irParaCoordenada(lat, lng) {
+        const note = document.getElementById('mapNote');
+        map.setView([lat, lng], 20);
+        mapZoomKey = ''; ajustarZoomNativo(lat, lng);
+        if (mapPin) mapPin.remove();
+        mapPin = window.L.circleMarker([lat, lng], { radius: 5, color: '#E4694F', weight: 2, fillOpacity: 1, interactive: false }).addTo(map);
+        const txt = `${lat.toFixed(6).replace('.', ',')}; ${lng.toFixed(6).replace('.', ',')}`;
+        if (STATE.placed > 0) {
+            MAPA.cLat = lat; MAPA.cLng = lng; MAPA.placed = true;
+            document.getElementById('btnMapRemover').disabled = false;
+            mapRedraw(); schedulePersist(); calculate();
+            note.textContent = `Coordenada ${txt}: arranjo posicionado no ponto (centro do croqui). Arraste e gire para encaixar no telhado.`;
+        } else {
+            note.textContent = `Coordenada ${txt} localizada. Ajuste a área ou a meta para ter módulos e use "Inserir arranjo".`;
+        }
+        const fora = lat < -34 || lat > 6 || lng < -74 || lng > -28;
+        if (fora) note.textContent += ' Atenção: o ponto está fora do Brasil — confira a ordem latitude, longitude.';
+    }
+
     async function buscarNoMapa() {
         const q = (document.getElementById('mapBusca').value || '').trim();
         const note = document.getElementById('mapNote');
         if (!q) { note.textContent = 'Digite um endereço ou coordenadas.'; return; }
         if (!map) await abrirMapa();
         if (!map) return;
-        // Coordenadas coladas do Google Maps: "-17.88, -51.72"
-        const m = q.match(/^\s*(-?\d{1,2}(?:[.,]\d+)?)\s*[,;\s]\s*(-?\d{1,3}(?:[.,]\d+)?)\s*$/);
-        if (m) {
-            const lat = parseFloat(m[1].replace(',', '.')), lng = parseFloat(m[2].replace(',', '.'));
-            if (Math.abs(lat) <= 90 && Math.abs(lng) <= 180) { map.setView([lat, lng], 19); note.textContent = 'Coordenadas localizadas.'; return; }
-        }
+        // Coordenadas: o arranjo vai direto para o ponto (é o local da instalação)
+        const coord = parseCoord(q);
+        if (coord) { irParaCoordenada(coord.lat, coord.lng); return; }
         note.textContent = 'Buscando endereço…';
         try {
             const r = await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=br&q=' + encodeURIComponent(q),
