@@ -8,11 +8,11 @@
     <!-- Segurança: Content Security Policy -->
     <meta http-equiv="Content-Security-Policy" content="
         default-src 'self';
-        script-src 'self' 'unsafe-inline';
+        script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com;
         style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com;
         font-src 'self' https://cdnjs.cloudflare.com data:;
-        img-src 'self' data:;
-        connect-src 'self' https://generativelanguage.googleapis.com;
+        img-src 'self' data: https://server.arcgisonline.com https://tile.openstreetmap.org https://cdnjs.cloudflare.com;
+        connect-src 'self' https://generativelanguage.googleapis.com https://nominatim.openstreetmap.org;
         base-uri 'self';
         form-action 'self';
     ">
@@ -85,6 +85,17 @@
         details.adv > summary .chev { transition: transform 0.2s; }
         details.adv[open] > summary .chev { transform: rotate(180deg); }
         canvas { max-width: 100%; height: auto; }
+        /* Utilitários usados pelo card do mapa que não estão no build do Tailwind (styles.css) */
+        .col-span-12 { grid-column: span 12 / span 12; }
+        @media (min-width: 768px) { .md\:col-span-6 { grid-column: span 6 / span 6; } .md\:col-span-3 { grid-column: span 3 / span 3; } }
+        .px-2\.5 { padding-left: .625rem; padding-right: .625rem; }
+        .mt-4 { margin-top: 1rem; }
+        button:disabled { opacity: .5; cursor: not-allowed; }
+        #mapBox .leaflet-container { font-family: 'Inter', system-ui, sans-serif; }
+        /* A regra global 'canvas { max-width:100% }' encolhia o canvas do Leaflet a 0 px (módulos sumiam) */
+        #mapBox canvas, #mapBox img { max-width: none !important; }
+        .ek-map-lbl { background: #0A1B2E; color: #E8F0F8; border: 1px solid #2C7BE5; border-radius: 4px; padding: 2px 6px;
+                      font: 600 11px 'IBM Plex Mono', monospace; white-space: nowrap; }
         select option { background-color: #0E2841; color: #E8F0F8; }
         /* inputs de preço/quantidade */
         .num-in { background:#06121E; border:1px solid #21425F; border-radius:6px; padding:6px 8px;
@@ -433,6 +444,30 @@
                                 <button id="btnIaInversor" class="bg-primary hover:bg-primary-700 text-white text-xs font-semibold px-3 rounded-md transition whitespace-nowrap">Buscar</button>
                             </div>
                             <p id="iaInvNote" class="text-[10px] text-sky mt-1.5 leading-snug"></p>
+                            <div class="border-t border-line pt-3 mt-3">
+                                <label class="block text-[10px] font-semibold text-muted uppercase mb-1">Ou informe os dados do inversor (datasheet)</label>
+                                <div class="grid grid-cols-3 gap-2">
+                                    <div><label for="invKw" class="text-[9px] text-muted uppercase block mb-0.5">Potência CA kW</label>
+                                        <input type="number" id="invKw" min="0.3" max="500" step="0.1" placeholder="5" class="num-in"></div>
+                                    <div><label for="invVmax" class="text-[9px] text-muted uppercase block mb-0.5">V CC máx</label>
+                                        <input type="number" id="invVmax" min="100" max="1500" step="10" placeholder="550" class="num-in"></div>
+                                    <div><label for="invPdc" class="text-[9px] text-muted uppercase block mb-0.5">kWp CC máx</label>
+                                        <input type="number" id="invPdc" min="0.3" max="750" step="0.1" placeholder="7,5" class="num-in"></div>
+                                    <div><label for="invMpptMin" class="text-[9px] text-muted uppercase block mb-0.5">MPPT mín V</label>
+                                        <input type="number" id="invMpptMin" min="0" max="1500" step="5" placeholder="90" class="num-in"></div>
+                                    <div><label for="invMpptMax" class="text-[9px] text-muted uppercase block mb-0.5">MPPT máx V</label>
+                                        <input type="number" id="invMpptMax" min="0" max="1500" step="5" placeholder="520" class="num-in"></div>
+                                    <div><label for="invNMppt" class="text-[9px] text-muted uppercase block mb-0.5">Nº de MPPT</label>
+                                        <input type="number" id="invNMppt" min="1" max="20" step="1" placeholder="2" class="num-in"></div>
+                                    <div><label for="invQtd" class="text-[9px] text-muted uppercase block mb-0.5">Quantidade</label>
+                                        <input type="number" id="invQtd" min="1" max="100" step="1" placeholder="auto" class="num-in"></div>
+                                </div>
+                                <div class="flex gap-2 mt-2">
+                                    <button id="btnInvManApply" class="flex-1 border border-line hover:border-sky text-muted hover:text-sky text-xs font-semibold py-2 rounded-md transition">Aplicar dados do inversor</button>
+                                    <button id="btnInvManClear" class="border border-line hover:border-alert text-muted hover:text-alert text-xs font-semibold px-3 py-2 rounded-md transition">Limpar</button>
+                                </div>
+                                <p id="invManNote" class="text-[10px] text-sky mt-1.5 leading-snug">Use o campo "Inversor (modelo)" acima para o nome. Só a potência CA é obrigatória; tensão e MPPT ativam a verificação das strings.</p>
+                            </div>
                         </div>
                         <div class="border-t border-line pt-3">
                             <label for="iaKey" class="block text-[10px] font-semibold text-muted uppercase tracking-wider mb-1.5">Chave da API Gemini (fica só neste navegador)</label>
@@ -507,9 +542,59 @@
                     </div>
                 </div>
 
+                <!-- IMPLANTAÇÃO NO MAPA: o croqui acima sobre imagem de satélite, com posição e direção reais -->
+                <div class="bg-panel border border-line rounded-xl p-6 text-fg">
+                    <div class="flex items-center gap-2 mb-3">
+                        <i class="fa-solid fa-map-location-dot text-primary" aria-hidden="true"></i>
+                        <h3 class="font-display font-bold text-lg tracking-wide">IMPLANTAÇÃO NO MAPA</h3>
+                    </div>
+                    <p class="text-xs text-muted mb-4">Coloque o arranjo sobre o telhado ou o terreno do cliente: arraste para posicionar e gire para definir para onde os módulos ficam voltados. O retângulo tracejado é a área informada; a seta é a frente dos módulos (o topo do croqui).</p>
+
+                    <div class="grid grid-cols-12 gap-2 items-end">
+                        <div class="col-span-12 md:col-span-6">
+                            <label for="mapBusca" class="text-[10px] text-muted uppercase block mb-1">Endereço ou coordenadas</label>
+                            <div class="flex gap-2">
+                                <input type="text" id="mapBusca" placeholder="Rua, nº, cidade — ou -17.8812, -51.7210" class="num-in" style="font-family:'Inter'">
+                                <button id="btnMapBuscar" class="bg-primary hover:bg-primary-700 text-white text-xs font-semibold px-3 rounded-md transition whitespace-nowrap">Localizar</button>
+                            </div>
+                        </div>
+                        <div class="col-span-6 md:col-span-3">
+                            <label for="mapAz" class="text-[10px] text-muted uppercase block mb-1">Frente dos módulos (°)</label>
+                            <input type="number" id="mapAz" min="0" max="359" step="1" value="0" class="num-in">
+                        </div>
+                        <div class="col-span-6 md:col-span-3">
+                            <label for="mapTilt" class="text-[10px] text-muted uppercase block mb-1">Inclinação (°)</label>
+                            <input type="number" id="mapTilt" min="0" max="60" step="1" value="15" class="num-in">
+                        </div>
+                    </div>
+                    <input type="range" id="mapAzRange" min="0" max="359" step="1" value="0" class="mt-3" aria-label="Girar o arranjo (azimute da frente dos módulos)">
+                    <div class="flex flex-wrap items-center gap-2 mt-2">
+                        <span class="text-[10px] font-semibold text-muted uppercase tracking-wider">Girar</span>
+                        <button type="button" data-az-step="-15" class="map-step border border-line rounded-md px-2.5 py-1 text-xs text-muted hover:text-sky hover:border-sky transition">−15°</button>
+                        <button type="button" data-az-step="-1" class="map-step border border-line rounded-md px-2.5 py-1 text-xs text-muted hover:text-sky hover:border-sky transition">−1°</button>
+                        <button type="button" data-az-step="1" class="map-step border border-line rounded-md px-2.5 py-1 text-xs text-muted hover:text-sky hover:border-sky transition">+1°</button>
+                        <button type="button" data-az-step="15" class="map-step border border-line rounded-md px-2.5 py-1 text-xs text-muted hover:text-sky hover:border-sky transition">+15°</button>
+                        <span id="mapOriTxt" class="text-xs font-mono text-sky ml-auto">Norte (0°) · fator 1,000</span>
+                    </div>
+                    <label class="flex items-start gap-2 text-[11px] text-muted mt-3">
+                        <input type="checkbox" id="mapAplicar" checked class="mt-0.5">
+                        <span>Aplicar a perda por orientação na geração (o ideal em Goiás é a frente voltada para o Norte).</span>
+                    </label>
+
+                    <div class="flex flex-wrap gap-2 mt-4">
+                        <button id="btnMapAbrir" class="bg-primary hover:bg-primary-700 text-white text-xs font-semibold px-4 py-2 rounded-md transition flex items-center gap-1.5">
+                            <i class="fa-solid fa-satellite" aria-hidden="true"></i> Abrir mapa de satélite
+                        </button>
+                        <button id="btnMapInserir" disabled class="border border-line hover:border-sky text-muted hover:text-sky text-xs font-semibold px-4 py-2 rounded-md transition disabled:opacity-50">Inserir arranjo no centro do mapa</button>
+                        <button id="btnMapRemover" disabled class="border border-line hover:border-alert text-muted hover:text-alert text-xs font-semibold px-4 py-2 rounded-md transition disabled:opacity-50">Remover do mapa</button>
+                    </div>
+                    <div id="mapBox" class="hidden mt-3 rounded-lg overflow-hidden border border-line" style="height:440px"></div>
+                    <p id="mapNote" class="text-[10px] text-muted mt-2 leading-snug">Imagem de satélite: Esri World Imagery. A busca de endereço usa o OpenStreetMap (Nominatim) — o texto digitado é enviado a esse serviço.</p>
+                </div>
+
                 <div class="bg-panel border border-line border-l-4 border-l-alert p-4 rounded-r-md flex gap-3 text-xs text-muted">
                     <i class="fa-solid fa-triangle-exclamation text-alert mt-0.5 text-base"></i>
-                    <p><strong class="text-fg font-semibold">Limites da estimativa:</strong> a economia já desconta o custo de disponibilidade e o Fio B escalonado da Lei 14.300/2022. Não são modelados: simultaneidade de consumo, sazonalidade mensal, sombreamentos locais, orientação/inclinação reais do telhado, janela de MPPT e corrente por entrada do inversor (a tensão máxima das strings a frio já é verificada). O dimensionamento definitivo exige projeto com ART. <a href="memorial.html" class="text-sky underline">Ver memorial de cálculo</a>.</p>
+                    <p><strong class="text-fg font-semibold">Limites da estimativa:</strong> a economia já desconta o custo de disponibilidade e o Fio B escalonado da Lei 14.300/2022. Não são modelados: simultaneidade de consumo, sazonalidade mensal, sombreamentos locais e corrente por entrada do inversor. A orientação entra por um fator aproximado e as strings são verificadas pela tensão e pela faixa de MPPT do inversor informado. O dimensionamento definitivo exige projeto com ART. <a href="memorial.html" class="text-sky underline">Ver memorial de cálculo</a>.</p>
                 </div>
             </div>
         </div>
@@ -950,6 +1035,7 @@
                     <tr><td>Irradiação média (HSP)</td><td class="r" id="pqHsp">—</td><td>Taxa de desempenho (PR)</td><td class="r" id="pqPr">—</td></tr>
                     <tr><td>Tarifa de energia</td><td class="r" id="pqTarifa">—</td><td>TUSD Fio B (Lei 14.300)</td><td class="r" id="pqFioB">—</td></tr>
                     <tr><td>Tipo de ligação</td><td class="r" id="pqLigacao">—</td><td>Reajuste tarifário / degradação</td><td class="r" id="pqReaj">—</td></tr>
+                    <tr><td>Orientação / inclinação</td><td class="r" id="pqOri">—</td><td>Implantação (lat, lng)</td><td class="r" id="pqCoord">—</td></tr>
                 </tbody>
             </table>
 
@@ -1047,6 +1133,24 @@
         return { nome: '132 células 210 mm', w: 1.303, l: 2.384, voc: 47.0 };
     }
 
+    // Perda por orientação (aproximação para o Centro-Oeste, latitude ~16° S — ver memorial, seção 04).
+    // Δ = desvio da frente dos módulos em relação ao Norte; a perda cresce com a inclinação:
+    //   f = 1 − 0,0044 · inclinação · (1 − cos Δ)  → 15°: Leste/Oeste ≈ −6,6 %, Sul ≈ −13 %
+    function fatorOrientacao(az, tilt) {
+        const d = Math.min(az, 360 - az) * Math.PI / 180;
+        return Math.max(0.5, 1 - 0.0044 * tilt * (1 - Math.cos(d)));
+    }
+    function orientacaoAtual() {
+        const az = ((Math.round(sanitize(document.getElementById('mapAz').value, 0)) % 360) + 360) % 360;
+        const tilt = clamp(sanitize(document.getElementById('mapTilt').value, 15), 0, 60);
+        return { az, tilt, aplicar: document.getElementById('mapAplicar').checked, f: fatorOrientacao(az, tilt) };
+    }
+    function rumo(az) {
+        const R = ['Norte', 'Nor-nordeste', 'Nordeste', 'Lés-nordeste', 'Leste', 'Lés-sudeste', 'Sudeste', 'Su-sudeste',
+                   'Sul', 'Su-sudoeste', 'Sudoeste', 'Oés-sudoeste', 'Oeste', 'Oés-noroeste', 'Noroeste', 'Nor-noroeste'];
+        return R[Math.round(az / 22.5) % 16];
+    }
+
     // kWh/mês que efetivamente reduzem a fatura (ver memorial, seção 05)
     function compensavel(gen, availKWh, consumo) {
         return consumo != null
@@ -1054,21 +1158,35 @@
             : Math.max(0, gen - availKWh);
     }
 
-    // Verificação de tensão das strings (pré-dimensionamento; o projeto confere com o datasheet do inversor)
+    // Verificação de tensão das strings (pré-dimensionamento; o projeto confere com o datasheet do inversor).
+    // Com o inversor informado (manual ou IA) usa os limites dele; senão, valores usuais de BT.
     const STRINGS = {
-        VDC_MAX: 1000,          // tensão CC máxima usual de inversores string de BT
+        VDC_MAX: 1000,          // tensão CC máxima usual de inversores string de BT (sem inversor informado)
         TMIN: 0,                // temperatura mínima de projeto (°C) — conservador para Goiás
+        TCELL_MAX: 70,          // temperatura de célula em operação no verão (°C)
         BETA_VOC: -0.0028,      // coeficiente de temperatura do Voc (/°C), típico PERC/TOPCon
-        MIN_POR_STRING: 4,      // abaixo disso a tensão de MPPT tende a ficar sob a partida
+        BETA_VMP: -0.0034,      // coeficiente de temperatura do Vmp (/°C), típico
+        VMP_RATIO: 0.82,        // Vmp/Voc em STC, típico de módulos cristalinos
+        MIN_POR_STRING: 4,      // sem MPPT mín. informado: abaixo disso a tensão tende a ficar sob a partida
     };
-    function stringDesign(total, vocStc, micro, nManual) {
+    function stringDesign(total, vocStc, micro, nManual, inv) {
+        const vmax = (inv && inv.vmax) || STRINGS.VDC_MAX;
         const vocFrio = vocStc * (1 + STRINGS.BETA_VOC * (STRINGS.TMIN - 25));
-        const maxPorString = Math.max(1, Math.floor(STRINGS.VDC_MAX / vocFrio));
+        const vmpStc  = vocStc * STRINGS.VMP_RATIO;
+        const vmpQuente = vmpStc * (1 + STRINGS.BETA_VMP * (STRINGS.TCELL_MAX - 25));
+        // Limite rígido: Voc a frio ≤ V CC máx. Limite operacional: Vmp (STC) ≤ MPPT máx.
+        let maxPorString = Math.max(1, Math.floor(vmax / vocFrio));
+        if (inv && inv.mpptMax) maxPorString = Math.max(1, Math.min(maxPorString, Math.floor(inv.mpptMax / vmpStc)));
+        // Mínimo: Vmp no calor ≥ MPPT mín. (senão o inversor perde o ponto de máxima potência à tarde)
+        const minPorString = (inv && inv.mpptMin) ? Math.max(1, Math.ceil(inv.mpptMin / vmpQuente)) : STRINGS.MIN_POR_STRING;
         const nAuto = total > 0 ? Math.ceil(total / maxPorString) : 1;
-        if (micro || total <= 0) return { total, nStr: 0, nAuto, porString: 0, vFrio: 0, maxPorString, vocFrio };
+        const base = { total, nAuto, maxPorString, minPorString, vocFrio, vmax };
+        if (micro || total <= 0) return { ...base, nStr: 0, porString: 0, vFrio: 0, vmpStcStr: 0, vmpQuenteStr: 0 };
         const nStr = Number.isFinite(nManual) && nManual >= 1 ? Math.min(Math.round(nManual), total) : nAuto;
         const porString = Math.ceil(total / nStr);
-        return { total, nStr, nAuto, porString, vFrio: porString * vocFrio, maxPorString, vocFrio };
+        const menor = Math.floor(total / nStr);   // string mais curta (divisão desigual)
+        return { ...base, nStr, porString, menor, vFrio: porString * vocFrio,
+                 vmpStcStr: porString * vmpStc, vmpQuenteStr: menor * vmpQuente };
     }
 
     // Estado corrente do sistema (compartilhado entre cálculo e orçamento)
@@ -1197,6 +1315,13 @@
         const warnTx = document.getElementById('metaWarnText');
         const metaInfo = document.getElementById('metaInfo');
 
+        // Orientação/inclinação (card do mapa): perda por desvio da frente dos módulos em relação ao Norte
+        const ori = orientacaoAtual();
+        const fOri = ori.aplicar ? ori.f : 1;
+        STATE.az = ori.az; STATE.tilt = ori.tilt; STATE.fOri = fOri; STATE.fOriCalc = ori.f;
+        document.getElementById('mapOriTxt').textContent =
+            `${rumo(ori.az)} (${ori.az}°) · fator ${fmtBR(ori.f, 3)}${ori.aplicar ? '' : ' (não aplicado)'}`;
+
         // Consumo conhecido (modo consumo): a fatura nunca fica abaixo do custo de
         // disponibilidade, então só o consumo ACIMA dele pode ser compensado.
         let consumo = null;
@@ -1204,7 +1329,7 @@
             consumo = clamp(sanitize(el.target.value, 500), 1, 1e6);
             const descontar = document.getElementById('descDisp').checked;
             const target = descontar ? Math.max(0, consumo - availabilityKWh) : consumo;
-            const requiredKWp = target / (hsp * pr * SOLAR.DAYS_PER_MONTH);
+            const requiredKWp = target / (hsp * pr * SOLAR.DAYS_PER_MONTH * fOri);
             const requiredPanels = Math.max(0, Math.ceil((requiredKWp * 1000) / pPower));
             placed = Math.min(requiredPanels, capacity);
 
@@ -1225,7 +1350,7 @@
 
         const totalPanels = placed;
         const kWp = (totalPanels * pPower) / 1000;
-        const monthlyGen = kWp * hsp * pr * SOLAR.DAYS_PER_MONTH;
+        const monthlyGen = kWp * hsp * pr * SOLAR.DAYS_PER_MONTH * fOri;
         // Energia que efetivamente reduz a fatura:
         //  - consumo conhecido: min(geração, consumo − disponibilidade); o excedente vira crédito;
         //  - só área (consumo desconhecido): assume sistema casado com o consumo → geração − disponibilidade.
@@ -1267,7 +1392,7 @@
             document.getElementById('resInverter').textContent = totalPanels > 0 ? `${STATE.invUnits} micro` : '–';
         } else if (CUSTOM_INV && CUSTOM_INV.kw > 0) {
             // Inversor real informado: sugere quantas unidades cobrem a potência requerida
-            STATE.invUnits = Math.max(1, Math.ceil(inverterKW / CUSTOM_INV.kw));
+            STATE.invUnits = CUSTOM_INV.qtd > 0 ? CUSTOM_INV.qtd : Math.max(1, Math.ceil(inverterKW / CUSTOM_INV.kw));
             document.getElementById('resInverter').textContent = totalPanels > 0
                 ? `${STATE.invUnits} × ${fmtBR(CUSTOM_INV.kw, 1)}` : '–';
         } else {
@@ -1288,7 +1413,7 @@
 
         // Strings: nº automático pelo limite de tensão CC do inversor (Voc corrigido a frio).
         // Antes era fixo em 2 — uma usina de 352 módulos saía "2 × 176", ~9 kV por string.
-        const str = stringDesign(totalPanels, vocStc, invType === 'micro', num('nStringsMan', NaN));
+        const str = stringDesign(totalPanels, vocStc, invType === 'micro', num('nStringsMan', NaN), CUSTOM_INV);
         STATE.nStr = str.nStr; STATE.porString = str.porString; STATE.vStringFrio = str.vFrio;
         STATE.maxPorString = str.maxPorString; STATE.nStrAuto = str.nAuto; STATE.vocStc = vocStc;
         document.getElementById('nStringsMan').placeholder = invType === 'micro' ? '—' : `auto: ${str.nAuto}`;
@@ -1329,13 +1454,29 @@
     function checkEngWarnings(p) {
         const { invACtotal, availKWh, kWp, invType, str, consumo, monthlyGen } = p;
         const w = [];
+        const inv = CUSTOM_INV;
+        const fonteV = (inv && inv.vmax) ? 'do inversor informado' : 'usual (informe o inversor para usar o limite real)';
         if (invType !== 'micro' && str.nStr > 0) {
-            if (str.vFrio > STRINGS.VDC_MAX) {
-                w.push(`String de ${str.porString} módulos chega a ≈ ${Math.round(str.vFrio)} V de Voc a ${STRINGS.TMIN} °C — acima de ${STRINGS.VDC_MAX} V CC. ` +
+            if (str.vFrio > str.vmax) {
+                w.push(`String de ${str.porString} módulos chega a ≈ ${Math.round(str.vFrio)} V de Voc a ${STRINGS.TMIN} °C — acima dos ${str.vmax} V CC ${fonteV}. ` +
                        `Use pelo menos ${str.nAuto} strings (máx. ${str.maxPorString} módulos por string).`);
-            } else if (str.porString < STRINGS.MIN_POR_STRING && str.total >= STRINGS.MIN_POR_STRING) {
-                w.push(`String com ${str.porString} módulo(s): a tensão de MPPT pode ficar abaixo da partida do inversor. Reduza o nº de strings.`);
+            } else if (inv && inv.mpptMax && str.vmpStcStr > inv.mpptMax) {
+                w.push(`Vmp da string ≈ ${Math.round(str.vmpStcStr)} V acima da faixa de MPPT (máx. ${inv.mpptMax} V): o inversor sai do ponto de máxima potência. ` +
+                       `Use no máximo ${str.maxPorString} módulos por string.`);
             }
+            if (str.menor < str.minPorString && str.total >= str.minPorString) {
+                w.push(`String com ${str.menor} módulo(s): Vmp no calor ≈ ${Math.round(str.vmpQuenteStr)} V` +
+                       (inv && inv.mpptMin ? `, abaixo do MPPT mínimo de ${inv.mpptMin} V` : ', provavelmente abaixo da partida do inversor') +
+                       `. Use strings de pelo menos ${str.minPorString} módulos (menos strings).`);
+            }
+            if (inv && inv.nMppt) {
+                const entradas = inv.nMppt * (STATE.invUnits || 1);
+                if (str.nStr > entradas) w.push(`${str.nStr} strings para ${entradas} entrada(s) MPPT: haverá strings em paralelo na mesma entrada — confira a corrente máxima por MPPT no datasheet.`);
+            }
+        }
+        if (inv && inv.pdcMax) {
+            const pdcTotal = inv.pdcMax * (STATE.invUnits || 1);
+            if (kWp > pdcTotal + 1e-9) w.push(`${fmtBR(kWp, 2)} kWp acima da potência CC máxima do(s) inversor(es) (${fmtBR(pdcTotal, 2)} kWp): risco de perda de garantia. Reduza módulos ou aumente o inversor.`);
         }
         // Microgeração vai até 75 kW (REN ANEEL 1.059); acima disso é minigeração
         const kwCA = invACtotal > 0 ? invACtotal : kWp / SOLAR.INVERTER_RATIO;
@@ -1348,7 +1489,7 @@
                 w.push(`Geração ${Math.round(exc)} kWh/mês acima do que a fatura consegue compensar (${Math.round(compensavelMax)} kWh): ` +
                        'o excedente vira crédito (validade de 60 meses) e não entra na economia. Confira se o sistema está superdimensionado.');
         }
-        if (!CUSTOM_INV) w.push('Inversor sem marca/modelo: a distribuidora exige equipamento com registro INMETRO para homologar. Informe o modelo real no card "Equipamento real (IA)".');
+        if (!CUSTOM_INV || /dados do datasheet/.test(CUSTOM_INV.modelo)) w.push('Inversor sem marca/modelo: a distribuidora exige equipamento com registro INMETRO para homologar. Informe o modelo real no card "Equipamento real (IA)".');
         if (STATE.fdi && (STATE.fdi < 1.10 || STATE.fdi > 1.30)) {
             w.push(`FDI de ${fmtBR(STATE.fdi, 2)} fora da faixa usual (1,10–1,30): ` +
                 (STATE.fdi > 1.30 ? 'haverá clipping nos dias de céu limpo.' : 'inversor superdimensionado — custo desnecessário.'));
@@ -1376,7 +1517,7 @@
     let manual = false;   // usuário arrastou manualmente (some corredores-guia)
     let lastSig = '';     // assinatura da geometria — regenera só quando muda
     let view = null;      // transform corrente do canvas (p/ hit-test do arraste)
-    let L = null;         // parâmetros de layout correntes
+    let L = null;         // parâmetros de layout correntes (o Leaflet do mapa é acessado sempre como window.L)
     let dragIndex = -1;   // placa destacada (modo 'placa')
     let dragMode = 'group'; // 'group' = mover conjunto | 'single' = mover uma placa
     let drag = null;      // estado do arraste em andamento
@@ -1442,6 +1583,11 @@
             }
         }
 
+        // Frente dos módulos = topo do croqui (é o que o azimute do mapa gira)
+        ctx.fillStyle = '#E4694F'; ctx.font = '600 11px "IBM Plex Mono", monospace'; ctx.textAlign = 'center';
+        ctx.fillText(`▲ frente dos módulos · ${STATE.az || 0}° ${rumo(STATE.az || 0)}`, canvas.width / 2, 14);
+        ctx.textAlign = 'left';
+
         // Placas
         for (let i = 0; i < panels.length; i++) {
             const p = panels[i];
@@ -1454,6 +1600,7 @@
             ctx.fillStyle = 'rgba(255,255,255,0.14)';
             ctx.fillRect(x + 1, y + 1, w - 2, h / 2 - 1);
         }
+        mapRedrawSoon();
     }
 
     // === ORÇAMENTO ITEMIZADO ===
@@ -1721,6 +1868,8 @@
     const SCHEMA_INVERSOR = { type: 'OBJECT', properties: {
         encontrado: { type: 'BOOLEAN' }, marca: { type: 'STRING' },
         potencia_kw: { type: 'NUMBER' }, eficiencia_pct: { type: 'NUMBER' },
+        tensao_cc_max_v: { type: 'NUMBER' }, mppt_min_v: { type: 'NUMBER' }, mppt_max_v: { type: 'NUMBER' },
+        n_mppt: { type: 'NUMBER' }, potencia_cc_max_kw: { type: 'NUMBER' },
         linha: { type: 'STRING', enum: ['linhaA', 'linhaB', 'linhaC'] },
         observacao: { type: 'STRING' }
     }, required: ['encontrado'] };
@@ -1776,6 +1925,8 @@
             const d = await geminiJson(
                 `Você é um engenheiro fotovoltaico. Retorne os dados de DATASHEET do inversor solar grid-tie "${modelo}". ` +
                 `potencia_kw = potência nominal CA de saída em kW; eficiencia_pct = eficiência máxima em %; ` +
+                `tensao_cc_max_v = tensão CC máxima de entrada (V); mppt_min_v e mppt_max_v = faixa de tensão de MPPT (V); ` +
+                `n_mppt = número de rastreadores MPPT; potencia_cc_max_kw = potência FV máxima recomendada na entrada (kWp); ` +
                 `linha = rede de assistência técnica no Brasil (linhaA = consolidada, ex.: Growatt, Fronius, SMA, Sungrow, Huawei, Solis, Deye, Goodwe; ` +
                 `linhaB = parcial; linhaC = sem suporte local). ` +
                 `Se você NÃO conhecer este modelo com segurança, retorne encontrado=false — NÃO invente números.`,
@@ -1783,7 +1934,9 @@
             if (!d.encontrado) { note.textContent = 'A IA não conhece esse modelo com segurança. Confira a grafia ou deixe o dimensionamento automático.'; return; }
             const kw = sanitize(d.potencia_kw, 0);
             if (!(kw >= 0.3 && kw <= 500)) { note.textContent = `Potência fora do plausível (${kw} kW) — descartada.`; return; }
-            CUSTOM_INV = { marca: d.marca || '', modelo, kw, ef: sanitize(d.eficiencia_pct, 0) };
+            CUSTOM_INV = sanitizeInv({ marca: d.marca || '', modelo, kw, ef: sanitize(d.eficiencia_pct, 0),
+                vmax: d.tensao_cc_max_v, mpptMin: d.mppt_min_v, mpptMax: d.mppt_max_v, nMppt: d.n_mppt, pdcMax: d.potencia_cc_max_kw });
+            fillInvFields(CUSTOM_INV);   // mostra nos campos manuais para conferir/editar com o datasheet
             if (d.linha && EQUIPMENT_TIERS.inversor[d.linha]) { document.getElementById('clsInversor').value = d.linha; applyInversorClass(); }
             note.textContent = `IA: ${d.marca} — ${fmtBR(kw, 1)} kW CA, eficiência ${fmtBR(CUSTOM_INV.ef, 1)}%. ${d.observacao || ''} Confira no datasheet antes de propor.`;
             calculate();
@@ -1808,6 +1961,46 @@
         o.textContent = `${wp} Wp — manual`;
         o.selected = true;
         note.textContent = `Aplicado: ${wp} Wp, ${fmtBR(w, 2)}×${fmtBR(l, 2)} m — o kWp do sistema já reflete estes dados.`;
+        calculate();
+    }
+
+    // === DADOS MANUAIS DO INVERSOR ===
+    // Descarta valores fora do plausível (campo vazio, digitação errada) em vez de usá-los no cálculo.
+    function sanitizeInv(o) {
+        const n = (v, min, max) => { const x = Number(v); return (Number.isFinite(x) && x >= min && x <= max) ? x : 0; };
+        const r = { marca: o.marca || '', modelo: o.modelo || '', kw: n(o.kw, 0.3, 500), ef: n(o.ef, 50, 100),
+                    vmax: n(o.vmax, 100, 1500), mpptMin: n(o.mpptMin, 20, 1500), mpptMax: n(o.mpptMax, 20, 1500),
+                    nMppt: Math.round(n(o.nMppt, 1, 20)), pdcMax: n(o.pdcMax, 0.3, 750), qtd: Math.round(n(o.qtd, 1, 100)) };
+        if (r.mpptMin && r.mpptMax && r.mpptMin >= r.mpptMax) { r.mpptMin = 0; r.mpptMax = 0; }
+        if (r.vmax && r.mpptMax > r.vmax) r.mpptMax = r.vmax;
+        return r;
+    }
+    const INV_FIELDS = { kw: 'invKw', vmax: 'invVmax', pdcMax: 'invPdc', mpptMin: 'invMpptMin', mpptMax: 'invMpptMax', nMppt: 'invNMppt', qtd: 'invQtd' };
+    function fillInvFields(inv) {
+        Object.keys(INV_FIELDS).forEach(k => { document.getElementById(INV_FIELDS[k]).value = (inv && inv[k]) ? inv[k] : ''; });
+    }
+    function aplicarInversorManual() {
+        const note = document.getElementById('invManNote');
+        const raw = {};
+        Object.keys(INV_FIELDS).forEach(k => { raw[k] = document.getElementById(INV_FIELDS[k]).value; });
+        const modelo = document.getElementById('iaModeloInversor').value.trim();
+        const inv = sanitizeInv({ ...raw, marca: (CUSTOM_INV && CUSTOM_INV.marca) || '', modelo: modelo || 'Inversor (dados do datasheet)',
+                                  ef: CUSTOM_INV && CUSTOM_INV.ef });
+        if (!inv.kw) { note.textContent = 'Informe pelo menos a potência CA (0,3 a 500 kW).'; return; }
+        CUSTOM_INV = inv;
+        fillInvFields(inv);   // reflete o que foi aceito (campos inválidos voltam vazios)
+        const partes = [`${fmtBR(inv.kw, 1)} kW CA`];
+        if (inv.vmax) partes.push(`${inv.vmax} V CC máx`);
+        if (inv.mpptMin && inv.mpptMax) partes.push(`MPPT ${inv.mpptMin}–${inv.mpptMax} V`);
+        if (inv.nMppt) partes.push(`${inv.nMppt} MPPT`);
+        if (inv.pdcMax) partes.push(`até ${fmtBR(inv.pdcMax, 1)} kWp`);
+        if (inv.qtd) partes.push(`${inv.qtd} unidade(s)`);
+        note.textContent = `Aplicado: ${partes.join(' · ')}. A verificação das strings passa a usar estes limites.`;
+        calculate();
+    }
+    function limparInversorManual() {
+        CUSTOM_INV = null; fillInvFields(null);
+        document.getElementById('invManNote').textContent = 'Dados do inversor removidos — voltando ao dimensionamento automático.';
         calculate();
     }
 
@@ -2029,6 +2222,8 @@
         t('pqFioB', s.fioBTar > 0 ? `${brl(s.fioBTar)}/kWh · ${Math.round(s.pctFioB * 100)}% em ${s.anoBase}` : 'não informado');
         t('pqLigacao', s.ligacao);
         t('pqReaj', `${fmtBR(s.adj, 1)}% a.a. / 0,6% a.a.`);
+        t('pqOri', `${rumo(s.az || 0)} (${s.az || 0}°) / ${fmtBR(s.tilt || 0, 0)}° · fator ${fmtBR(s.fOri || 1, 3)}`);
+        t('pqCoord', MAPA.placed ? `${MAPA.cLat.toFixed(5).replace('.', ',')}; ${MAPA.cLng.toFixed(5).replace('.', ',')}` : 'a definir na visita');
 
         // Disposição das placas (imagem do canvas ao vivo) — vai para o relatório
         try {
@@ -2068,12 +2263,13 @@
         'clsModulo','clsInversor','modoPrModulo','modoPrInversor','prModuloWp','prInversorKW',
         'distModInv','distInvQGBT','nStringsMan','wpOutra','prCaboCC','prCaboCA','prCaboTerra','prConector','prEletroduto',
         'prArt','prEstruturaUn','prProtecao','prMaoObraKWp','prMargem',
-        'clientName','clientCity','propNum','propValid','propNotes','iaModeloModulo','iaModeloInversor'];
+        'clientName','clientCity','propNum','propValid','propNotes','iaModeloModulo','iaModeloInversor','mapAz','mapTilt'];
     const PERSIST_TILES = ['modeGroup','structureGroup','orientationGroup','invTypeGroup'];
 
     function snapshotState() {
         const o = { v: 1, inputs: {}, tiles: {}, inv: CUSTOM_INV || null,
-                    flags: { descDisp: document.getElementById('descDisp').checked },
+                    flags: { descDisp: document.getElementById('descDisp').checked, mapAplicar: document.getElementById('mapAplicar').checked },
+                    mapa: { lat: MAPA.lat, lng: MAPA.lng, zoom: MAPA.zoom, cLat: MAPA.cLat, cLng: MAPA.cLng, placed: MAPA.placed },
                     panel: { custom: (STATE.customPanelActive && CUSTOM_PANEL) ? CUSTOM_PANEL : null, value: el.panel.value } };
         PERSIST_INPUTS.forEach(id => { const e = document.getElementById(id); if (e) o.inputs[id] = e.value; });
         PERSIST_TILES.forEach(g => o.tiles[g] = tileValue(g));
@@ -2090,7 +2286,8 @@
         RESTORING = true;
         try {
             PERSIST_INPUTS.forEach(id => { const e = document.getElementById(id); if (e && o.inputs && o.inputs[id] != null) e.value = o.inputs[id]; });
-            CUSTOM_INV = o.inv || null;
+            CUSTOM_INV = o.inv ? sanitizeInv(o.inv) : null;
+            fillInvFields(CUSTOM_INV);
             if (o.panel && o.panel.custom) {
                 const d = o.panel.custom; CUSTOM_PANEL = d;
                 let op = document.getElementById('optCustomPanel');
@@ -2109,6 +2306,11 @@
                 if (e && o.inputs && o.inputs[id] != null && !e.disabled) e.value = o.inputs[id];
             });
             if (o.flags && typeof o.flags.descDisp === 'boolean') document.getElementById('descDisp').checked = o.flags.descDisp;
+            if (o.flags && typeof o.flags.mapAplicar === 'boolean') document.getElementById('mapAplicar').checked = o.flags.mapAplicar;
+            if (o.mapa && Number.isFinite(o.mapa.lat)) Object.assign(MAPA, o.mapa);
+            MAPA.placed = !!(MAPA.placed && Number.isFinite(MAPA.cLat) && Number.isFinite(MAPA.cLng));
+            document.getElementById('mapAzRange').value = document.getElementById('mapAz').value;
+            document.getElementById('btnMapRemover').disabled = !(map && MAPA.placed);
             applyModuloClass(true); applyInversorClass(true);
         } finally { RESTORING = false; }
         calculate();
@@ -2212,6 +2414,8 @@
     document.getElementById('adjInput').addEventListener('input', calculate);
     document.getElementById('fioBTarifa').addEventListener('input', calculate);
     document.getElementById('btnManApply').addEventListener('click', aplicarManual);
+    document.getElementById('btnInvManApply').addEventListener('click', aplicarInversorManual);
+    document.getElementById('btnInvManClear').addEventListener('click', limparInversorManual);
     document.getElementById('btnIaLink').addEventListener('click', buscarPrecoLink);
 
     // Modelos de condições → preenche as observações
@@ -2327,6 +2531,161 @@
         fillProposal();
         window.print();
     });
+
+    // === IMPLANTAÇÃO NO MAPA (Leaflet + satélite) ===
+    // O croqui (terreno + módulos, em metros) é projetado sobre o mapa a partir de um ponto central,
+    // girado pelo azimute da frente dos módulos (topo do croqui = frente; 0° = Norte, sentido horário).
+    // Leaflet só é carregado quando o usuário abre o mapa — o simulador não depende dele.
+    const LEAFLET_JS = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js';
+    const LEAFLET_CSS = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css';
+    const MAPA = { lat: -16.6869, lng: -49.2648, zoom: 18, cLat: null, cLng: null, placed: false };  // padrão: Goiânia
+    let map = null, mapLayer = null, mapDrag = null, mapRaf = 0;
+
+    function loadLeaflet() {
+        if (window.L) return Promise.resolve();
+        return new Promise((ok, fail) => {
+            const css = document.createElement('link'); css.rel = 'stylesheet'; css.href = LEAFLET_CSS; css.crossOrigin = 'anonymous';
+            document.head.appendChild(css);
+            const js = document.createElement('script'); js.src = LEAFLET_JS; js.crossOrigin = 'anonymous';
+            js.onload = ok; js.onerror = () => fail(new Error('não foi possível carregar o mapa (sem internet?)'));
+            document.head.appendChild(js);
+        });
+    }
+
+    // Metros no croqui (x → direita, y → baixo, origem no canto do terreno) → lat/lng
+    function croquiToLatLng(x, y) {
+        const az = (STATE.az || 0) * Math.PI / 180;
+        const e = x - L.wTerreno / 2, n = -(y - L.lTerreno / 2);          // topo do croqui = frente
+        const e2 = e * Math.cos(az) + n * Math.sin(az);
+        const n2 = -e * Math.sin(az) + n * Math.cos(az);
+        const lat = MAPA.cLat + n2 / 111320;
+        const lng = MAPA.cLng + e2 / (111320 * Math.cos(MAPA.cLat * Math.PI / 180));
+        return [lat, lng];
+    }
+    const rect = (x, y, w, h) => [croquiToLatLng(x, y), croquiToLatLng(x + w, y), croquiToLatLng(x + w, y + h), croquiToLatLng(x, y + h)];
+
+    function mapRedraw() {
+        if (!map || !window.L || !L) return;
+        if (!mapLayer) mapLayer = window.L.layerGroup().addTo(map);
+        mapLayer.clearLayers();
+        if (!MAPA.placed) return;
+        const LL = window.L;
+        const terreno = LL.polygon(rect(0, 0, L.wTerreno, L.lTerreno),
+            { color: '#E8F0F8', weight: 1.5, dashArray: '6 4', fillColor: '#0A1B2E', fillOpacity: 0.15 });
+        const grupo = [terreno];
+        panels.forEach(p => grupo.push(LL.polygon(rect(p.x, p.y, L.pW, L.pL),
+            { color: '#0A1B2E', weight: 0.6, fillColor: '#2C7BE5', fillOpacity: 0.85 })));
+        // Seta da frente dos módulos: do centro até além da borda superior do croqui
+        const ponta = croquiToLatLng(L.wTerreno / 2, -Math.max(2, L.lTerreno * 0.15));
+        grupo.push(LL.polyline([croquiToLatLng(L.wTerreno / 2, L.lTerreno / 2), ponta], { color: '#E4694F', weight: 3 }));
+        grupo.push(LL.marker(ponta, { interactive: false, icon: LL.divIcon({ className: '', iconSize: null,
+            html: `<span class="ek-map-lbl">Frente ${STATE.az}° · ${rumo(STATE.az)}</span>` }) }));
+        grupo.forEach(l => {
+            l.addTo(mapLayer);
+            if (l.on) l.on('mousedown', mapDragStart);
+        });
+    }
+    // Redesenho coalescido (o croqui chama a cada quadro durante o arraste)
+    function mapRedrawSoon() { if (!map) return; cancelAnimationFrame(mapRaf); mapRaf = requestAnimationFrame(mapRedraw); }
+
+    // Arraste do conjunto no mapa: o ponto central acompanha o deslocamento do cursor
+    function mapDragStart(e) {
+        if (!MAPA.placed) return;
+        window.L.DomEvent.stop(e);
+        map.dragging.disable();
+        mapDrag = { lat0: e.latlng.lat, lng0: e.latlng.lng, cLat: MAPA.cLat, cLng: MAPA.cLng };
+        map.on('mousemove', mapDragMove);
+        map.once('mouseup', mapDragEnd);
+    }
+    function mapDragMove(e) {
+        if (!mapDrag) return;
+        MAPA.cLat = mapDrag.cLat + (e.latlng.lat - mapDrag.lat0);
+        MAPA.cLng = mapDrag.cLng + (e.latlng.lng - mapDrag.lng0);
+        mapRedrawSoon();
+    }
+    function mapDragEnd() {
+        mapDrag = null; map.off('mousemove', mapDragMove); map.dragging.enable();
+        schedulePersist();
+    }
+
+    async function abrirMapa() {
+        const note = document.getElementById('mapNote');
+        try {
+            await loadLeaflet();
+        } catch (e) { note.textContent = `Erro: ${e.message}`; return; }
+        const box = document.getElementById('mapBox');
+        box.classList.remove('hidden');
+        if (!map) {
+            const LL = window.L;
+            map = LL.map(box, { preferCanvas: true, zoomControl: true }).setView([MAPA.lat, MAPA.lng], MAPA.zoom);
+            const sat = LL.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+                { maxNativeZoom: 19, maxZoom: 21, attribution: 'Imagem © Esri, Maxar, Earthstar Geographics' }).addTo(map);
+            const ruas = LL.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                { maxNativeZoom: 19, maxZoom: 21, attribution: '© OpenStreetMap' });
+            LL.control.layers({ 'Satélite': sat, 'Ruas': ruas }, null, { position: 'topright' }).addTo(map);
+            LL.control.scale({ imperial: false }).addTo(map);
+            map.on('moveend', () => { const c = map.getCenter(); MAPA.lat = c.lat; MAPA.lng = c.lng; MAPA.zoom = map.getZoom(); schedulePersist(); });
+        }
+        setTimeout(() => map.invalidateSize(), 0);
+        if (MAPA.placed) { map.setView([MAPA.cLat, MAPA.cLng], Math.max(map.getZoom(), 18)); }
+        document.getElementById('btnMapInserir').disabled = false;
+        document.getElementById('btnMapRemover').disabled = !MAPA.placed;
+        note.textContent = 'Arraste o arranjo (no celular, mova o mapa e use "Inserir no centro"). Gire pelo campo "Frente dos módulos". ' +
+                           'Imagem: Esri World Imagery · busca de endereço: OpenStreetMap (o texto digitado é enviado a esse serviço).';
+        mapRedraw();
+    }
+
+    function inserirNoMapa() {
+        if (!map) return;
+        if (!STATE.placed) { document.getElementById('mapNote').textContent = 'Nenhum módulo no arranjo — ajuste a área ou a meta primeiro.'; return; }
+        const c = map.getCenter();
+        MAPA.cLat = c.lat; MAPA.cLng = c.lng; MAPA.placed = true;
+        if (map.getZoom() < 18) map.setZoom(19);
+        document.getElementById('btnMapRemover').disabled = false;
+        mapRedraw(); schedulePersist(); calculate();
+    }
+    function removerDoMapa() {
+        MAPA.placed = false; document.getElementById('btnMapRemover').disabled = true;
+        mapRedraw(); schedulePersist(); calculate();
+    }
+
+    async function buscarNoMapa() {
+        const q = (document.getElementById('mapBusca').value || '').trim();
+        const note = document.getElementById('mapNote');
+        if (!q) { note.textContent = 'Digite um endereço ou coordenadas.'; return; }
+        if (!map) await abrirMapa();
+        if (!map) return;
+        // Coordenadas coladas do Google Maps: "-17.88, -51.72"
+        const m = q.match(/^\s*(-?\d{1,2}(?:[.,]\d+)?)\s*[,;\s]\s*(-?\d{1,3}(?:[.,]\d+)?)\s*$/);
+        if (m) {
+            const lat = parseFloat(m[1].replace(',', '.')), lng = parseFloat(m[2].replace(',', '.'));
+            if (Math.abs(lat) <= 90 && Math.abs(lng) <= 180) { map.setView([lat, lng], 19); note.textContent = 'Coordenadas localizadas.'; return; }
+        }
+        note.textContent = 'Buscando endereço…';
+        try {
+            const r = await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=br&q=' + encodeURIComponent(q),
+                                  { headers: { 'Accept-Language': 'pt-BR' } });
+            const d = await r.json();
+            if (!r.ok || !d.length) { note.textContent = 'Endereço não encontrado — tente "rua, número, cidade" ou cole as coordenadas do Google Maps.'; return; }
+            map.setView([parseFloat(d[0].lat), parseFloat(d[0].lon)], 19);
+            note.textContent = `Localizado: ${d[0].display_name}. Confira na imagem e ajuste.`;
+        } catch (e) { note.textContent = 'Falha na busca de endereço — cole as coordenadas do Google Maps.'; }
+    }
+
+    (function initMapa() {
+        const az = document.getElementById('mapAz'), azR = document.getElementById('mapAzRange');
+        const setAz = v => { const a = ((Math.round(v) % 360) + 360) % 360; az.value = a; azR.value = a; calculate(); schedulePersist(); };
+        az.addEventListener('input', () => setAz(sanitize(az.value, 0)));
+        azR.addEventListener('input', () => setAz(sanitize(azR.value, 0)));
+        document.querySelectorAll('.map-step').forEach(b => b.addEventListener('click', () => setAz(sanitize(az.value, 0) + Number(b.dataset.azStep))));
+        ['mapTilt'].forEach(id => document.getElementById(id).addEventListener('input', () => { calculate(); schedulePersist(); }));
+        document.getElementById('mapAplicar').addEventListener('change', () => { calculate(); schedulePersist(); });
+        document.getElementById('btnMapAbrir').addEventListener('click', abrirMapa);
+        document.getElementById('btnMapInserir').addEventListener('click', inserirNoMapa);
+        document.getElementById('btnMapRemover').addEventListener('click', removerDoMapa);
+        document.getElementById('btnMapBuscar').addEventListener('click', buscarNoMapa);
+        document.getElementById('mapBusca').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); buscarNoMapa(); } });
+    })();
 
     // === ARRASTAR PLACAS (mouse + toque) ===
     (function initDrag() {

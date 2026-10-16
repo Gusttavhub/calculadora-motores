@@ -127,12 +127,18 @@ N_placas = ⌈ kWp_nec · 1000 / W_módulo ⌉</div>
 ≥ 640 Wp → 132 cél. 210 mm (2,384 × 1,303 m)</div>
 
         <h2><span>04</span>Geração mensal estimada</h2>
-        <div class="formula">E [kWh/mês] = P_pico · HSP · PR · 30,42</div>
+        <div class="formula">E [kWh/mês] = P_pico · HSP · PR · 30,42 · f_orientação</div>
         <ul>
             <li><strong>HSP</strong> — Horas de Sol Pleno (kWh/m²·dia) do local. Fonte recomendada: banco de dados do CRESESB para a cidade do projeto. Padrão da ferramenta: 4,8.</li>
             <li><strong>PR</strong> — Performance Ratio (taxa de desempenho global do sistema: temperatura, sujeira, cabeamento, conversão). Padrão: 80%, faixa usual 75–85%.</li>
             <li><strong>30,42</strong> — dias médios por mês (365 ÷ 12), em vez do mês comercial de 30 dias.</li>
+            <li><strong>f_orientação</strong> — perda pelo desvio da frente dos módulos em relação ao Norte (definida no card "Implantação no mapa"). Aproximação para o Centro-Oeste (latitude ≈ 16° S), proporcional à inclinação <span class="var">β</span>:</li>
         </ul>
+        <div class="formula">Δ = desvio do azimute em relação ao Norte (0–180°)
+f_orientação = 1 − 0,0044 · β · (1 − cos Δ)
+β = 15°: Norte 1,000 · NE/NO 0,981 · Leste/Oeste 0,934 · Sul 0,868</div>
+        <p>É uma estimativa de pré-dimensionamento; o projeto executivo usa transposição de irradiação para o plano real (ex.: PVsyst, SAM ou o próprio CRESESB no ângulo do telhado). No modo consumo o fator também entra no cálculo do número de placas. A opção pode ser desligada.</p>
+        <p><strong>Implantação no mapa.</strong> O croqui (área informada + módulos, em metros) é projetado sobre imagem de satélite a partir de um ponto central e girado pelo azimute da frente (topo do croqui), em sentido horário a partir do Norte. A conversão usa 111.320 m por grau de latitude e 111.320 · cos(lat) m por grau de longitude — erro desprezível na escala de um telhado. As coordenadas e a orientação vão para as premissas da proposta.</p>
 
         <h2><span>05</span>Economia mensal e Fio B (Lei 14.300/2022)</h2>
         <div class="formula">Compensável = min(E, C − D)        (consumo C conhecido — modo consumo)
@@ -155,9 +161,13 @@ tarifa_líquida = max(0, tarifa − TUSD_FioB × percentual_do_ano)</div>
         <p><strong>FDI — fator de dimensionamento do inversor.</strong> Quando o inversor real é informado, o simulador calcula e exibe:</p>
         <div class="formula">FDI = P_pico [kWp] / P_CA_instalada [kW]</div>
         <p><strong>Strings (inversor string).</strong> O número de strings é calculado pelo limite de tensão CC do inversor, com o Voc corrigido para a temperatura mínima de projeto:</p>
-        <div class="formula">Voc_frio = Voc_STC × (1 + β × (T_min − 25))   β = −0,28 %/°C · T_min = 0 °C
-máx_por_string = ⌊ 1000 V / Voc_frio ⌋
-N_strings = ⌈ N_placas / máx_por_string ⌉   (ou o valor digitado)</div>
+        <div class="formula">Voc_frio = Voc_STC × (1 + β_Voc × (T_min − 25))     β_Voc = −0,28 %/°C · T_min = 0 °C
+Vmp_STC = 0,82 · Voc_STC
+Vmp_quente = Vmp_STC × (1 + β_Vmp × (70 − 25))   β_Vmp = −0,34 %/°C
+máx_por_string = min( ⌊ V_CC,máx / Voc_frio ⌋ , ⌊ MPPT_máx / Vmp_STC ⌋ )
+mín_por_string = ⌈ MPPT_mín / Vmp_quente ⌉          (sem dado do inversor: 4)
+N_strings = ⌈ N_placas / máx_por_string ⌉            (ou o valor digitado)</div>
+        <p>Com o inversor informado (campos manuais do datasheet ou IA), entram os limites dele: tensão CC máxima, faixa de MPPT, nº de entradas MPPT, potência CC máxima e quantidade de unidades. Sem inversor informado, usa-se 1000 V. Alertas: string acima da tensão máxima a frio; Vmp acima da faixa de MPPT; string curta demais para a partida no calor; mais strings que entradas (paralelo na mesma entrada — conferir corrente); kWp acima da potência CC máxima do inversor (risco de garantia).</p>
         <p>Se o nº de strings for informado manualmente e a string passar de 1000 V a frio, ou ficar com menos de 4 módulos (tensão de MPPT abaixo da partida), o simulador alerta. É pré-dimensionamento: o projeto executivo confere com a janela de MPPT, a tensão máxima e a corrente por entrada do inversor escolhido.</p>
         <p><strong>Micro × minigeração.</strong> Acima de 75 kW CA a conexão é de minigeração (média tensão, estudo de acesso, relé de proteção, subestação) — custos fora do orçamento desta ferramenta; o simulador alerta.</p>
         <p>Faixa usual: <strong>1,10 a 1,30</strong>. Acima disso há clipping (perda de pico nos dias claros); abaixo, o inversor está superdimensionado. Fora da faixa, a ferramenta emite alerta. Sem marca/modelo definidos o FDI não é calculado — e a proposta não deve ser enviada, pois a homologação exige equipamento com registro INMETRO.</p>
