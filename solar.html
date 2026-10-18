@@ -335,6 +335,18 @@
                                 <input type="number" id="wpOutra" min="100" max="800" step="5" value="560" class="num-in">
                                 <p id="wpOutraNote" class="text-[10px] text-sky mt-1 leading-snug">—</p>
                             </div>
+                            <div class="mt-2">
+                                <p class="text-[10px] font-semibold text-muted uppercase mb-1">Dimensões da placa (datasheet)</p>
+                                <div class="grid grid-cols-3 gap-2">
+                                    <div><label for="dimL" class="text-[9px] text-muted uppercase block mb-0.5">Comprimento (mm)</label>
+                                        <input type="number" id="dimL" min="500" max="3000" step="1" class="num-in"></div>
+                                    <div><label for="dimW" class="text-[9px] text-muted uppercase block mb-0.5">Largura (mm)</label>
+                                        <input type="number" id="dimW" min="500" max="3000" step="1" class="num-in"></div>
+                                    <div><label for="dimVoc" class="text-[9px] text-muted uppercase block mb-0.5">Voc (V)</label>
+                                        <input type="number" id="dimVoc" min="10" max="100" step="0.01" class="num-in"></div>
+                                </div>
+                                <p id="dimNote" class="text-[10px] text-muted mt-1 leading-snug">Preenchidas pelo modelo escolhido. Altere com os valores da ficha técnica (aceita mm ou metros).</p>
+                            </div>
                             <p id="panelNote" class="text-[10px] text-muted mt-1.5">—</p>
                         </div>
 
@@ -1163,6 +1175,36 @@
         return out.filter(x => x > 0);
     }
 
+    // === DIMENSÕES DA PLACA (campos editáveis) ===
+    // Ficha técnica traz mm (2382 × 1134); aceita metros também (2,382). Fora do plausível → ignora.
+    function lerMetros(id) {
+        let v = parseFloat(String(document.getElementById(id).value).replace(',', '.'));
+        if (!Number.isFinite(v)) return 0;
+        if (v > 10) v = v / 1000;                 // veio em mm
+        return (v >= 0.5 && v <= 3) ? v : 0;
+    }
+    function dimsDigitadas() {
+        const voc = parseFloat(String(document.getElementById('dimVoc').value).replace(',', '.'));
+        return { l: lerMetros('dimL'), w: lerMetros('dimW'), voc: (voc >= 10 && voc <= 100) ? voc : 0 };
+    }
+    function fillDims(d) {
+        document.getElementById('dimL').value = d.l ? Math.round(d.l * 1000) : '';
+        document.getElementById('dimW').value = d.w ? Math.round(d.w * 1000) : '';
+        document.getElementById('dimVoc').value = d.voc ? Math.round(d.voc * 100) / 100 : '';
+    }
+    // Valores do modelo atualmente escolhido na lista (sem as edições do usuário)
+    function dimsDoModelo() {
+        const opt = el.panel.options[el.panel.selectedIndex];
+        if (opt && opt.id === 'optOutra') {
+            const fam = moduleFamily(clamp(sanitize(document.getElementById('wpOutra').value, 560), 100, 800));
+            return { l: fam.l, w: fam.w, voc: fam.voc };
+        }
+        const wp = sanitize(opt && opt.value, 550), l = sanitize(opt && opt.dataset.l, 2.278), w = sanitize(opt && opt.dataset.w, 1.134);
+        const custom = opt && opt.id === 'optCustomPanel' && CUSTOM_PANEL;
+        return { l, w, voc: sanitize(opt && opt.dataset.voc, 0) || (custom && CUSTOM_PANEL.voc) || moduleFamily(wp, l).voc };
+    }
+    function resetDims() { fillDims(dimsDoModelo()); }
+
     // Formato de célula típico por faixa de potência (datasheets 2024–2026). Usado quando
     // só a potência é conhecida. lHint (comprimento) separa 108 células de 144 na faixa < 480 Wp.
     function moduleFamily(wp, lHint) {
@@ -1322,7 +1364,7 @@
             pW_raw = fam.w; pL_raw = fam.l; vocStc = fam.voc;
             document.getElementById('wpOutraNote').textContent =
                 `Formato estimado: ${fam.nome} — ${fmtBR(fam.l, 2)} × ${fmtBR(fam.w, 2)} m, Voc ≈ ${fmtBR(fam.voc, 1)} V. ` +
-                'Para outro tamanho, use "dados manuais" no card Equipamento real.';
+                'Para outro tamanho, edite as dimensões logo abaixo.';
         } else {
             pPower = sanitize(opt.value, 550);
             pW_raw = sanitize(opt.dataset.w, 1.134);
@@ -1330,6 +1372,23 @@
             vocStc = sanitize(opt.dataset.voc, 0) ||
                      ((STATE.customPanelActive && CUSTOM_PANEL && CUSTOM_PANEL.voc) || moduleFamily(pPower, pL_raw).voc);
         }
+        // Dimensões e Voc digitados (datasheet) têm prioridade sobre os do modelo escolhido
+        // (campo vazio ou inválido usa o valor do modelo; não reescreve o campo enquanto o usuário digita)
+        const dim = dimsDigitadas();
+        const invalido = ['dimL', 'dimW', 'dimVoc'].some(id => document.getElementById(id).value !== '') &&
+                         ((document.getElementById('dimL').value !== '' && !dim.l) || (document.getElementById('dimW').value !== '' && !dim.w) ||
+                          (document.getElementById('dimVoc').value !== '' && !dim.voc));
+        const editado = (dim.l && Math.abs(dim.l - pL_raw) > 0.0005) || (dim.w && Math.abs(dim.w - pW_raw) > 0.0005) ||
+                        (dim.voc && Math.abs(dim.voc - vocStc) > 0.005);
+        if (dim.l) pL_raw = dim.l;
+        if (dim.w) pW_raw = dim.w;
+        if (dim.voc) vocStc = dim.voc;
+        document.getElementById('dimNote').textContent = invalido
+            ? 'Valor fora do plausível (comprimento e largura entre 500 e 3000 mm; Voc entre 10 e 100 V) — usando o valor do modelo nesse campo.'
+            : editado
+                ? 'Dimensões editadas (ficha técnica) — área, arranjo e strings usam estes valores. Trocar o modelo volta aos valores dele.'
+                : 'Preenchidas pelo modelo escolhido. Altere com os valores da ficha técnica (aceita mm ou metros).';
+        document.getElementById('dimNote').className = 'text-[10px] mt-1 leading-snug ' + (invalido ? 'text-alert' : editado ? 'text-sky' : 'text-muted');
         document.getElementById('panelNote').textContent =
             `${pPower} Wp · ${fmtBR(pL_raw, 3)} × ${fmtBR(pW_raw, 3)} m (${fmtBR(pL_raw * pW_raw, 2)} m²) · ` +
             `eficiência ≈ ${fmtBR(pPower / (pL_raw * pW_raw) / 10, 1)}% · Voc ${fmtBR(vocStc, 1)} V`;
@@ -1970,6 +2029,7 @@
             opt2.value = wp; opt2.dataset.w = w; opt2.dataset.l = l;
             opt2.textContent = `${wp} Wp — ${d.marca || modelo} (IA)`;
             opt2.selected = true;
+            resetDims();
             if (d.tier && EQUIPMENT_TIERS.modulo[d.tier]) { document.getElementById('clsModulo').value = d.tier; applyModuloClass(); }
             note.textContent = `IA: ${d.marca} — ${wp} Wp, ${fmtBR(w, 2)}×${fmtBR(l, 2)} m, eficiência ${fmtBR(CUSTOM_PANEL.ef, 1)}%. ${d.observacao || ''} Confira no datasheet antes de propor.`;
             calculate();
@@ -2024,6 +2084,7 @@
         o.value = wp; o.dataset.w = w; o.dataset.l = l;
         o.textContent = `${wp} Wp — manual`;
         o.selected = true;
+        resetDims();
         note.textContent = `Aplicado: ${wp} Wp, ${fmtBR(w, 2)}×${fmtBR(l, 2)} m — o kWp do sistema já reflete estes dados.`;
         calculate();
     }
@@ -2343,7 +2404,7 @@
         'clsModulo','clsInversor','modoPrModulo','modoPrInversor','prModuloWp','prInversorKW',
         'distModInv','distInvQGBT','nStringsMan','wpOutra','prCaboCC','prCaboCA','prCaboTerra','prConector','prEletroduto',
         'prArt','prEstruturaUn','prProtecao','prMaoObraKWp','prMargem',
-        'clientName','clientCity','propNum','propValid','propNotes','iaModeloModulo','iaModeloInversor','mapAz','mapTilt','nModFix'];
+        'clientName','clientCity','propNum','propValid','propNotes','iaModeloModulo','iaModeloInversor','mapAz','mapTilt','nModFix','dimL','dimW','dimVoc'];
     const PERSIST_TILES = ['modeGroup','structureGroup','orientationGroup','invTypeGroup'];
 
     function snapshotState() {
@@ -2388,6 +2449,7 @@
                 const e = document.getElementById(id);
                 if (e && o.inputs && o.inputs[id] != null && !e.disabled) e.value = o.inputs[id];
             });
+            if (!document.getElementById('dimL').value) resetDims();   // estado salvo antes dos campos de dimensão
             if (o.flags && typeof o.flags.descDisp === 'boolean') document.getElementById('descDisp').checked = o.flags.descDisp;
             if (o.flags && typeof o.flags.mapAplicar === 'boolean') document.getElementById('mapAplicar').checked = o.flags.mapAplicar;
             if (o.flags && typeof o.flags.optNoPdf === 'boolean') document.getElementById('optNoPdf').checked = o.flags.optNoPdf;
@@ -2625,7 +2687,11 @@
     [el.width, el.length, el.margin, el.hsp, el.pr, el.rate, el.corridor, el.target].forEach(
         input => input.addEventListener('input', calculate)
     );
+    // Trocar o modelo volta as dimensões para as dele (registrado antes do recálculo)
+    el.panel.addEventListener('change', resetDims);
     [el.panel, el.phase].forEach(sel => sel.addEventListener('change', calculate));
+    ['dimL', 'dimW', 'dimVoc'].forEach(id => document.getElementById(id).addEventListener('input', calculate));
+    document.getElementById('wpOutra').addEventListener('input', () => { resetDims(); calculate(); });
 
     // Preços recalculam só o orçamento (não mexem no sistema)
     ['prModuloWp','prInversorKW','prEstruturaUn','prProtecao','prMaoObraKWp','prMargem','prArt',
@@ -3107,6 +3173,7 @@
         manual = false; lastSig = ''; calculate();
     });
 
+    resetDims();   // 1ª carga: campos de dimensão com os valores do modelo padrão
     calculate();
 
     // Preços ao vivo (Fase 2) — carrega em paralelo, não bloqueia o primeiro render.
