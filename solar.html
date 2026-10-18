@@ -93,6 +93,8 @@
         .px-1 { padding-left: .25rem; padding-right: .25rem; }
         #optList > li + li { margin-top: .25rem; }
         button:disabled { opacity: .5; cursor: not-allowed; }
+        .ek-direto { display: inline-flex; align-items: center; gap: 4px; margin-top: 2px; font-size: 10px; color: #8CA3BC; cursor: pointer; }
+        .ek-direto input { accent-color: #2C7BE5; }
         #mapBox .leaflet-container { font-family: 'Inter', system-ui, sans-serif; }
         /* A regra global 'canvas { max-width:100% }' encolhia o canvas do Leaflet a 0 px (módulos sumiam) */
         #mapBox canvas, #mapBox img { max-width: none !important; }
@@ -621,6 +623,7 @@
                         <div>
                             <h3 class="font-display font-bold text-lg tracking-wide text-fg">COMPOSIÇÃO DE CUSTOS</h3>
                             <p class="text-[11px] text-muted mt-1">Valores de referência (2026) — <span class="text-sky">ajuste com seus fornecedores</span>. O cálculo usa os seus números.</p>
+                            <p class="text-[11px] text-muted mt-1">Marque <strong class="text-fg">faturado direto ao cliente</strong> nos itens que o cliente compra do fornecedor em nome dele (ex.: kit no CPF do cliente). Esses itens entram no investimento pelo custo, sem a sua margem.</p>
                         </div>
                     </div>
 
@@ -630,6 +633,7 @@
                             <div class="grid grid-cols-12 gap-2 items-center">
                                 <div class="col-span-6">
                                     <p class="text-sm font-semibold text-fg">Módulos fotovoltaicos</p>
+                                    <label class="ek-direto"><input type="checkbox" data-direto="modulos"> faturado direto ao cliente</label>
                                     <p class="text-[10px] text-muted font-mono" id="ctxModulos">— un · — Wp</p>
                                 </div>
                                 <div class="col-span-6">
@@ -665,6 +669,7 @@
                             <div class="grid grid-cols-12 gap-2 items-center">
                                 <div class="col-span-6">
                                     <p class="text-sm font-semibold text-fg">Inversor</p>
+                                    <label class="ek-direto"><input type="checkbox" data-direto="inversor"> faturado direto ao cliente</label>
                                     <p class="text-[10px] text-muted font-mono" id="ctxInversor">— kW</p>
                                 </div>
                                 <div class="col-span-6">
@@ -700,6 +705,7 @@
                             <div class="flex items-start justify-between gap-2 mb-2">
                                 <div>
                                     <p class="text-sm font-semibold text-fg">Cabeamento</p>
+                                    <label class="ek-direto"><input type="checkbox" data-direto="cabo"> faturado direto ao cliente</label>
                                     <p class="text-[10px] text-muted">CC e CA calculados por metro de condutor (NBR 16612 / NBR 5410).</p>
                                 </div>
                                 <p class="font-mono text-sm text-fg" id="stCabo">R$ 0,00</p>
@@ -764,6 +770,7 @@
                         <div class="grid grid-cols-12 gap-2 items-center">
                             <div class="col-span-6">
                                 <p class="text-sm font-semibold text-fg">Estrutura de fixação</p>
+                                <label class="ek-direto"><input type="checkbox" data-direto="estrutura"> faturado direto ao cliente</label>
                                 <p class="text-[10px] text-muted font-mono" id="ctxEstrutura">— un</p>
                             </div>
                             <div class="col-span-3">
@@ -779,6 +786,7 @@
                         <div class="grid grid-cols-12 gap-2 items-center">
                             <div class="col-span-6">
                                 <p class="text-sm font-semibold text-fg">Proteção CC/CA (string box, DPS)</p>
+                                <label class="ek-direto"><input type="checkbox" data-direto="protecao"> faturado direto ao cliente</label>
                                 <p class="text-[10px] text-muted font-mono">valor total</p>
                             </div>
                             <div class="col-span-3">
@@ -814,7 +822,7 @@
                         <div class="grid grid-cols-12 gap-2 items-center">
                             <div class="col-span-6">
                                 <p class="text-sm font-semibold text-fg">Margem / lucro do projeto</p>
-                                <p class="text-[10px] text-muted font-mono">sobre o custo · no PDF fica embutida nos itens</p>
+                                <p class="text-[10px] text-muted font-mono">sobre o que você fatura · no PDF fica embutida nos itens</p>
                             </div>
                             <div class="col-span-3">
                                 <label class="text-[9px] text-muted uppercase block mb-0.5">%</label>
@@ -834,6 +842,7 @@
                         <p class="text-[10px] font-semibold text-sky uppercase tracking-widest mb-2">Preço sugerido ao cliente</p>
                         <div class="font-mono text-4xl font-bold text-fg" id="stPreco">R$ 0,00</div>
                         <p class="text-[11px] text-muted mt-2 font-mono"><span id="stPrecoKwp">R$ 0</span>/kWp instalado</p>
+                        <p id="stSplit" class="hidden text-[11px] text-sky mt-1 font-mono leading-snug"></p>
                         <p class="text-[11px] text-muted mt-1 font-mono">Payback simples: <span id="stPayback" class="text-signal">–</span></p>
                     </div>
 
@@ -1085,7 +1094,7 @@
                     <tr><td>Inversor</td><td id="pdInversor">—</td><td class="r" id="pvInversor">—</td></tr>
                     <tr><td>Estrutura de fixação</td><td id="pdEstrutura">—</td><td class="r" id="pvEstrutura">—</td></tr>
                     <tr><td>Cabeamento CC + CA</td><td id="pdCabo">—</td><td class="r" id="pvCabo">—</td></tr>
-                    <tr><td>Proteção CC/CA</td><td>String box, DPS, disjuntores e aterramento</td><td class="r" id="pvProtecao">—</td></tr>
+                    <tr><td>Proteção CC/CA</td><td id="pdProtecao">String box, DPS, disjuntores e aterramento</td><td class="r" id="pvProtecao">—</td></tr>
                     <tr class="sub"><td>Subtotal — equipamentos e materiais</td><td></td><td class="r" id="pvSubEquip">—</td></tr>
                     <tr><td>Projeto, ART e homologação</td><td>Projeto executivo, ART no CREA-GO e homologação na distribuidora</td><td class="r" id="pvArt">—</td></tr>
                     <tr><td>Instalação e comissionamento</td><td id="pdMaoObra">—</td><td class="r" id="pvMaoObra">—</td></tr>
@@ -1097,6 +1106,7 @@
                 <span class="lbl">Investimento total</span>
                 <span class="val" id="pvPreco">—</span>
             </div>
+            <div id="pSplit" class="doc-notes doc-keep" style="display:none;margin-top:8px;padding:10px 12px;border:1px dashed #9ca3af;border-radius:6px;"></div>
 
             <h2>6. Condições comerciais</h2>
             <div class="doc-notes" id="pNotes">—</div>
@@ -1704,8 +1714,15 @@
         const cProtecao  = protecao;
         const cMaoObra   = s.kWp * maoObraKWp;
         const custo      = cModulos + cInversor + cCabo + cEstrutura + cProtecao + cArt + cMaoObra;
-        const vMargem    = custo * (margem / 100);
-        const preco      = custo + vMargem;
+        // Itens faturados direto pelo fornecedor ao cliente (ex.: kit comprado no CPF do cliente):
+        // entram no investimento pelo custo; a margem incide só sobre o que você fatura.
+        const direto     = diretoAtual();
+        const custoItem  = { modulos: cModulos, inversor: cInversor, cabo: cCabo, estrutura: cEstrutura, protecao: cProtecao };
+        const valorDireto= Object.keys(custoItem).reduce((a, k) => a + (direto[k] ? custoItem[k] : 0), 0);
+        const custoServ  = custo - valorDireto;
+        const vMargem    = custoServ * (margem / 100);
+        const precoServ  = custoServ + vMargem;
+        const preco      = precoServ + valorDireto;
 
         // Contexto (quantidades) + rótulo do campo de preço conforme o modo
         document.getElementById('lblPrModulo').textContent   = (modoMod === 'un') ? 'R$/un' : 'R$/Wp';
@@ -1743,6 +1760,9 @@
         document.getElementById('stMargem').textContent    = brl(vMargem);
         document.getElementById('stPreco').textContent     = brl(preco);
         document.getElementById('stPrecoKwp').textContent  = s.kWp > 0 ? brl(preco / s.kWp) : brl(0);
+        const split = document.getElementById('stSplit');
+        split.classList.toggle('hidden', !(valorDireto > 0));
+        split.textContent = valorDireto > 0 ? `Você fatura ${brl(precoServ)} · cliente paga ao fornecedor ${brl(valorDireto)}` : '';
 
         // Payback simples (sem reajuste/degradação — o gráfico do PDF usa o modelo completo)
         const pbSimples = (preco > 0 && s.monthlySavings > 0) ? preco / (s.monthlySavings * 12) : null;
@@ -1750,10 +1770,19 @@
 
         STATE.budget = { moduloWp, inversorKW, caboLen, estruturaUn, protecao, maoObraKWp, margem, art,
                          cModulos, cInversor, cCabo, cEstrutura, cProtecao, cArt, cMaoObra, custo, vMargem, preco,
+                         direto, valorDireto, custoServ, precoServ,
                          modoMod, modoInv, micro, invUnits,
                          mCC, mCA, mTerra, paresMC4, condCA, nStr, distMI, distIQ, rCC, rCA, vEletro };
         schedulePersist();
     }
+
+    // Itens marcados como "faturado direto ao cliente" (checkboxes data-direto)
+    function diretoAtual() {
+        const d = {};
+        document.querySelectorAll('[data-direto]').forEach(c => { d[c.dataset.direto] = c.checked; });
+        return d;
+    }
+    document.querySelectorAll('[data-direto]').forEach(c => c.addEventListener('change', updateBudget));
 
     // === Preços ao vivo (prices.json, gerado semanalmente pelo robô — Fase 2) ===
     let LIVE_PRICES = null;
@@ -2235,20 +2264,35 @@
         t('pdEstrutura', `${s.placed} conjunto(s) de fixação para ${structureLabel()}`);
         t('pdMaoObra', `Montagem, passagem de cabos, conexões e testes — ${fmtBR(s.kWp, 2)} kWp`);
 
-        // Preço de VENDA por item: a margem é distribuída proporcionalmente ao custo de cada
-        // item. O cliente vê quanto paga por item e no total — custo e margem ficam só na tela.
-        const fator = b.custo > 0 ? b.preco / b.custo : 1;
-        const itens = [['pvModulos', b.cModulos], ['pvInversor', b.cInversor], ['pvEstrutura', b.cEstrutura],
-                       ['pvCabo', b.cCabo], ['pvProtecao', b.cProtecao], ['pvArt', b.cArt], ['pvMaoObra', b.cMaoObra]];
+        // Preço de VENDA por item: a margem é distribuída proporcionalmente ao custo dos itens que
+        // você fatura. Itens faturados direto pelo fornecedor aparecem pelo custo (é o que o cliente
+        // paga a ele). O cliente vê quanto paga por item e no total — custo e margem ficam só na tela.
+        const dir = b.direto || {};
+        const fator = b.custoServ > 0 ? b.precoServ / b.custoServ : 1;
+        const itens = [['pvModulos', b.cModulos, 'modulos'], ['pvInversor', b.cInversor, 'inversor'], ['pvEstrutura', b.cEstrutura, 'estrutura'],
+                       ['pvCabo', b.cCabo, 'cabo'], ['pvProtecao', b.cProtecao, 'protecao'], ['pvArt', b.cArt], ['pvMaoObra', b.cMaoObra]];
         const venda = {};
         let soma = 0;
-        itens.forEach(([id, c]) => { venda[id] = Math.round(c * fator * 100) / 100; soma += venda[id]; });
+        itens.forEach(([id, c, k]) => { venda[id] = Math.round(c * (k && dir[k] ? 1 : fator) * 100) / 100; soma += venda[id]; });
+        t('pdProtecao', 'String box, DPS, disjuntores e aterramento');
+        const DIRETO_TXT = ' · faturado direto pelo fornecedor ao cliente';
+        [['pdModulos', 'modulos'], ['pdInversor', 'inversor'], ['pdEstrutura', 'estrutura'], ['pdCabo', 'cabo'], ['pdProtecao', 'protecao']]
+            .forEach(([id, k]) => { if (dir[k]) document.getElementById(id).textContent += DIRETO_TXT; });
         // Ajuste de centavos no último item para a soma bater exatamente com o total
         venda.pvMaoObra = Math.round((venda.pvMaoObra + (Math.round(b.preco * 100) / 100 - soma)) * 100) / 100;
         itens.forEach(([id]) => t(id, brl(venda[id])));
         t('pvSubEquip', brl(venda.pvModulos + venda.pvInversor + venda.pvEstrutura + venda.pvCabo + venda.pvProtecao));
         t('pvSubServ', brl(venda.pvArt + venda.pvMaoObra));
         t('pvPreco', brl(b.preco));
+        const pSplit = document.getElementById('pSplit');
+        if (b.valorDireto > 0) {
+            pSplit.style.display = '';
+            pSplit.textContent =
+                `Forma de faturamento — equipamentos marcados como "faturado direto" são comprados pelo cliente diretamente do fornecedor, ` +
+                `com nota fiscal em nome do cliente: ${brl(b.valorDireto)} (valor de referência da cotação; confirmar no fechamento). ` +
+                `Serviços e materiais faturados pelo responsável técnico: ${brl(Math.round(b.precoServ * 100) / 100)}. ` +
+                'A garantia dos equipamentos é prestada pelo fabricante/fornecedor; projeto, instalação e homologação ficam sob responsabilidade técnica do engenheiro, com ART.';
+        } else { pSplit.style.display = 'none'; pSplit.textContent = ''; }
 
         // Premissas (o cliente e o engenheiro dele conseguem auditar a conta)
         t('pqHsp', `${fmtBR(s.hsp, 2)} kWh/m²·dia`);
@@ -2311,6 +2355,7 @@
         PERSIST_TILES.forEach(g => o.tiles[g] = tileValue(g));
         o.opcoes = OPCOES; o.opcaoAtual = OPCAO_ATUAL;
         o.flags.optNoPdf = document.getElementById('optNoPdf').checked;
+        o.flags.direto = diretoAtual();
         return o;
     }
     function persistNow() { try { localStorage.setItem(PERSIST_KEY, JSON.stringify(snapshotState())); } catch (e) { } }
@@ -2346,6 +2391,7 @@
             if (o.flags && typeof o.flags.descDisp === 'boolean') document.getElementById('descDisp').checked = o.flags.descDisp;
             if (o.flags && typeof o.flags.mapAplicar === 'boolean') document.getElementById('mapAplicar').checked = o.flags.mapAplicar;
             if (o.flags && typeof o.flags.optNoPdf === 'boolean') document.getElementById('optNoPdf').checked = o.flags.optNoPdf;
+            document.querySelectorAll('[data-direto]').forEach(c => { c.checked = !!(o.flags && o.flags.direto && o.flags.direto[c.dataset.direto]); });
             // Snapshot de opção não traz a lista de opções — só o estado completo (salvo/persistido) traz
             if (Array.isArray(o.opcoes)) { OPCOES = o.opcoes; OPCAO_ATUAL = o.opcaoAtual || null; renderOpcoes(); }
             if (o.mapa && Number.isFinite(o.mapa.lat)) Object.assign(MAPA, o.mapa);
@@ -2379,6 +2425,7 @@
                 : (CUSTOM_INV ? `${b.invUnits} × ${fmtBR(CUSTOM_INV.kw, 1)} kW${invModelo}` : `${fmtBR(s.inverterKW, 1)} kW (modelo a definir)`),
             fdi: s.fdi, gen: s.monthlyGen, comp, excedente: Math.max(0, s.monthlyGen - comp),
             eco: s.monthlySavings, payback: pb.payback, eco25: pb.serie[pb.serie.length - 1], preco: b.preco,
+            valorDireto: b.valorDireto || 0, precoServ: b.precoServ != null ? b.precoServ : b.preco,
             area: s.areaModulos
         };
     }
@@ -2468,6 +2515,10 @@
         linha('Retorno do investimento', r => r.payback != null ? `${fmtBR(r.payback, 1)} anos` : '> 25 anos');
         linha('Economia acumulada em 25 anos', r => brl(r.eco25));
         linha('Investimento total', r => brl(r.preco), 'sub');
+        if (OPCOES.some(op => op.resumo.valorDireto > 0)) {
+            linha('↳ pago direto ao fornecedor', r => r.valorDireto > 0 ? brl(r.valorDireto) : '—');
+            linha('↳ pago ao responsável técnico', r => brl(r.precoServ != null ? r.precoServ : r.preco));
+        }
         tb.appendChild(body);
         const base = 'O excedente de geração não reduz a conta hoje (vira crédito com validade de 60 meses), mas cobre aumento futuro de consumo.';
         document.getElementById('pOpcoesNota').textContent = OPCAO_ATUAL ? `As seções a seguir detalham a Opção ${OPCAO_ATUAL}. ${base}` : base;

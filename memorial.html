@@ -197,6 +197,12 @@ Conectores MC4 = 3 pares por string  ·  + eletroduto/eletrocalha</div>
         <div class="formula">Custo = Σ itens &nbsp;·&nbsp; Margem = Custo × m% &nbsp;·&nbsp; Preço = Custo + Margem</div>
         <p>O indicador <span class="var">R$/kWp</span> (Preço ÷ P_pico) permite comparar a proposta com o mercado.</p>
         <p><strong>No documento do cliente</strong> custo e margem não aparecem: cada item é exibido pelo preço de venda, <span class="var">Venda_i = Custo_i × (Preço ÷ Custo)</span>, ou seja, a margem é distribuída proporcionalmente ao custo de cada item. Os centavos de arredondamento são ajustados no último item para que a soma bata exatamente com o investimento total. Os itens são agrupados em equipamentos e materiais e em serviços.</p>
+        <p><strong>Faturamento direto ao cliente.</strong> Itens marcados como "faturado direto" (ex.: kit comprado pelo cliente, em nome dele, do distribuidor) entram no investimento pelo custo da cotação e não recebem margem:</p>
+        <div class="formula">Custo_serv = Custo − Σ itens_diretos
+Preço = Custo_serv × (1 + m%) + Σ itens_diretos
+Venda_i = Custo_i × (Preço_serv ÷ Custo_serv)   (itens faturados pelo responsável técnico)
+Venda_i = Custo_i                              (itens faturados direto pelo fornecedor)</div>
+        <p>A proposta informa separadamente o valor pago ao fornecedor e o valor pago ao responsável técnico. O retorno do investimento usa o total que o cliente desembolsa.</p>
 
         <h2><span>09</span>Retorno do investimento (payback)</h2>
         <p><strong>Payback simples</strong> (mostrado no cartão de preço):</p>
