@@ -117,6 +117,7 @@
 kWp_nec = E_alvo / (HSP · PR · 30,42)
 N_placas = ⌈ kWp_nec · 1000 / W_módulo ⌉</div>
         <p>O arredondamento é sempre <strong>para cima</strong> (⌈·⌉): a meta é atendida, nunca subatendida. Se a área não comportar <span class="var">N_placas</span>, o simulador avisa e usa o máximo que cabe. Se o arredondamento gerar mais de 10% acima de <span class="var">C − D</span> (comum em sistemas pequenos com módulos grandes), o simulador alerta para superdimensionamento.</p>
+        <p><strong>Nº de módulos fixado.</strong> Para montar opções (ex.: prever aumento de consumo), o número de módulos pode ser fixado. A economia continua calculada sobre o consumo informado <span class="var">C</span>: a geração além de <span class="var">C − D</span> aparece como excedente (crédito), não como economia. Na proposta com opções A/B, o PDF traz o comparativo das opções e detalha a opção carregada.</p>
 
         <h2><span>03</span>Potência de pico do sistema</h2>
         <div class="formula">P_pico [kWp] = N_placas × W_módulo [Wp] / 1000</div>

@@ -90,6 +90,8 @@
         @media (min-width: 768px) { .md\:col-span-6 { grid-column: span 6 / span 6; } .md\:col-span-3 { grid-column: span 3 / span 3; } }
         .px-2\.5 { padding-left: .625rem; padding-right: .625rem; }
         .mt-4 { margin-top: 1rem; }
+        .px-1 { padding-left: .25rem; padding-right: .25rem; }
+        #optList > li + li { margin-top: .25rem; }
         button:disabled { opacity: .5; cursor: not-allowed; }
         #mapBox .leaflet-container { font-family: 'Inter', system-ui, sans-serif; }
         /* A regra global 'canvas { max-width:100% }' encolhia o canvas do Leaflet a 0 px (módulos sumiam) */
@@ -250,6 +252,11 @@
                             <label for="targetKwh" class="block text-xs font-semibold text-muted uppercase tracking-wider mb-1.5">Consumo Alvo (kWh/mês)</label>
                             <input type="number" id="targetKwh" min="1" max="100000" step="10" value="500" class="w-full bg-ink border border-primary/50 rounded-md px-3 py-2 text-sm font-mono font-semibold text-fg focus:outline-none focus:border-primary">
                             <p id="metaInfo" class="text-[10px] text-sky mt-1.5">Informe seu consumo médio; o sistema calcula as placas necessárias.</p>
+                            <div class="mt-2">
+                                <label for="nModFix" class="block text-[10px] font-semibold text-muted uppercase mb-1">Nº de módulos (fixar)</label>
+                                <input type="number" id="nModFix" min="1" max="5000" step="1" placeholder="auto (pela meta)" class="num-in">
+                                <p class="text-[10px] text-muted mt-1">Use para opções maiores ou menores que a meta (ex.: prever aumento de consumo). A economia continua calculada sobre o consumo informado.</p>
+                            </div>
                             <label class="flex items-start gap-2 text-[11px] text-muted mt-2">
                                 <input type="checkbox" id="descDisp" checked class="mt-0.5">
                                 <span>Descontar o custo de disponibilidade da meta <span class="text-sky">(recomendado)</span> — a fatura nunca fica abaixo do mínimo da ligação; gerar além disso vira crédito, não economia.</span>
@@ -864,6 +871,23 @@
                             <label for="propNotes" class="text-[10px] text-muted uppercase block mb-1">Condições comerciais</label>
                             <textarea id="propNotes" rows="3" placeholder="Condições de pagamento, prazo de execução, garantias..." class="num-in" style="font-family:'Inter';resize:vertical"></textarea>
                         </div>
+                        <div class="border border-line rounded-lg p-3">
+                            <p class="text-[10px] font-semibold text-muted uppercase tracking-wider mb-1">Opções da proposta (comparativo)</p>
+                            <p class="text-[10px] text-muted mb-2">Monte uma configuração e salve como A; mude e salve como B. O PDF traz o comparativo e detalha a opção carregada.</p>
+                            <label for="optDesc" class="text-[9px] text-muted uppercase block mb-0.5">Nome da opção</label>
+                            <input type="text" id="optDesc" placeholder="Ex.: Enxuta — 10 placas" maxlength="60" class="num-in" style="font-family:'Inter'">
+                            <div class="grid grid-cols-2 gap-2 mt-2">
+                                <button type="button" data-opt-save="A" class="border border-line hover:border-sky text-muted hover:text-sky text-xs font-semibold py-2 rounded-md transition">Salvar como A</button>
+                                <button type="button" data-opt-save="B" class="border border-line hover:border-sky text-muted hover:text-sky text-xs font-semibold py-2 rounded-md transition">Salvar como B</button>
+                            </div>
+                            <ul id="optList" class="mt-2 text-[11px]"></ul>
+                            <label class="flex items-start gap-2 text-[11px] text-muted mt-2">
+                                <input type="checkbox" id="optNoPdf" checked class="mt-0.5">
+                                <span>Incluir o comparativo de opções no PDF</span>
+                            </label>
+                            <button type="button" id="btnOptLink" class="w-full mt-2 border border-line hover:border-sky text-muted hover:text-sky text-xs font-semibold py-2 rounded-md transition">Copiar link desta proposta</button>
+                            <p id="optNote" class="text-[10px] text-sky mt-1.5 leading-snug">O link abre a proposta com as opções em outro aparelho. Nome e cidade do cliente não vão no link.</p>
+                        </div>
                         <button id="btnPdf" class="w-full bg-primary hover:bg-primary-700 text-white font-semibold px-4 py-3 rounded-md transition flex items-center justify-center gap-2">
                             <i class="fa-solid fa-file-pdf"></i> Gerar proposta (PDF)
                         </button>
@@ -1018,6 +1042,12 @@
                     <div class="doc-hl__val" id="hlGen" style="color:#0A1B2E;">—</div>
                     <div class="doc-hl__sub">kWh por mês (média anual)</div>
                 </div>
+            </div>
+
+            <div id="pOpcoesBox" style="display:none">
+                <h2>Opções de sistema</h2>
+                <table class="doc-table" id="pOpcoes"></table>
+                <p class="doc-notes" id="pOpcoesNota" style="margin-top:6px;">—</p>
             </div>
 
             <h2>1. Resumo do sistema</h2>
@@ -1332,15 +1362,19 @@
             const target = descontar ? Math.max(0, consumo - availabilityKWh) : consumo;
             const requiredKWp = target / (hsp * pr * SOLAR.DAYS_PER_MONTH * fOri);
             const requiredPanels = Math.max(0, Math.ceil((requiredKWp * 1000) / pPower));
-            placed = Math.min(requiredPanels, capacity);
+            // Quantidade fixada pelo usuário (opções da proposta) tem prioridade sobre a meta
+            const fix = Math.round(sanitize(document.getElementById('nModFix').value, 0));
+            const desejado = fix >= 1 ? fix : requiredPanels;
+            placed = Math.min(desejado, capacity);
 
             if (metaInfo) metaInfo.textContent = `Meta de geração: ${Math.round(target).toLocaleString('pt-BR')} kWh/mês` +
                 (descontar ? ` (${Math.round(consumo).toLocaleString('pt-BR')} − ${availabilityKWh} de disponibilidade)` : '') +
-                ` → ${requiredPanels} placa(s) ≈ ${fmtBR(requiredKWp, 2)} kWp.`;
+                ` → ${requiredPanels} placa(s) ≈ ${fmtBR(requiredKWp, 2)} kWp.` +
+                (fix >= 1 ? ` Fixado em ${fix} placa(s).` : '');
 
-            if (requiredPanels > capacity) {
+            if (desejado > capacity) {
                 warnEl.classList.remove('hidden');
-                warnTx.textContent = `A área comporta ${capacity} placa(s), mas a meta exige ${requiredPanels}. Aumente a área ou reduza a meta — usando ${capacity}.`;
+                warnTx.textContent = `A área comporta ${capacity} placa(s), mas ${fix >= 1 ? 'o número fixado é' : 'a meta exige'} ${desejado}. Aumente a área ou reduza ${fix >= 1 ? 'o número' : 'a meta'} — usando ${capacity}.`;
             } else {
                 warnEl.classList.add('hidden');
             }
@@ -2252,6 +2286,7 @@
 
         const notes = (document.getElementById('propNotes').value || '').trim();
         t('pNotes', notes || NOTES_DEFAULT);
+        renderOpcoesPdf();
     }
 
     // === PERSISTÊNCIA (localStorage) — nada de redigitar preço entre propostas ===
@@ -2264,7 +2299,7 @@
         'clsModulo','clsInversor','modoPrModulo','modoPrInversor','prModuloWp','prInversorKW',
         'distModInv','distInvQGBT','nStringsMan','wpOutra','prCaboCC','prCaboCA','prCaboTerra','prConector','prEletroduto',
         'prArt','prEstruturaUn','prProtecao','prMaoObraKWp','prMargem',
-        'clientName','clientCity','propNum','propValid','propNotes','iaModeloModulo','iaModeloInversor','mapAz','mapTilt'];
+        'clientName','clientCity','propNum','propValid','propNotes','iaModeloModulo','iaModeloInversor','mapAz','mapTilt','nModFix'];
     const PERSIST_TILES = ['modeGroup','structureGroup','orientationGroup','invTypeGroup'];
 
     function snapshotState() {
@@ -2274,6 +2309,8 @@
                     panel: { custom: (STATE.customPanelActive && CUSTOM_PANEL) ? CUSTOM_PANEL : null, value: el.panel.value } };
         PERSIST_INPUTS.forEach(id => { const e = document.getElementById(id); if (e) o.inputs[id] = e.value; });
         PERSIST_TILES.forEach(g => o.tiles[g] = tileValue(g));
+        o.opcoes = OPCOES; o.opcaoAtual = OPCAO_ATUAL;
+        o.flags.optNoPdf = document.getElementById('optNoPdf').checked;
         return o;
     }
     function persistNow() { try { localStorage.setItem(PERSIST_KEY, JSON.stringify(snapshotState())); } catch (e) { } }
@@ -2308,6 +2345,9 @@
             });
             if (o.flags && typeof o.flags.descDisp === 'boolean') document.getElementById('descDisp').checked = o.flags.descDisp;
             if (o.flags && typeof o.flags.mapAplicar === 'boolean') document.getElementById('mapAplicar').checked = o.flags.mapAplicar;
+            if (o.flags && typeof o.flags.optNoPdf === 'boolean') document.getElementById('optNoPdf').checked = o.flags.optNoPdf;
+            // Snapshot de opção não traz a lista de opções — só o estado completo (salvo/persistido) traz
+            if (Array.isArray(o.opcoes)) { OPCOES = o.opcoes; OPCAO_ATUAL = o.opcaoAtual || null; renderOpcoes(); }
             if (o.mapa && Number.isFinite(o.mapa.lat)) Object.assign(MAPA, o.mapa);
             MAPA.placed = !!(MAPA.placed && Number.isFinite(MAPA.cLat) && Number.isFinite(MAPA.cLng));
             document.getElementById('mapAzRange').value = document.getElementById('mapAz').value;
@@ -2319,6 +2359,164 @@
     function restoreState() {
         try { const raw = localStorage.getItem(PERSIST_KEY); if (raw) applySnapshot(JSON.parse(raw)); } catch (e) { }
     }
+
+    // === OPÇÕES DA PROPOSTA (A/B) ===
+    // Cada opção guarda o snapshot completo da configuração + um resumo calculado no momento
+    // em que foi salva. Os dados do cliente e as condições são comuns a todas as opções.
+    let OPCOES = [];               // [{ id:'A'|'B', desc, snap, resumo }]
+    let OPCAO_ATUAL = null;        // opção carregada/salva por último (é a detalhada no PDF)
+    const CAMPOS_COMUNS = ['clientName', 'clientCity', 'propNum', 'propValid', 'propNotes'];
+
+    function resumoAtual() {
+        const s = STATE, b = STATE.budget;
+        const pb = computePayback(b.preco, s.monthlyGen, s.avail, s.rate, s.adj, s.fioBTar, s.anoBase, s.consumo);
+        const comp = compensavel(s.monthlyGen, s.avail, s.consumo);
+        const invModelo = CUSTOM_INV && CUSTOM_INV.modelo && !/dados do datasheet/.test(CUSTOM_INV.modelo) ? ' — ' + CUSTOM_INV.modelo : '';
+        return {
+            modulos: `${s.placed} × ${s.pPower} Wp`, kWp: s.kWp,
+            moduloNome: (s.customPanelActive && CUSTOM_PANEL) ? CUSTOM_PANEL.modelo : (document.getElementById('iaModeloModulo').value.trim() || ''),
+            inversor: s.invType === 'micro' ? `${b.invUnits} microinversor(es)`
+                : (CUSTOM_INV ? `${b.invUnits} × ${fmtBR(CUSTOM_INV.kw, 1)} kW${invModelo}` : `${fmtBR(s.inverterKW, 1)} kW (modelo a definir)`),
+            fdi: s.fdi, gen: s.monthlyGen, comp, excedente: Math.max(0, s.monthlyGen - comp),
+            eco: s.monthlySavings, payback: pb.payback, eco25: pb.serie[pb.serie.length - 1], preco: b.preco,
+            area: s.areaModulos
+        };
+    }
+    function snapSemComuns() {
+        const o = snapshotState();
+        delete o.opcoes; delete o.opcaoAtual;
+        CAMPOS_COMUNS.forEach(id => { delete o.inputs[id]; });
+        return o;
+    }
+    function salvarOpcao(id) {
+        const desc = (document.getElementById('optDesc').value || '').trim() || `Opção ${id}`;
+        const item = { id, desc, snap: snapSemComuns(), resumo: resumoAtual() };
+        OPCOES = OPCOES.filter(o => o.id !== id).concat(item).sort((a, b) => a.id.localeCompare(b.id));
+        OPCAO_ATUAL = id;
+        renderOpcoes(); schedulePersist();
+        document.getElementById('optNote').textContent = `Opção ${id} salva: ${item.resumo.modulos}, ${brl(item.resumo.preco)}. Ao mudar preços, salve de novo para atualizar o comparativo.`;
+    }
+    function carregarOpcao(id) {
+        const op = OPCOES.find(o => o.id === id);
+        if (!op) return;
+        // Mantém cliente e condições; troca só a configuração técnica e de custos
+        const comuns = {};
+        CAMPOS_COMUNS.forEach(c => { comuns[c] = document.getElementById(c).value; });
+        applySnapshot(op.snap);
+        CAMPOS_COMUNS.forEach(c => { document.getElementById(c).value = comuns[c]; });
+        document.getElementById('optDesc').value = op.desc;
+        OPCAO_ATUAL = id;
+        renderOpcoes(); schedulePersist();
+        document.getElementById('optNote').textContent = `Opção ${id} carregada — o PDF detalha esta opção.`;
+    }
+    function excluirOpcao(id) {
+        OPCOES = OPCOES.filter(o => o.id !== id);
+        if (OPCAO_ATUAL === id) OPCAO_ATUAL = null;
+        renderOpcoes(); schedulePersist();
+    }
+    function renderOpcoes() {
+        const ul = document.getElementById('optList');
+        ul.textContent = '';
+        OPCOES.forEach(op => {
+            const li = document.createElement('li');
+            li.className = 'flex items-center gap-2 border border-line rounded-md px-2 py-1.5' + (op.id === OPCAO_ATUAL ? ' text-fg' : ' text-muted');
+            const txt = document.createElement('span');
+            txt.className = 'flex-1 leading-snug';
+            txt.textContent = `${op.id === OPCAO_ATUAL ? '● ' : ''}${op.id} · ${op.desc} — ${op.resumo.modulos}, ${brl(op.resumo.preco)}`;
+            const bLoad = document.createElement('button');
+            bLoad.type = 'button'; bLoad.textContent = 'Abrir'; bLoad.className = 'text-sky hover:text-fg font-semibold';
+            bLoad.addEventListener('click', () => carregarOpcao(op.id));
+            const bDel = document.createElement('button');
+            bDel.type = 'button'; bDel.textContent = '×'; bDel.setAttribute('aria-label', `Excluir opção ${op.id}`);
+            bDel.className = 'text-muted hover:text-alert font-semibold px-1';
+            bDel.addEventListener('click', () => excluirOpcao(op.id));
+            li.append(txt, bLoad, bDel);
+            ul.appendChild(li);
+        });
+    }
+    function renderOpcoesPdf() {
+        const box = document.getElementById('pOpcoesBox');
+        const usar = document.getElementById('optNoPdf').checked && OPCOES.length >= 2;
+        box.style.display = usar ? '' : 'none';
+        if (!usar) return;
+        const tb = document.getElementById('pOpcoes');
+        tb.textContent = '';
+        const head = document.createElement('thead'), trh = document.createElement('tr');
+        trh.appendChild(document.createElement('th'));
+        OPCOES.forEach(op => {
+            const th = document.createElement('th'); th.className = 'r';
+            th.textContent = `Opção ${op.id}${op.id === OPCAO_ATUAL ? ' (detalhada)' : ''}`; trh.appendChild(th);
+        });
+        head.appendChild(trh); tb.appendChild(head);
+        const body = document.createElement('tbody');
+        const linha = (rot, fn, cls) => {
+            const tr = document.createElement('tr');
+            if (cls) tr.className = cls;
+            const td0 = document.createElement('td'); td0.textContent = rot; tr.appendChild(td0);
+            OPCOES.forEach(op => { const td = document.createElement('td'); td.className = 'r'; td.textContent = fn(op.resumo, op); tr.appendChild(td); });
+            body.appendChild(tr);
+        };
+        linha('Descrição', (r, op) => op.desc);
+        linha('Módulos', r => r.modulos + (r.moduloNome ? ` · ${r.moduloNome}` : ''));
+        linha('Potência de pico', r => `${fmtBR(r.kWp, 2)} kWp`);
+        linha('Inversor', r => r.inversor);
+        linha('Relação CC/CA (FDI)', r => r.fdi ? fmtBR(r.fdi, 2) : '—');
+        linha('Geração estimada', r => `${Math.round(r.gen).toLocaleString('pt-BR')} kWh/mês`);
+        linha('Energia que reduz a conta', r => `${Math.round(r.comp).toLocaleString('pt-BR')} kWh/mês`);
+        linha('Excedente (vira crédito)', r => r.excedente >= 1 ? `${Math.round(r.excedente).toLocaleString('pt-BR')} kWh/mês` : '—');
+        linha('Economia estimada (1º ano)', r => `${brl(r.eco)}/mês`);
+        linha('Retorno do investimento', r => r.payback != null ? `${fmtBR(r.payback, 1)} anos` : '> 25 anos');
+        linha('Economia acumulada em 25 anos', r => brl(r.eco25));
+        linha('Investimento total', r => brl(r.preco), 'sub');
+        tb.appendChild(body);
+        const base = 'O excedente de geração não reduz a conta hoje (vira crédito com validade de 60 meses), mas cobre aumento futuro de consumo.';
+        document.getElementById('pOpcoesNota').textContent = OPCAO_ATUAL ? `As seções a seguir detalham a Opção ${OPCAO_ATUAL}. ${base}` : base;
+    }
+
+    // Link com a proposta inteira no fragmento (#) — não é enviado ao servidor.
+    // Nome e cidade do cliente ficam de fora (dado pessoal não vai em URL).
+    function b64urlEncode(str) { return btoa(unescape(encodeURIComponent(str))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
+    function b64urlDecode(b) { b = b.replace(/-/g, '+').replace(/_/g, '/'); while (b.length % 4) b += '='; return decodeURIComponent(escape(atob(b))); }
+    function linkProposta() {
+        const pacote = { v: 1, atual: OPCAO_ATUAL, estado: snapSemComuns(), opcoes: OPCOES,
+                         comuns: { propValid: document.getElementById('propValid').value, propNotes: document.getElementById('propNotes').value } };
+        return location.origin + location.pathname + '#proposta=' + b64urlEncode(JSON.stringify(pacote));
+    }
+    async function copiarLinkProposta() {
+        const url = linkProposta();
+        const note = document.getElementById('optNote');
+        try { await navigator.clipboard.writeText(url); note.textContent = `Link copiado (${Math.round(url.length / 1000)} mil caracteres). Abra em outro aparelho para continuar a proposta.`; }
+        catch (e) { window.prompt('Copie o link da proposta:', url); }
+    }
+    function importarLinkProposta() {
+        const m = location.hash.match(/^#proposta=([A-Za-z0-9_-]+)$/);
+        if (!m) return false;
+        try {
+            const p = JSON.parse(b64urlDecode(m[1]));
+            if (!p || !p.estado) throw new Error('vazio');
+            if (!window.confirm('Abrir a proposta deste link? A configuração atual do simulador será substituída (as propostas salvas não são afetadas).')) return false;
+            applySnapshot(p.estado);
+            OPCOES = Array.isArray(p.opcoes) ? p.opcoes.filter(o => o && /^[AB]$/.test(o.id) && o.snap && o.resumo) : [];
+            OPCAO_ATUAL = /^[AB]$/.test(p.atual) ? p.atual : null;
+            if (p.comuns) ['propValid', 'propNotes'].forEach(id => { if (p.comuns[id] != null) document.getElementById(id).value = p.comuns[id]; });
+            const op = OPCOES.find(o => o.id === OPCAO_ATUAL);
+            if (op) document.getElementById('optDesc').value = op.desc;
+            renderOpcoes(); persistNow();
+            document.getElementById('optNote').textContent = `Proposta do link carregada (${OPCOES.length} opção(ões)). Preencha nome e cidade do cliente.`;
+            return true;
+        } catch (e) {
+            document.getElementById('optNote').textContent = 'O link da proposta está incompleto ou corrompido.';
+            return false;
+        } finally {
+            history.replaceState(null, '', location.pathname + location.search);
+        }
+    }
+
+    (function initOpcoes() {
+        document.querySelectorAll('[data-opt-save]').forEach(b => b.addEventListener('click', () => salvarOpcao(b.dataset.optSave)));
+        document.getElementById('btnOptLink').addEventListener('click', copiarLinkProposta);
+        document.getElementById('optNoPdf').addEventListener('change', schedulePersist);
+    })();
 
     // === PROPOSTAS SALVAS ===
     // Sem backend: lista local (localStorage). Com backend conectado: lista vem
@@ -2410,7 +2608,7 @@
     });
     document.getElementById('ppmInput').addEventListener('change', calculate);
     // Potência digitada, nº de strings e meta líquida mudam o sistema (não só o orçamento)
-    ['wpOutra', 'nStringsMan'].forEach(id => document.getElementById(id).addEventListener('input', calculate));
+    ['wpOutra', 'nStringsMan', 'nModFix'].forEach(id => document.getElementById(id).addEventListener('input', calculate));
     document.getElementById('descDisp').addEventListener('change', () => { calculate(); schedulePersist(); });
     document.getElementById('adjInput').addEventListener('input', calculate);
     document.getElementById('fioBTarifa').addEventListener('input', calculate);
@@ -2868,8 +3066,10 @@
         .then(onLivePricesLoaded)
         .catch(err => console.warn('[ElektroSys] prices.json não carregado — usando referência estática.', err));
 
-    // Restaura o último estado (preços, cliente, tudo) e a lista de propostas
+    // Restaura o último estado (preços, cliente, tudo) e a lista de propostas;
+    // um link "#proposta=..." tem prioridade (o usuário confirma antes de substituir)
     restoreState();
+    importarLinkProposta();
     // Observações nunca saem vazias para o cliente
     if (!(document.getElementById('propNotes').value || '').trim()) {
         document.getElementById('propNotes').value = NOTES_DEFAULT;
