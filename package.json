@@ -2,7 +2,7 @@
   "name": "elektrosys-site",
   "version": "1.0.0",
   "private": true,
-  "description": "Site institucional da ElektroSys Engenharia Eletrica. HTML, CSS e JavaScript estaticos, sem framework.",
+  "description": "Site institucional da GG Soluções Engenharia Elétrica. HTML, CSS e JavaScript estaticos, sem framework.",
   "scripts": {
     "dev": "node tools/serve.mjs 4173",
     "check": "node tools/check-site.mjs",

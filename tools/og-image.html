@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<title>ElektroSys — imagem social</title>
+<title>GG Soluções — imagem social</title>
 <style>
   @font-face { font-family:'Barlow Semi Condensed'; font-weight:700; font-style:normal;
     src:url('../assets/fonts/barlow-semi-condensed-latin-700-normal.woff2') format('woff2'); }
@@ -32,13 +32,15 @@
             mask-image: radial-gradient(115% 90% at 85% 8%, #000 0%, transparent 70%);
   }
   .top, .bottom { position:relative; }
-  .plate { display:inline-flex; background:#F7F9FB; border-radius:4px; padding:12px 18px; }
-  .plate img { width:264px; height:auto; display:block; }
+  /* trilha da marca: gradiente do logotipo, 3px no topo */
+  .trace { position:absolute; left:0; right:0; top:0; height:3px;
+    background:linear-gradient(90deg,#177CD6,#2DC7CD 55%,#4FC791); }
+  .brand img { width:236px; height:auto; display:block; margin-left:-4px; }
 
   h1 {
     font-family:'Barlow Semi Condensed', 'Arial Narrow', Arial, sans-serif;
     font-weight:700; font-size:72px; line-height:1.0; letter-spacing:-.02em;
-    max-width:16ch; margin-top:40px;
+    max-width:16ch; margin-top:28px;
   }
   .sub { font-size:22px; line-height:1.5; color:#8CA3BC; max-width:48ch; margin-top:18px; }
 
@@ -58,9 +60,10 @@
 </head>
 <body>
   <div class="grid"></div>
+  <div class="trace"></div>
 
   <div class="top">
-    <span class="plate"><img src="../assets/brand/elektrosys-logo-tight.png" alt="ElektroSys Engenharia Elétrica" width="538" height="239"></span>
+    <span class="brand"><img src="../assets/brand/gg-logo-tight.png" alt="GG Soluções" width="701" height="337"></span>
     <h1>Projetos, laudos e perícias elétricas.</h1>
     <p class="sub">Baixa e média tensão, SPDA, fotovoltaico e assistência técnica — com atendimento direto do engenheiro responsável.</p>
   </div>

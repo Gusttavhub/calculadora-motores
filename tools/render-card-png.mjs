@@ -56,7 +56,7 @@ const SIDES = [
 ];
 
 const page = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="utf-8">
-<title>Rasterizando o cartao ElektroSys</title>
+<title>Rasterizando o cartao GG Soluções</title>
 <style>${FONT_CSS}
 body{font:14px/1.6 system-ui;background:#0A1B2E;color:#E8F0F8;padding:24px}
 code{font-family:ui-monospace,monospace;color:#5AA9F0}</style></head><body>

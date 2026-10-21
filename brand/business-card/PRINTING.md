@@ -1,4 +1,4 @@
-# Cartão de apresentação ElektroSys — especificação para a gráfica
+# Cartão de apresentação GG Soluções — especificação para a gráfica
 
 Documento de referência para produção. Gerado por `tools/build-card.mjs` a partir
 dos tokens de `design.md` e dos dados de `content/site.config.json`.
@@ -19,7 +19,8 @@ dos tokens de `design.md` e dos dados de `content/site.config.json`.
 | `business-card-back.png` | Pré-visualização com sangria | 2268 × 1323 px @ 600 dpi |
 | `business-card-front-trimmed.png` | Pré-visualização já aparada | 2126 × 1181 px @ 600 dpi |
 | `business-card-back-trimmed.png` | Pré-visualização já aparada | 2126 × 1181 px @ 600 dpi |
-| `logo-para-impressao.png` | Logotipo achatado sobre `#F7F9FB` | Sem canal alfa, evita transparência no RIP |
+| `logo-para-impressao.png` | Logotipo (wordmark azul-marinho) achatado sobre `#F7F9FB` | Sem canal alfa, evita transparência no RIP |
+| `logo-para-impressao-verso.png` | Logotipo (wordmark branco) achatado sobre `#0A1B2E` | Idem, para o verso |
 
 **Envie para a gráfica os dois primeiros arquivos.** Os demais são apoio.
 
@@ -142,18 +143,19 @@ sobre o QR pode gerar reflexo e atrapalhar a câmera.
 
 ## 6. Logotipo
 
-- Arquivo aplicado: `logo-para-impressao.png`, gerado a partir do logotipo
-  oficial recebido.
-- Proporção original preservada (2,251:1) nas duas aplicações. Não foi
-  redesenhado, recolorido, inclinado nem esticado.
-- Cores da marca no arquivo: `#025797` (símbolo e wordmark) e `#0C243F`
-  (descritor e filete).
-- **Frente:** 40 × 17,77 mm, centralizado, sozinho — sem QR, sem slogan, sem
-  lista de serviços, conforme `design.md`. Resolução efetiva de 342 dpi.
-- **Verso:** 16 × 7,11 mm, sobre uma placa clara de 18,4 × 9,51 mm no canto
-  superior esquerdo — a mesma marca que aparece no cabeçalho e no rodapé do
-  site, para reforçar a identidade também no verso. Resolução efetiva de
-  854 dpi (bem acima da frente, por ser menor).
+- Marca: **GG Soluções**. Arquivos aplicados: `logo-para-impressao.png` (frente,
+  wordmark azul-marinho achatado sobre `#F7F9FB`) e
+  `logo-para-impressao-verso.png` (verso, wordmark branco achatado sobre `#0A1B2E`).
+- Proporção original preservada (2,08:1). Monograma com o gradiente original
+  azul `#177CD6` → ciano `#2DC7CD` → verde `#4FC791`; não foi redesenhado,
+  inclinado nem esticado. A versão de wordmark azul-marinho é derivada.
+- **Frente:** 40 × 19,23 mm, centralizado, sozinho — sem QR, sem slogan, sem
+  lista de serviços, conforme `design.md`. Resolução efetiva de 445 dpi.
+- **Verso:** 18 mm de largura, direto sobre o azul-marinho (sem placa), no
+  canto superior esquerdo — a mesma aplicação do cabeçalho do site.
+- **Gradiente em CMYK:** ciano e verde saturados ficam fora do gamut de muitas
+  gráficas. Peça prova de cor e aceite leve perda de brilho; não "corrija"
+  trocando as cores.
 
 > **Pendência conhecida.** O logotipo oficial só foi fornecido em bitmap (PNG).
 > A 342 dpi ele imprime bem no tamanho atual, mas **para registro de marca e

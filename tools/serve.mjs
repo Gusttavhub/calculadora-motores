@@ -42,4 +42,4 @@ http.createServer((req, res) => {
     });
     res.end(data);
   });
-}).listen(PORT, () => console.log('ElektroSys em http://localhost:' + PORT));
+}).listen(PORT, () => console.log('GG Soluções em http://localhost:' + PORT));

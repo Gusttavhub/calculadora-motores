@@ -1,11 +1,12 @@
 ---
-name: ElektroSys
+name: GG Soluções
 version: "1.0"
 language: pt-BR
-description: "Sistema visual e especificação de experiência para a ElektroSys Engenharia Elétrica."
+description: "Sistema visual e especificação de experiência para a GG Soluções Engenharia Elétrica (antiga ElektroSys)."
 
 brand:
-  company: "ElektroSys"
+  company: "GG Soluções"
+  formerName: "ElektroSys"
   descriptor: "Engenharia Elétrica"
   professional: "Gusttavo Gutierry"
   role: "Engenheiro Eletricista"
@@ -21,6 +22,9 @@ brand:
 colors:
   primary: "#0A1B2E"
   secondary: "#075B91"
+  brandBlue: "#177CD6"
+  brandCyan: "#2DC7CD"
+  brandGreen: "#4FC791"
   tertiary: "#2C7BE5"
   neutral: "#F7F9FB"
   surface: "#0E2841"
@@ -114,15 +118,15 @@ breakpoints:
   xl: "1280px"
 ---
 
-# ElektroSys — direção de design e implementação
+# GG Soluções — direção de design e implementação
 
 ## Overview
 
 Minimalismo técnico com autoridade institucional. A experiência deve transmitir a precisão de um memorial de cálculo, a robustez de uma instalação industrial e a clareza de um laudo que pode ser auditado.
 
-O resultado deve parecer uma empresa de engenharia especializada — nunca uma empresa genérica de manutenção, uma loja de materiais elétricos ou um site jurídico. A composição é sóbria, escura e precisa, com o azul do logotipo conduzindo hierarquia, navegação e chamadas para ação.
+O resultado deve parecer uma empresa de engenharia especializada — nunca uma empresa genérica de manutenção, uma loja de materiais elétricos ou um site jurídico. A composição é sóbria, escura e precisa: o azul conduz hierarquia, navegação e chamadas para ação, e o gradiente azul → ciano → verde do logotipo aparece só como assinatura (logo e trilha).
 
-Esta especificação orienta o Claude Code na criação ou refatoração do site da ElektroSys e nas aplicações da mesma identidade em cartão de apresentação. Antes de implementar, inspecionar a estrutura e o stack existentes. Reaproveitar componentes e conteúdo válidos; não trocar framework nem adicionar dependências sem necessidade.
+Esta especificação orienta o Claude Code na criação ou refatoração do site da GG Soluções e nas aplicações da mesma identidade em cartão de apresentação. Antes de implementar, inspecionar a estrutura e o stack existentes. Reaproveitar componentes e conteúdo válidos; não trocar framework nem adicionar dependências sem necessidade.
 
 ## Objetivos
 
@@ -152,28 +156,33 @@ Precisam de segurança, continuidade operacional, aprovação, documentação e 
 
 ### Logotipo oficial
 
-- Usar exatamente o logotipo escolhido: símbolo hexagonal aberto com raio azul, wordmark “ElektroSys” e assinatura “ENGENHARIA ELÉTRICA”.
-- Arquivo-fonte recebido: `855058ec-ab39-4ab7-b3da-bff39cc7e410.png`.
-- No projeto web, normalizar os ativos como `/public/brand/elektrosys-logo.png` e, se houver versão isolada legítima, `/public/brand/elektrosys-symbol.png`.
-- Não redesenhar, reinterpretar, inclinar, esticar, aplicar gradiente, sombra, contorno ou efeitos 3D.
-- Não alterar a proporção entre símbolo, nome e descritor.
-- Não recriar o wordmark com uma fonte aproximada.
-- Não gerar um novo logotipo por IA. Se o ativo não estiver disponível, solicitar o arquivo em vez de inventá-lo.
-- Manter área de proteção mínima equivalente à largura do traço principal do raio em todos os lados.
-- Sobre fundo escuro, usar somente uma versão branca/azul oficialmente preparada. Não inverter automaticamente uma imagem raster se isso comprometer a marca.
-- Para registro de marca e gráfica, o logotipo deverá ser vetorizado profissionalmente e validado separadamente; o site não deve apresentar uma versão improvisada como arquivo-mestre.
+- Marca: **GG Soluções** (antiga ElektroSys; o domínio `elektrosys.eng.br` continua o mesmo até decisão em contrário).
+- Desenho: monograma “GG” em trilhas de circuito com terminais em ponto, botão de energia com raio dentro do primeiro G, gradiente azul → ciano → verde; wordmark “GG SOLUÇÕES” em sans geométrica estendida.
+- Arquivo-fonte recebido: `brand/source/gg-solucoes-logo-original.png` (raster 1024×765 sobre azul-marinho `#0E1E35`).
+- Variantes geradas por `npm run brand:logo` (`tools/extract-logo.mjs`) em `assets/brand/`:
+  - `gg-logo(-tight).png` — original, wordmark branco. **Uso padrão**: cabeçalho, rodapé, OG, verso do cartão — sempre sobre azul-marinho, sem placa.
+  - `gg-logo-light(-tight).png` — wordmark azul-marinho `#0A1B2E` para fundo claro (PDF da proposta, frente do cartão). Variante derivada; validar com o designer.
+  - `gg-symbol(-tight).png` — monograma isolado, para favicon e ícones (sobre quadrado `#0A1B2E`).
+- Não redesenhar, reinterpretar, inclinar, esticar, aplicar sombra, contorno ou efeitos 3D. Não trocar as cores do gradiente.
+- Não alterar a proporção entre monograma e wordmark. Não montar versão horizontal sem arte oficial.
+- Não recriar o wordmark com uma fonte aproximada. Não gerar um novo logotipo por IA.
+- Nunca usar a versão de wordmark branco sobre fundo claro.
+- Área de proteção mínima: diâmetro de um terminal em ponto do monograma, em todos os lados.
+- Tamanho mínimo: 112 px de largura na tela (wordmark ≈ 15 px de altura); 18 mm no impresso.
+- Para registro de marca e gráfica, o logotipo deverá ser vetorizado profissionalmente; o PNG atual não é arquivo-mestre.
 
 ### Paleta
 
-- `#0A1B2E` é a base institucional: cabeçalho, hero, rodapé e áreas de alta autoridade.
-- `#075B91` é o azul original do logotipo e deve preservar reconhecimento da marca.
+- `#0A1B2E` é a base institucional: cabeçalho, hero, rodapé e áreas de alta autoridade. O logotipo foi desenhado para esse fundo.
+- **Cores da marca (amostradas do logotipo):** azul `#177CD6`, ciano `#2DC7CD`, verde `#4FC791` — tokens `--color-brand-*` e `--gradient-brand`.
+- O gradiente da marca aparece **somente** no próprio logotipo e na “trilha”: linha de 2–3 px no topo do cabeçalho, do rodapé, da imagem social e sob o cabeçalho do PDF. Nunca em texto, botões, ícones ou fundos grandes.
+- `#075B91` é o azul profundo para links e números sobre superfície clara (6,8:1 sobre `#F7F9FB`). O azul da marca `#177CD6` não atinge 4,5:1 sobre claro e não deve ser usado em texto.
 - `#2C7BE5` é o azul elétrico para links, foco, indicadores e CTAs secundários.
 - `#F7F9FB` é a superfície clara de documentos, explicações e áreas que pedem leitura longa.
 - `#0E2841` e `#133150` criam profundidade discreta em superfícies escuras.
 - `#25D366` é reservado ao botão oficial do WhatsApp. Não usar como cor geral da marca.
 - `#2FB39A`, `#E7A740` e `#E4694F` são cores semânticas de status, gráficos, alertas ou validação. Não competir com o azul principal.
 - Evitar preto puro e branco puro em grandes áreas. Usar contraste alto sem aparência agressiva.
-- Gradientes só são permitidos como iluminação de fundo muito sutil, com opacidade baixa. Nunca aplicar gradiente no logotipo ou nos botões principais.
 
 ### Tipografia
 
@@ -217,7 +226,7 @@ O conteúdo deve ser tecnicamente correto para engenheiros e compreensível para
 
 - Português do Brasil, formal sem burocratês, objetivo e humano.
 - Escrever na primeira pessoa quando Gusttavo estiver assumindo atendimento ou responsabilidade: “Você fala comigo”, “Analiso o material”, “Devolvo escopo, prazo e preço”.
-- Escrever na voz da marca para capacidades institucionais: “A ElektroSys atua em…”.
+- Escrever na voz da marca para capacidades institucionais: “A GG Soluções atua em…”.
 - Usar verbos concretos: analisar, dimensionar, inspecionar, documentar, calcular, compatibilizar e entregar.
 - Evitar “soluções inovadoras”, “excelência”, “líder”, “revolucionário”, “garantia de resultado” e clichês semelhantes.
 - Não prometer aprovação por concessionária, ganho de processo, economia fixa ou prazo sem validar o caso.
@@ -228,7 +237,7 @@ O conteúdo deve ser tecnicamente correto para engenheiros e compreensível para
 
 | Campo | Conteúdo |
 | --- | --- |
-| Marca | ElektroSys |
+| Marca | GG Soluções |
 | Descritor | Engenharia Elétrica |
 | Responsável | Gusttavo Gutierry |
 | Cargo | Engenheiro Eletricista |
@@ -294,7 +303,7 @@ Apresentar quatro sinais verificáveis, sem contadores inflados:
 - Contato direto com o engenheiro responsável.
 - Mais de 6 anos de vivência industrial.
 - Projetos e documentos com referências técnicas auditáveis.
-- Escopo transparente: se não for competência da ElektroSys, isso será informado.
+- Escopo transparente: se não for competência da GG Soluções, isso será informado.
 
 ### 4. Serviços
 
@@ -505,7 +514,7 @@ O cartão deve usar a mesma identidade, ser apropriado para deixar em escritóri
 - Contraste mínimo de 4.5:1 para texto normal e 3:1 para texto grande e componentes.
 - Todos os controles operáveis por teclado, com foco visível.
 - Incluir link “Pular para o conteúdo”.
-- Logo deve ter texto alternativo `ElektroSys Engenharia Elétrica`; elementos decorativos usam `alt=""`.
+- Logo deve ter texto alternativo `GG Soluções`; elementos decorativos usam `alt=""`.
 - Ícones acionáveis precisam de nome acessível.
 - Respeitar `prefers-reduced-motion` e desativar transições não essenciais.
 - Não depender apenas de cor para estados, categorias ou erros.
@@ -519,7 +528,7 @@ O cartão deve usar a mesma identidade, ser apropriado para deixar em escritóri
 
 ## SEO e conteúdo compartilhável
 
-- Título sugerido: `ElektroSys | Engenharia Elétrica, Laudos e Perícias em Goiás`.
+- Título sugerido: `GG Soluções | Engenharia Elétrica, Laudos e Perícias em Goiás`.
 - Descrição sugerida: `Projetos elétricos, laudos, inspeções, SPDA, sistemas fotovoltaicos, perícias judiciais e assistência técnica com atendimento direto do engenheiro responsável.`
 - URLs, títulos, descrições e Open Graph exclusivos por página.
 - Incluir dados estruturados `ProfessionalService` ou tipo Schema.org mais específico somente com informações reais e verificadas.
@@ -560,7 +569,7 @@ O cartão deve usar a mesma identidade, ser apropriado para deixar em escritóri
 - Não usar estética de escritório de advocacia tradicional.
 - Não usar amarelo e preto como paleta principal de “alta tensão”.
 - Não usar neon, cyberpunk, glow intenso ou excesso de circuitos decorativos.
-- Não usar gradientes chamativos, glassmorphism ou skeuomorphism.
+- Não usar gradientes chamativos (o gradiente da marca é restrito ao logo e à trilha), glassmorphism ou skeuomorphism.
 - Não usar fotos ou depoimentos gerados por IA como se fossem reais.
 - Não criar selos de “certificado”, “aprovado” ou “garantido”.
 - Não misturar mais de três famílias tipográficas.
@@ -570,8 +579,8 @@ O cartão deve usar a mesma identidade, ser apropriado para deixar em escritóri
 ## Critérios de aceite
 
 - [ ] O logotipo oficial aparece sem distorção e com respiro adequado.
-- [ ] A paleta principal é azul-marinho, azul do logotipo e azul elétrico.
-- [ ] Em até cinco segundos é possível entender quem atende, o que a ElektroSys faz e como entrar em contato.
+- [ ] A paleta principal é azul-marinho e azul elétrico; o gradiente da marca aparece só no logo e na trilha.
+- [ ] Em até cinco segundos é possível entender quem atende, o que a GG Soluções faz e como entrar em contato.
 - [ ] Perícias e assistência técnica são encontradas facilmente pelo público jurídico.
 - [ ] Projetos, laudos, inspeções, SPDA e fotovoltaico estão descritos com clareza.
 - [ ] O WhatsApp correto funciona com mensagem pré-preenchida e editável.

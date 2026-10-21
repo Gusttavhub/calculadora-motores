@@ -6,14 +6,14 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const R = (p) => path.join(ROOT, p);
 
 
-const SYM = R('assets/brand/elektrosys-symbol-tight.png');   // 174x239, sem respiro
+const SYM = R('assets/brand/gg-symbol-tight.png');   // 338x201, sem respiro
 const OUT = R('assets/brand');
-const PLATE = '#F7F9FB';   // superficie clara oficial — o simbolo nunca e invertido
+const PLATE = '#0A1B2E';   // azul-marinho institucional — o monograma foi desenhado sobre fundo escuro
 
-// O simbolo e mais alto que largo; encaixa-lo numa area segura quadrada.
+// O monograma e mais largo que alto; encaixa-lo numa area segura quadrada.
 async function icon(size, file, { round = false, inset = 0.66 } = {}) {
   const box = Math.round(size * inset);
-  const sym = await sharp(SYM).resize({ height: box, fit: 'inside' }).toBuffer();
+  const sym = await sharp(SYM).resize({ width: box, height: box, fit: 'inside' }).toBuffer();
   const m = await sharp(sym).metadata();
   let img = sharp({ create: { width: size, height: size, channels: 4, background: PLATE } })
     .composite([{ input: sym, left: Math.round((size - m.width) / 2), top: Math.round((size - m.height) / 2) }]);
@@ -27,12 +27,12 @@ async function icon(size, file, { round = false, inset = 0.66 } = {}) {
   return buf;
 }
 
-const b16 = await icon(16, 'favicon-16.png', { inset: 0.78 });
-const b32 = await icon(32, 'favicon-32.png', { inset: 0.74 });
-const b48 = await icon(48, 'favicon-48.png', { inset: 0.72 });
-await icon(192, 'favicon-192.png');
-await icon(512, 'favicon-512.png');
-await icon(180, 'apple-touch-icon.png', { inset: 0.62 });
+const b16 = await icon(16, 'favicon-16.png', { inset: 1 });
+const b32 = await icon(32, 'favicon-32.png', { inset: 0.94 });
+const b48 = await icon(48, 'favicon-48.png', { inset: 0.9 });
+await icon(192, 'favicon-192.png', { inset: 0.78 });
+await icon(512, 'favicon-512.png', { inset: 0.78 });
+await icon(180, 'apple-touch-icon.png', { inset: 0.74 });
 
 // favicon.ico multi-resolucao (PNG embutido, aceito por todos os navegadores atuais)
 function buildIco(entries) {

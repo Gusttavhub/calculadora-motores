@@ -1,10 +1,18 @@
 {
-  "$comment": "Fonte central de dados comerciais da ElektroSys. Editar aqui e rodar `npm run check` para validar que o HTML esta consistente. Ver README.md.",
+  "$comment": "Fonte central de dados comerciais da GG Soluções (antiga ElektroSys). Editar aqui e rodar `npm run check` para validar que o HTML esta consistente. Ver README.md.",
   "brand": {
-    "company": "ElektroSys",
+    "company": "GG Soluções",
+    "formerName": "ElektroSys",
     "descriptor": "Engenharia Eletrica",
     "descriptorAccented": "Engenharia Elétrica",
-    "logoAlt": "ElektroSys Engenharia Elétrica"
+    "logoAlt": "GG Soluções",
+    "logo": {
+      "onDark": "assets/brand/gg-logo-tight.png",
+      "onLight": "assets/brand/gg-logo-light-tight.png",
+      "symbol": "assets/brand/gg-symbol-tight.png",
+      "source": "brand/source/gg-solucoes-logo-original.png"
+    },
+    "colors": { "blue": "#177CD6", "cyan": "#2DC7CD", "green": "#4FC791" }
   },
   "professional": {
     "name": "Gusttavo Gutierry",
@@ -36,7 +44,7 @@
   "site": {
     "domain": "https://elektrosys.eng.br",
     "canonicalHome": "https://elektrosys.eng.br/",
-    "title": "ElektroSys | Engenharia Elétrica, Laudos e Perícias em Goiás",
+    "title": "GG Soluções | Engenharia Elétrica, Laudos e Perícias em Goiás",
     "description": "Projetos elétricos, laudos, inspeções, SPDA, sistemas fotovoltaicos, perícias judiciais e assistência técnica com atendimento direto do engenheiro responsável."
   },
   "tools": [
@@ -104,8 +112,8 @@
       {
         "id": "logo-vetorial",
         "where": "brand/",
-        "text": "Logotipo vetorial oficial (SVG/AI/EPS)",
-        "status": "Somente o PNG foi fornecido. Para grafica e registro de marca, vetorizar profissionalmente e revalidar o cartao."
+        "text": "Logotipo vetorial oficial GG Soluções (SVG/AI/EPS)",
+        "status": "Somente um PNG 1024x765 sobre fundo azul-marinho foi fornecido; as variantes foram recortadas por tools/extract-logo.mjs e a versão para fundo claro (wordmark azul-marinho) é derivada, não original. Para grafica e registro de marca, vetorizar profissionalmente e revalidar o cartao."
       }
     ]
   },

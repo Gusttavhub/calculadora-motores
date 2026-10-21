@@ -1,6 +1,6 @@
-# ElektroSys — site institucional e identidade
+# GG Soluções — site institucional e identidade
 
-Site institucional da **ElektroSys Engenharia Elétrica** e aplicação da marca em
+Site institucional da **GG Soluções Engenharia Elétrica** (antiga ElektroSys) e aplicação da marca em
 cartão de apresentação.
 
 Responsável técnico: **Gusttavo Gutierry**, Engenheiro Eletricista,
@@ -143,18 +143,22 @@ instalado, em modo headless.
 
 ### Sobre o logotipo
 
-O arquivo oficial recebido é `855058ec-ab39-4ab7-b3da-bff39cc7e410.png`, na raiz.
-Ele **não foi redesenhado, recolorido, vetorizado automaticamente nem
-substituído**.
+Marca atual: **GG Soluções** (antiga ElektroSys). O arquivo oficial recebido é
+`brand/source/gg-solucoes-logo-original.png` (PNG 1024×765 sobre azul-marinho
+`#0E1E35`). O logotipo antigo ficou em `brand/source/elektrosys-logo-legacy.png`
+só como histórico.
 
-`npm run brand:logo` faz apenas duas operações não destrutivas: recorta o
-enquadramento e separa o fundo em canal alfa. As cores originais são preservadas
-exatamente (`#025797` no símbolo e no wordmark, `#0C243F` no descritor e no
-filete) e a proporção 2,251:1 é mantida.
+`npm run brand:logo` recorta o enquadramento, separa o fundo em canal alfa
+(com despremultiplicação, para não carregar o azul-marinho para fundos claros)
+e gera em `assets/brand/`:
 
-Sobre fundo escuro o logotipo é aplicado **sobre uma placa clara**, nunca
-invertido — a versão azul sobre o azul-marinho institucional não atinge
-contraste suficiente, e `design.md` proíbe inverter o bitmap.
+- `gg-logo(-tight).png` — original, wordmark branco, para fundo escuro (padrão do site);
+- `gg-logo-light(-tight).png` — wordmark azul-marinho, para fundo claro (PDF e frente do cartão);
+- `gg-symbol(-tight).png` — monograma GG, base do favicon e dos ícones.
+
+O gradiente do monograma não é alterado. Como o logotipo foi desenhado sobre
+azul-marinho, no site ele entra **direto no fundo escuro, sem placa**. Cores e
+regras de uso: `design.md` > Identidade visual.
 
 ---
 
@@ -163,7 +167,7 @@ contraste suficiente, e `design.md` proíbe inverter o bitmap.
 O site é estático: publique o conteúdo da raiz do projeto.
 
 **Não precisa ir para o servidor:** `tools/`, `previews/`, `content/`,
-`brand/`, `design.md`, `package.json` e o PNG original do logotipo.
+`brand/` (inclui o PNG original do logotipo), `design.md` e `package.json`.
 
 **Precisa ir:** `index.html`, `ferramentas.html`, `assets/`, `favicon.ico`,
 `robots.txt`, `sitemap.xml`, `site.webmanifest`.
@@ -277,7 +281,7 @@ recalcula todos os contrastes a partir dos tokens do CSS.
 
 ## Licenças
 
-- **Logotipo ElektroSys** — propriedade da ElektroSys. Não redistribuir.
+- **Logotipo GG Soluções** — propriedade da GG Soluções. Não redistribuir.
 - **Barlow Semi Condensed, Inter, IBM Plex Mono** — SIL Open Font License 1.1,
   uso comercial e incorporação permitidos.
 - Ícones da interface são SVG inline desenhados para este projeto.

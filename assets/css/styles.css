@@ -1,6 +1,6 @@
 @charset "UTF-8";
 /* ==========================================================================
-   ElektroSys Engenharia Eletrica — folha de estilo unica
+   GG Soluções Engenharia Elétrica — folha de estilo unica
    Tokens derivados de design.md. Nao usar valores soltos: sempre var(--…).
    ========================================================================== */
 
@@ -114,6 +114,14 @@
   --color-success: #2FB39A;
   --color-warning: #E7A740;
   --color-danger: #E4694F;
+
+  /* Marca GG Soluções — cores amostradas do logotipo (azul > ciano > verde).
+     Usar só no próprio logo e na "trilha" de 2px do cabeçalho/rodapé.
+     Nunca em texto, botões ou fundos grandes (ver design.md > Paleta). */
+  --color-brand-blue: #177CD6;
+  --color-brand-cyan: #2DC7CD;
+  --color-brand-green: #4FC791;
+  --gradient-brand: linear-gradient(90deg, var(--color-brand-blue), var(--color-brand-cyan) 55%, var(--color-brand-green));
 
   /* Derivados para atender WCAG 2.2 AA (ver README > Desvios) */
   --color-link-on-dark: #5AA9F0;        /* 6.9:1 sobre --color-primary */
@@ -396,26 +404,31 @@ button { font: inherit; color: inherit; background: none; border: none; cursor: 
   min-height: var(--header-height);
 }
 
-/* O logotipo oficial e positivo (azul sobre claro). Sobre fundo escuro ele fica
-   sobre uma placa clara — nunca invertido, recolorido nem redesenhado.
-   A area de protecao em relacao aos elementos vizinhos e garantida pelo gap do
-   cabecalho; a placa e o proprio fundo da marca, como no arquivo original. */
+/* O logotipo GG Soluções foi desenhado sobre azul-marinho: entra direto no fundo
+   escuro, sem placa. Nunca redesenhar, recolorir ou aplicar efeitos. Sobre fundo
+   claro, usar gg-logo-light (wordmark azul-marinho). A area de protecao em relacao
+   aos vizinhos e garantida pelo gap do cabecalho. */
 .logo {
   display: inline-flex;
   flex: none;
-  padding: 4px 7px;
-  background: var(--color-neutral);
   border-radius: var(--radius-sm);
   transition: box-shadow var(--motion-fast) var(--easing);
 }
-.logo img { width: 118px; height: auto; }
-@media (min-width: 1024px) { .logo { padding: 5px 9px; } .logo img { width: 152px; } }
+.logo img { width: 112px; height: auto; }
+@media (min-width: 1024px) { .logo img { width: 140px; } }
 .logo:hover { box-shadow: 0 0 0 1px var(--color-tertiary); }
 
 /* No rodape nao ha limite de altura: a marca respira mais */
-.site-footer .logo { padding: 10px 14px; }
-.site-footer .logo img { width: 168px; }
-@media (min-width: 1024px) { .site-footer .logo img { width: 196px; } }
+.site-footer .logo img { width: 176px; }
+@media (min-width: 1024px) { .site-footer .logo img { width: 208px; } }
+
+/* Trilha da marca: linha de 2px com o gradiente do logotipo no topo do cabecalho
+   e do rodape — a unica aplicacao do gradiente fora do logo. */
+.site-header, .site-footer {
+  background-image: var(--gradient-brand);
+  background-size: 100% 2px;
+  background-repeat: no-repeat;
+}
 
 .nav { display: none; }
 .nav__list { display: flex; align-items: center; gap: var(--space-lg); }

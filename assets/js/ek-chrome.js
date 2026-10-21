@@ -1,4 +1,4 @@
-// ElektroSys — comportamento comum do cabeçalho/rodapé das ferramentas.
+// GG Soluções — comportamento comum do cabeçalho/rodapé das ferramentas.
 // Links com data-wa abrem o WhatsApp com mensagem pré-preenchida e editável;
 // o assunto vem de data-wa-assunto no <body> (ex.: "um sistema fotovoltaico").
 // Sem JavaScript os links continuam funcionando (href estático para wa.me).

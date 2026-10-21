@@ -1,4 +1,4 @@
-/* ElektroSys — cabeçalho, rodapé e fontes das ferramentas (solar, motores, memorial).
+/* GG Soluções — cabeçalho, rodapé e fontes das ferramentas (solar, motores, memorial).
    Espelha o site institucional (design.md). As páginas de ferramenta usam Tailwind
    (styles.css); este arquivo só cobre o que não está no build do Tailwind. */
 /* ===== Fontes (design.md: Barlow 600/700, Inter 400–700, IBM Plex Mono 400/500) ===== */
@@ -15,12 +15,13 @@ body, .font-sans { font-family:'Inter', system-ui, sans-serif; }
 /* ===== Cabeçalho e rodapé alinhados ao site institucional ===== */
 .ek-skip { position:absolute; left:-9999px; top:8px; z-index:100; background:#2C7BE5; color:#fff; padding:8px 14px; border-radius:4px; }
 .ek-skip:focus { left:16px; }
-.ek-logo { display:inline-flex; flex:none; padding:4px 7px; background:#F7F9FB; border-radius:4px; transition:box-shadow .15s; }
-.ek-logo img { height:44px; width:auto; display:block; }
+.ek-logo { display:inline-flex; flex:none; border-radius:4px; transition:box-shadow .15s; }
+.ek-logo img { height:48px; width:auto; display:block; }
 .ek-logo:hover { box-shadow:0 0 0 1px #2C7BE5; }
-@media (min-width:1024px) { .ek-logo { padding:4px 9px; } .ek-logo img { height:50px; } }
-.ek-foot .ek-logo { padding:10px 14px; }
-.ek-foot .ek-logo img { height:auto; width:168px; }
+@media (min-width:1024px) { .ek-logo img { height:52px; } }
+.ek-foot .ek-logo img { height:auto; width:176px; }
+/* Trilha da marca (gradiente do logotipo, 2px) no topo do cabeçalho e do rodapé */
+.ek-head, .ek-foot { background-image:linear-gradient(90deg,#177CD6,#2DC7CD 55%,#4FC791); background-size:100% 2px; background-repeat:no-repeat; }
 .ek-nav { display:none; align-items:center; gap:24px; font-size:14px; font-weight:500; }
 @media (min-width:1100px) { .ek-nav { display:flex; } }
 .ek-nav a { color:#8CA3BC; padding:6px 0; transition:color .15s; }

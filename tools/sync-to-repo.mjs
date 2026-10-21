@@ -25,7 +25,6 @@ const COPY = [
   'package.json',
   'RELATORIO.md',
   'design.md',
-  '855058ec-ab39-4ab7-b3da-bff39cc7e410.png',
   'assets',
   'brand',
   'content',
@@ -132,7 +131,6 @@ exclude:
   - RELATORIO.md
   - README-SITE.md
   - package.json
-  - 855058ec-ab39-4ab7-b3da-bff39cc7e410.png
   - .claude/
 
   # Codigo que nao faz parte do site publicado

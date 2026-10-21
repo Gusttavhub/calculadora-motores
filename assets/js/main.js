@@ -1,5 +1,5 @@
 /* =============================================================================
-   ElektroSys — comportamento da interface.
+   GG Soluções — comportamento da interface.
    Progressive enhancement: todo o conteudo e todos os links funcionam sem JS.
    Este arquivo apenas melhora navegacao, estado e entrada de secoes.
    ============================================================================= */

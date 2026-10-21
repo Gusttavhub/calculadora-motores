@@ -1,5 +1,5 @@
 /* =============================================================================
-   Validacao do site ElektroSys — `npm run check`
+   Validacao do site GG Soluções — `npm run check`
    Sem dependencias. Falha com codigo 1 se algum item obrigatorio quebrar.
 
    Cobre:
@@ -130,7 +130,7 @@ for (const page of PAGES) {
   }
 
   // o logotipo precisa do texto alternativo definido em design.md
-  const logoAlts = [...h.matchAll(/<img[^>]*elektrosys-logo[^>]*alt="([^"]*)"/g)].map(m => m[1]);
+  const logoAlts = [...h.matchAll(/<img[^>]*gg-logo[^>]*alt="([^"]*)"/g)].map(m => m[1]);
   for (const a of logoAlts) {
     if (a === cfg.brand.logoAlt) pass(`${page}: alt do logotipo`);
     else fail(`${page}: alt do logotipo deveria ser "${cfg.brand.logoAlt}", veio "${a}"`);

@@ -1,4 +1,6 @@
-# ElektroSys — elektrosys.eng.br
+# GG Soluções — elektrosys.eng.br
+
+> Marca renomeada de ElektroSys para **GG Soluções**. O domínio continua `elektrosys.eng.br`; identidade visual em `design.md` e `README-SITE.md`.
 
 Ferramentas de engenharia elétrica: calculadora de dimensionamento de cabos
 para motores trifásicos (NBR 5410) e simulador de sistema fotovoltaico com

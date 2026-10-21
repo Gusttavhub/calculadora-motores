@@ -1,5 +1,5 @@
 /* =============================================================================
-   Cartao de apresentacao ElektroSys — gera SVG (RGB) e PDF (CMYK) da frente
+   Cartao de apresentacao GG Soluções — gera SVG (RGB) e PDF (CMYK) da frente
    e do verso a partir de um unico modelo geometrico em milimetros.
 
    Formato (design.md > "Aplicacao em cartao de apresentacao"):
@@ -153,12 +153,12 @@ const QR_RECTS = qrRects();
 const COL_L = SAFE_L;                 // 7
 const COL_W = QR_X - 4 - SAFE_L;      // 54 mm de largura util a esquerda
 
-// Logotipo oficial no verso, pequeno, sobre placa clara — mesma marca do
-// cabecalho e do rodape do site. Fica no canto superior esquerdo, ao lado da
+// Logotipo oficial no verso, pequeno, direto sobre o azul-marinho (versao de
+// wordmark branco) — mesma marca do cabecalho e do rodape do site. Fica no canto superior esquerdo, ao lado da
 // chamada, sem competir com o bloco de identificacao nem com o QR.
-const BACK_LOGO_W = 16;                                        // mm
-const BACK_LOGO_H = BACK_LOGO_W * (await sharp(path.join(ROOT, 'assets/brand/elektrosys-logo-tight.png')).metadata().then(m => m.height / m.width));
-const BACK_LOGO_PAD = 1.2;                                     // respiro da placa ao redor do logotipo
+const BACK_LOGO_W = 18;                                        // mm
+const BACK_LOGO_H = BACK_LOGO_W * (await sharp(path.join(ROOT, 'assets/brand/gg-logo-tight.png')).metadata().then(m => m.height / m.width));
+const BACK_LOGO_PAD = 1.2;                                     // area de protecao ao redor do logotipo (sem placa)
 const BACK_LOGO_PLATE = { x: COL_L, y: SAFE_T, w: BACK_LOGO_W + BACK_LOGO_PAD * 2, h: BACK_LOGO_H + BACK_LOGO_PAD * 2 };
 const BACK_LOGO_POS = { x: BACK_LOGO_PLATE.x + BACK_LOGO_PAD, y: BACK_LOGO_PLATE.y + BACK_LOGO_PAD };
 
@@ -213,7 +213,8 @@ if (BACK_LOGO_PLATE.y + BACK_LOGO_PLATE.h > SAFE_B) problems.push('verso/logo: p
 /* -------------------------------------------------------------------------- */
 /* Frente — logotipo oficial, sem qualquer outro elemento                      */
 /* -------------------------------------------------------------------------- */
-const LOGO_SRC = path.join(ROOT, 'assets/brand/elektrosys-logo-tight.png');
+const LOGO_SRC = path.join(ROOT, 'assets/brand/gg-logo-light-tight.png');   // wordmark azul-marinho, para fundo claro
+const LOGO_SRC_BACK = path.join(ROOT, 'assets/brand/gg-logo-tight.png');   // wordmark branco, para o verso
 const logoMeta = await sharp(LOGO_SRC).metadata();
 const LOGO_W = 40;                                            // mm
 const LOGO_H = LOGO_W * (logoMeta.height / logoMeta.width);
@@ -229,11 +230,17 @@ await sharp({ create: { width: logoMeta.width, height: logoMeta.height, channels
   .composite([{ input: LOGO_SRC }])
   .png({ compressionLevel: 9 })
   .toFile(LOGO_PRINT);
+const LOGO_PRINT_BACK = path.join(OUT, 'logo-para-impressao-verso.png');
+await sharp({ create: { width: logoMeta.width, height: logoMeta.height, channels: 4, background: RGB.navy } })
+  .composite([{ input: LOGO_SRC_BACK }])
+  .png({ compressionLevel: 9 })
+  .toFile(LOGO_PRINT_BACK);
 
 /* -------------------------------------------------------------------------- */
 /* Saida SVG (RGB, para uso digital e edicao)                                  */
 /* -------------------------------------------------------------------------- */
 const logoB64 = fs.readFileSync(LOGO_PRINT).toString('base64');
+const logoBackB64 = fs.readFileSync(LOGO_PRINT_BACK).toString('base64');
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
 function svgOpen(title, desc) {
@@ -259,8 +266,8 @@ function svgText(t, x, anchor = 'start') {
 }
 
 let front = svgOpen(
-  'ElektroSys — cartao de apresentacao, frente',
-  'Logotipo oficial da ElektroSys Engenharia Eletrica centralizado sobre fundo claro.'
+  'GG Soluções — cartao de apresentacao, frente',
+  'Logotipo oficial da GG Soluções centralizado sobre fundo claro.'
 );
 front += `  <rect width="${W}" height="${H}" fill="${RGB.neutral}"/>\n`;
 front += `  <image x="${LOGO_X.toFixed(3)}" y="${LOGO_Y.toFixed(3)}" width="${LOGO_W}" height="${LOGO_H.toFixed(3)}" xlink:href="data:image/png;base64,${logoB64}" preserveAspectRatio="xMidYMid meet"/>\n`;
@@ -268,12 +275,11 @@ front += svgGuides() + '</svg>\n';
 fs.writeFileSync(path.join(OUT, 'business-card-front.svg'), front);
 
 let back = svgOpen(
-  'ElektroSys — cartao de apresentacao, verso',
+  'GG Soluções — cartao de apresentacao, verso',
   `Dados de contato de ${cfg.professional.name}, ${cfg.professional.role}, ${cfg.professional.creaLabel}. QR code para ${QR_TARGET}.`
 );
 back += `  <rect width="${W}" height="${H}" fill="${RGB.navy}"/>\n`;
-back += `  <rect x="${BACK_LOGO_PLATE.x}" y="${BACK_LOGO_PLATE.y}" width="${BACK_LOGO_PLATE.w}" height="${BACK_LOGO_PLATE.h}" rx="1" fill="${RGB.neutral}"/>\n`;
-back += `  <image x="${BACK_LOGO_POS.x}" y="${BACK_LOGO_POS.y}" width="${BACK_LOGO_W}" height="${BACK_LOGO_H.toFixed(3)}" xlink:href="data:image/png;base64,${logoB64}" preserveAspectRatio="xMidYMid meet"/>\n`;
+back += `  <image x="${BACK_LOGO_POS.x}" y="${BACK_LOGO_POS.y}" width="${BACK_LOGO_W}" height="${BACK_LOGO_H.toFixed(3)}" xlink:href="data:image/png;base64,${logoBackB64}" preserveAspectRatio="xMidYMid meet"/>\n`;
 for (const t of BACK_TEXT) back += svgText(t, t.x ?? COL_L);
 back += `  <rect x="${DIVIDER.x}" y="${DIVIDER.y}" width="${DIVIDER.w}" height="${DIVIDER.h}" fill="${RGB.border}"/>\n`;
 back += `  <g id="qr">\n    <rect x="${QR_X}" y="${QR_Y}" width="${QR_PLATE}" height="${QR_PLATE}" fill="${RGB.white}"/>\n`;
@@ -292,10 +298,10 @@ async function writePdf(file, side, mode) {
   const useCmyk = mode === 'cmyk';
   const col = (name) => (useCmyk ? CMYK[name] : RGB[name]);
   const doc = new PDFDocument({ size: [mm(W), mm(H)], margin: 0, info: {
-    Title: `ElektroSys — cartao de apresentacao (${side === 'front' ? 'frente' : 'verso'})`,
+    Title: `GG Soluções — cartao de apresentacao (${side === 'front' ? 'frente' : 'verso'})`,
     Author: cfg.professional.name,
     Subject: `${TRIM_W}x${TRIM_H} mm, sangria ${BLEED} mm, ${mode.toUpperCase()}`,
-    Creator: 'ElektroSys build-card.mjs',
+    Creator: 'GG Soluções build-card.mjs',
   }});
   for (const [k, p] of Object.entries(FONT_PATH)) doc.registerFont(k, p);
 
@@ -313,8 +319,7 @@ async function writePdf(file, side, mode) {
     doc.image(LOGO_PRINT, mm(LOGO_X), mm(LOGO_Y), { width: mm(LOGO_W), height: mm(LOGO_H) });
   } else {
     doc.rect(0, 0, mm(W), mm(H)).fill(col('navy'));
-    doc.rect(mm(BACK_LOGO_PLATE.x), mm(BACK_LOGO_PLATE.y), mm(BACK_LOGO_PLATE.w), mm(BACK_LOGO_PLATE.h)).fill(col('neutral'));
-    doc.image(LOGO_PRINT, mm(BACK_LOGO_POS.x), mm(BACK_LOGO_POS.y), { width: mm(BACK_LOGO_W), height: mm(BACK_LOGO_H) });
+    doc.image(LOGO_PRINT_BACK, mm(BACK_LOGO_POS.x), mm(BACK_LOGO_POS.y), { width: mm(BACK_LOGO_W), height: mm(BACK_LOGO_H) });
     for (const t of BACK_TEXT) {
       doc.font(t.font).fontSize(mm(t.size)).fillColor(col(t.color));
       const opts = t.ls ? { characterSpacing: mm(t.ls * t.size), lineBreak: false } : { lineBreak: false };
@@ -344,7 +349,7 @@ await writePdf('business-card-back-rgb.pdf', 'back', 'rgb');
 /* -------------------------------------------------------------------------- */
 /* Relatorio                                                                   */
 /* -------------------------------------------------------------------------- */
-console.log('Cartao de apresentacao ElektroSys');
+console.log('Cartao de apresentacao GG Soluções');
 console.log('---------------------------------');
 console.log(`Area total (com sangria) : ${W} x ${H} mm`);
 console.log(`Corte final              : ${TRIM_W} x ${TRIM_H} mm`);
